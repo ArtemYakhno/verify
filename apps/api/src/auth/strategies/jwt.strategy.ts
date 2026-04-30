@@ -2,14 +2,15 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from '../../users/users.service';
 import { JwtPayload } from '../../../common/interfaces/jwt-payload.interface';
 import { AUTH_MESSAGES } from '../../../common/constants/messages.constants';
+import { PrismaService } from '../../prisma/prisma.service';
+import { safeUserSelect } from '../../../common/types/user.types';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly usersService: UsersService,
+    private readonly prismaService: PrismaService,
     configService: ConfigService,
   ) {
     super({
@@ -21,8 +22,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    const user = await this.usersService.findById(payload.sub);
-    if (!user) throw new UnauthorizedException(AUTH_MESSAGES.UNAUTHORIZED);
+    const user = await this.prismaService.user.findUnique({
+      where: { id: payload.sub },
+      select: { ...safeUserSelect, tokenVersion: true },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(AUTH_MESSAGES.UNAUTHORIZED);
+    }
+
+    if (user.tokenVersion !== payload.version) {
+      throw new UnauthorizedException(AUTH_MESSAGES.UNAUTHORIZED);
+    }
     return user;
   }
 }

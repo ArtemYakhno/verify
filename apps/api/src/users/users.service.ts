@@ -10,7 +10,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { USER_MESSAGES } from '../../common/constants/messages.constants';
 import { HashService } from '../../common/services/hash.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { userSelect } from '../../common/types/user.types';
+import { safeUserSelect } from '../../common/types/user.types';
 
 @Injectable()
 export class UsersService {
@@ -29,20 +29,20 @@ export class UsersService {
 
     return this.prismaService.user.create({
       data: { ...createUserDto, password },
-      select: userSelect,
+      select: safeUserSelect,
     });
   }
 
   async findAll() {
     return this.prismaService.user.findMany({
-      select: userSelect,
+      select: safeUserSelect,
     });
   }
 
   async findById(userId: number) {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
-      select: userSelect,
+      select: safeUserSelect,
     });
 
     return user;
@@ -60,7 +60,7 @@ export class UsersService {
     return this.prismaService.user.update({
       where: { id: userId },
       data: updateUserDto,
-      select: userSelect,
+      select: safeUserSelect,
     });
   }
 

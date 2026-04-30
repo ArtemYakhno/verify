@@ -41,7 +41,7 @@ export class AuthService {
   async register(res: Response, createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
 
-    return this.auth(res, { sub: user.id });
+    return this.auth(res, user.id);
   }
 
   async login(dto: LoginDto, res: Response) {
@@ -62,7 +62,7 @@ export class AuthService {
       throw new UnauthorizedException(AUTH_MESSAGES.INVALID_CREDENTIALS);
     }
 
-    return this.auth(res, { sub: user.id });
+    return this.auth(res, user.id);
   }
 
   async refresh(refreshToken: string, res: Response) {
@@ -98,16 +98,17 @@ export class AuthService {
       throw new UnauthorizedException(AUTH_MESSAGES.INVALID_REFRESH_TOKEN);
     }
 
-    return this.auth(res, { sub: user.id });
+    return this.auth(res, user.id);
   }
 
-  async logout(res: Response, id: number) {
+  async logout(res: Response, userId: number) {
     await this.prismaService.user.update({
       where: {
-        id,
+        id: userId,
       },
       data: {
         refreshToken: null,
+        tokenVersion: { increment: 1 },
       },
     });
 
@@ -116,14 +117,22 @@ export class AuthService {
     return true;
   }
 
-  private async auth(res: Response, payload: JwtPayload) {
-    const tokens = this.generateTokens(payload);
-    await this.saveRefreshToken(payload.sub, tokens.refreshToken);
-    this.setRefreshCookie(res, tokens.refreshToken);
+  private async auth(res: Response, userId: number) {
+    const { tokenVersion } = await this.prismaService.user.update({
+      where: { id: userId },
+      data: { tokenVersion: { increment: 1 } },
+      select: { tokenVersion: true },
+    });
 
-    return {
-      accessToken: tokens.accessToken,
-    };
+    const { accessToken, refreshToken } = this.generateTokens({
+      sub: userId,
+      version: tokenVersion,
+    });
+
+    await this.saveRefreshToken(userId, refreshToken);
+    this.setRefreshCookie(res, refreshToken);
+
+    return { accessToken };
   }
 
   private generateTokens(payload: JwtPayload) {

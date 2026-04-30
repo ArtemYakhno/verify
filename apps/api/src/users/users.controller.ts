@@ -9,15 +9,34 @@ import {
   ParseIntPipe,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBearerAuth,
+  ApiUnauthorizedResponse,
+  ApiForbiddenResponse,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
-import { USER_MESSAGES } from '../../common/constants/messages.constants';
+import {
+  AUTH_MESSAGES,
+  USER_MESSAGES,
+} from '../../common/constants/messages.constants';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { Auth } from '../../common/decorators/auth.decorator';
+import { Role } from '../../generated/prisma/enums';
 
 @ApiTags('Users')
+@ApiUnauthorizedResponse({
+  description: AUTH_MESSAGES.UNAUTHORIZED_DESCRIPTION,
+})
+@ApiForbiddenResponse({ description: AUTH_MESSAGES.FORBIDDEN_MESSAGE })
+@ApiBearerAuth()
+@Auth(Role.ADMIN)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -49,7 +68,7 @@ export class UsersController {
   })
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findOne(id);
+    return this.usersService.findById(id);
   }
 
   @ApiOperation({ summary: 'Update a user' })
@@ -83,7 +102,7 @@ export class UsersController {
     type: Boolean,
   })
   @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
+    status: HttpStatus.BAD_REQUEST,
     description: USER_MESSAGES.INVALID_CURRENT_PASSWORD,
   })
   @ApiResponse({

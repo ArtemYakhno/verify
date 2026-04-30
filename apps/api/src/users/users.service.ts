@@ -2,7 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
-  UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -10,15 +10,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { USER_MESSAGES } from '../../common/constants/messages.constants';
 import { HashService } from '../../common/services/hash.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
-
-const userSelect = {
-  id: true,
-  firstname: true,
-  lastname: true,
-  email: true,
-  createdAt: true,
-  updatedAt: true,
-};
+import { userSelect } from '../../common/types/user.types';
 
 @Injectable()
 export class UsersService {
@@ -47,44 +39,48 @@ export class UsersService {
     });
   }
 
-  async findOne(id: number) {
+  async findById(userId: number) {
     const user = await this.prismaService.user.findUnique({
-      where: { id },
+      where: { id: userId },
       select: userSelect,
     });
-
-    if (!user) throw new NotFoundException(USER_MESSAGES.NOT_FOUND(id));
 
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    await this.findOne(id);
+  async findByIdOrThrow(userId: number) {
+    const user = await this.findById(userId);
+    if (!user) throw new NotFoundException(USER_MESSAGES.NOT_FOUND(userId));
+    return user;
+  }
+
+  async update(userId: number, updateUserDto: UpdateUserDto) {
+    await this.findByIdOrThrow(userId);
 
     return this.prismaService.user.update({
-      where: { id },
+      where: { id: userId },
       data: updateUserDto,
       select: userSelect,
     });
   }
 
-  async delete(id: number) {
-    await this.findOne(id);
-    await this.prismaService.user.delete({ where: { id } });
+  async delete(userId: number) {
+    await this.findByIdOrThrow(userId);
+    await this.prismaService.user.delete({ where: { id: userId } });
     return true;
   }
 
-  async changePassword(id: number, changePasswordDto: ChangePasswordDto) {
+  async changePassword(userId: number, changePasswordDto: ChangePasswordDto) {
     const user = await this.prismaService.user.findUnique({
       where: {
-        id,
+        id: userId,
       },
       select: {
         password: true,
       },
     });
 
-    if (!user) throw new NotFoundException(USER_MESSAGES.NOT_FOUND(id));
+    if (!user) throw new NotFoundException(USER_MESSAGES.NOT_FOUND(userId));
 
     const isMatch = await this.hashService.verify(
       user.password,
@@ -92,7 +88,7 @@ export class UsersService {
     );
 
     if (!isMatch) {
-      throw new UnauthorizedException(USER_MESSAGES.INVALID_CURRENT_PASSWORD);
+      throw new BadRequestException(USER_MESSAGES.INVALID_CURRENT_PASSWORD);
     }
 
     const newPassword = await this.hashService.hash(
@@ -101,7 +97,7 @@ export class UsersService {
 
     await this.prismaService.user.update({
       where: {
-        id,
+        id: userId,
       },
       data: {
         password: newPassword,

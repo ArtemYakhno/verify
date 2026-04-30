@@ -6,6 +6,9 @@ export const USER_MESSAGES = {
 } as const;
 
 export const AUTH_MESSAGES = {
-  INVALID_CREDENTIALS: 'Invalid email or password',
   UNAUTHORIZED: 'Unauthorized',
+  INVALID_CREDENTIALS: 'Invalid credentials',
+  INVALID_REFRESH_TOKEN: 'Invalid refresh token',
+  FORBIDDEN_MESSAGE: 'You do not have access to perform this action',
+  UNAUTHORIZED_DESCRIPTION: 'Bearer token is missing or invalid',
 } as const;

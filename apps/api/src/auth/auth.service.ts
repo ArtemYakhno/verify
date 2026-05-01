@@ -108,7 +108,7 @@ export class AuthService {
       },
       data: {
         refreshToken: null,
-        tokenVersion: { increment: 1 },
+        tokenVersion: crypto.randomUUID(),
       },
     });
 
@@ -118,20 +118,21 @@ export class AuthService {
   }
 
   private async auth(res: Response, userId: number) {
-    const { tokenVersion } = await this.prismaService.user.update({
-      where: { id: userId },
-      data: { tokenVersion: { increment: 1 } },
-      select: { tokenVersion: true },
-    });
+    const newVersion = crypto.randomUUID();
 
     const { accessToken, refreshToken } = this.generateTokens({
       sub: userId,
-      version: tokenVersion,
+      version: newVersion,
     });
 
-    await this.saveRefreshToken(userId, refreshToken);
-    this.setRefreshCookie(res, refreshToken);
+    const hash = await this.hashService.hash(refreshToken);
 
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { tokenVersion: newVersion, refreshToken: hash },
+    });
+
+    this.setRefreshCookie(res, refreshToken);
     return { accessToken };
   }
 
@@ -149,14 +150,6 @@ export class AuthService {
     });
 
     return { accessToken, refreshToken };
-  }
-
-  private async saveRefreshToken(userId: number, refreshToken: string) {
-    const hash = await this.hashService.hash(refreshToken);
-    await this.prismaService.user.update({
-      where: { id: userId },
-      data: { refreshToken: hash },
-    });
   }
 
   private setRefreshCookie(res: Response, refreshToken: string) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -34,6 +35,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (user.tokenVersion !== payload.version) {
       throw new UnauthorizedException(AUTH_MESSAGES.UNAUTHORIZED);
     }
-    return user;
+
+    const { tokenVersion: _, ...safeUser } = user;
+    return safeUser;
   }
 }

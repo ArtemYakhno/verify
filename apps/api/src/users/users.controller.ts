@@ -68,7 +68,7 @@ export class UsersController {
   })
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findById(id);
+    return this.usersService.findByIdOrThrow(id);
   }
 
   @ApiOperation({ summary: 'Update a user' })

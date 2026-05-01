@@ -12,5 +12,5 @@ export class UserResponseDto extends OmitType(CreateUserDto, [
   createdAt!: Date;
 
   @ApiProperty()
-  updateAt!: Date;
+  updatedAt!: Date;
 }

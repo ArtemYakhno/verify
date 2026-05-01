@@ -16,6 +16,7 @@ import {
   USER_MESSAGES,
 } from '../../common/constants/messages.constants';
 import { REFRESH_TOKEN_COOKIE } from '../../common/constants/cookie.constants';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -68,8 +69,10 @@ export class AuthController {
     description: AUTH_MESSAGES.INVALID_CREDENTIALS,
   })
   @Post('logout')
-  logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const user = req.user as { id: number };
-    return this.authService.logout(res, user.id);
+  logout(
+    @CurrentUser('id') userId: number,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.logout(res, userId);
   }
 }

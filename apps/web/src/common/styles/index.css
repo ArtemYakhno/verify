@@ -1,0 +1,12 @@
+@import 'tailwindcss';
+@import './tokens.css';
+@import './base.css';
+@import './typography.css';
+@import './utilities.css';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+
+/* * {
+  outline: 1px solid red;
+} */

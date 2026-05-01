@@ -1,0 +1,9 @@
+@layer base {
+  body {
+    @apply bg-light-bg font-sans;
+  }
+
+  #root {
+    @apply min-h-dvh flex flex-col;
+  }
+}

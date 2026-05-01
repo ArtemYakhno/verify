@@ -1,0 +1,32 @@
+@layer components {
+  .typo-h1 {
+    @apply font-sans font-bold text-[24px] leading-[150%] tracking-[0%] text-black xl:text-[32px];
+  }
+
+  .typo-h2 {
+    @apply font-sans font-bold text-[24px] leading-[150%] tracking-[0%] text-black;
+  }
+
+  .typo-h3 {
+    @apply font-sans font-bold text-[16px] leading-[150%] tracking-[0%] text-placeholder;
+  }
+  .typo-main {
+    @apply font-sans font-medium text-[16px] leading-[150%] text-grey;
+  }
+
+  .typo-secondary {
+    @apply font-sans font-medium text-[12px] leading-[150%] text-placeholder;
+  }
+
+  .typo-label {
+    @apply font-sans font-semibold text-[14px] leading-[100%] tracking-[0%] text-black;
+  }
+
+  .typo-button {
+    @apply font-sans font-bold text-[14px] leading-[100%] tracking-[0%] text-nature-white;
+  }
+
+  .typo-input {
+    @apply font-sans font-medium text-[16px] leading-[150%] text-black;
+  }
+}

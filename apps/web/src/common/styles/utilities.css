@@ -1,0 +1,19 @@
+@utility u-content-padding {
+  @apply p-4  lg:p-7.5;
+}
+
+@utility u-container {
+  @apply u-content-padding box-border w-full lg:max-w-(--breakpoint-xl) mx-auto;
+}
+
+@utility u-page-grid {
+  @apply grid grid-cols-4 gap-4 md:grid-cols-12 md:gap-6 lg:grid-cols-24 lg:gap-4;
+}
+
+@utility u-hover-opacity {
+  @apply transition-opacity duration-200 hover:opacity-80;
+}
+
+@utility hover-scale {
+  @apply hover:scale-110 transition-transform duration-200;
+}

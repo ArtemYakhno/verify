@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "tokenVersion" DROP DEFAULT,
+ALTER COLUMN "tokenVersion" SET DATA TYPE TEXT;

@@ -3,7 +3,7 @@
   --nature-black: #000;
   --light-bg: #fcfcfc;
   --statuses: #f3f3f3;
-  --light-grey-border: #ededed;
+  --light-border: #ededed;
   --border: #dbdada;
   --grey: #878787;
   --placeholder: #a0b1a5;
@@ -13,9 +13,17 @@
   --accent-green: #1fb28b;
   --strong-green: #0f654e;
   --light-error: #ef837f;
-  --middle-error: #e95a54;
+  --red: #e95a54;
   --strong-error: #d3221b;
   --warning: #f1c219;
+  --layout-header-sticky-top: 0px;
+  --layout-sidebar-height: calc(100dvh - 60px);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --layout-header-sticky-top: 30px;
+  }
 }
 /* saved in root, because the project can have theme swither in futhure (for example)  */
 
@@ -31,17 +39,17 @@
   --color-nature-black: var(--nature-black);
   --color-light-bg: var(--light-bg);
   --color-statuses: var(--statuses);
-  --color-light-grey-border: var(--light-grey-border);
-  --color-border: var(--iborder);
+  --color-light-border: var(--light-border);
+  --color-border: var(--border);
   --color-grey: var(--grey);
-  --color-placeholder: var(--placeholder-text);
-  --color-black: var(--black);
+  --color-placeholder: var(--placeholder);
+  --color-ui-black: var(--black);
   --color-light-green: var(--light-green);
   --color-green: var(--green);
   --color-accent-green: var(--accent-green);
   --color-strong-green: var(--strong-green);
   --color-light-error: var(--light-error);
-  --color-middle-error: var(--middle-error);
+  --color-red: var(--red);
   --color-strong-error: var(--strong-error);
   --color-warning: var(--warning);
 
@@ -53,4 +61,6 @@
   --breakpoint-2xl: 2560px;
 
   --shadow-default: -4px 4px 10px 0px #0000001a;
+
+  --shadow-block: 14px 17px 40px 4px #7db59314;
 }

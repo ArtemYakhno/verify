@@ -6,12 +6,10 @@ import { useIsMobile } from "@/common/hooks/useIsMobile";
 import { Footer } from "./Footer";
 import { scrollTop } from "@/common/utils/scrollTop";
 import { cn } from "@/common/lib/utils";
-import { useScrolled } from "@/common/hooks/useScrolled";
 
 export const DashboardLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
-  const isScrolled = useScrolled();
 
 
   return (
@@ -37,8 +35,8 @@ export const DashboardLayout = () => {
 
       <div className="flex flex-1 flex-col">
 
-        <div className={cn("sticky top-(--layout-header-sticky-top) z-40 bg-light-bg lg:rounded-lg", isScrolled && 'bg-nature-white')}>
-          <Header onMenuClick={() => setSidebarOpen(true)} />
+        <div className="sticky top-(--layout-header-sticky-top) z-40 lg:shadow-[0_-30px_0_0_#fcfcfc]">
+          < Header onMenuClick={() => setSidebarOpen(true)} />
         </div>
 
         <main className={cn("flex-1 mt-4", isMobile && "u-container")}>
@@ -47,6 +45,6 @@ export const DashboardLayout = () => {
 
         <Footer variant={isMobile ? 'mobile' : 'desktop'} />
       </div>
-    </div>
+    </div >
   );
 };

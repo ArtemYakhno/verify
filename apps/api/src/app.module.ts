@@ -6,6 +6,7 @@ import { CommonModule } from '../common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { LoggerMiddleware } from '../common/middleware/logger.middleware';
+import { GalleriesModule } from './galleries/galleries.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { LoggerMiddleware } from '../common/middleware/logger.middleware';
     CommonModule,
     AuthModule,
     ProfileModule,
+    GalleriesModule,
   ],
 })
 export class AppModule implements NestModule {

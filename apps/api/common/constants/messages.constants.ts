@@ -12,3 +12,9 @@ export const AUTH_MESSAGES = {
   FORBIDDEN_MESSAGE: 'You do not have access to perform this action',
   UNAUTHORIZED_DESCRIPTION: 'Bearer token is missing or invalid',
 } as const;
+
+export const GALLERY_MESSAGES = {
+  NOT_FOUND: (id: number) => `Gallery with id ${id} not found`,
+  NOT_FOUND_DESCRIPTION: 'Gallery not found',
+  FORBIDDEN: 'You are not the owner of this gallery',
+};

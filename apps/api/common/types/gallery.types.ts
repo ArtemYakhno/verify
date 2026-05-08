@@ -17,10 +17,10 @@ export const galleryDetailSelect = {
   updatedAt: true,
 } satisfies Prisma.GallerySelect;
 
-export type GalleryList = Prisma.UserGetPayload<{
+export type GalleryList = Prisma.GalleryGetPayload<{
   select: typeof galleryListSelect;
 }>;
 
-export type GalleryDetail = Prisma.UserGetPayload<{
+export type GalleryDetail = Prisma.GalleryGetPayload<{
   select: typeof galleryDetailSelect;
 }>;

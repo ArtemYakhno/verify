@@ -7,9 +7,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { SafeUser } from '../types/user.types';
-import { GALLERY_MESSAGES } from '../constants/messages.constants';
-import { PrismaService } from '../../src/prisma/prisma.service';
+import { SafeUser } from '../../../common/types/user.types';
+import { GALLERY_MESSAGES } from '../../../common/constants/messages.constants';
+import { PrismaService } from '../../prisma/prisma.service';
+import { galleryDetailSelect } from '../../../common/types/gallery.types';
 
 @Injectable()
 export class GalleryOwnerGuard implements CanActivate {
@@ -27,7 +28,7 @@ export class GalleryOwnerGuard implements CanActivate {
 
     const gallery = await this.prismaService.gallery.findUnique({
       where: { id: galleryId },
-      select: { userId: true },
+      select: galleryDetailSelect,
     });
 
     if (!gallery) {
@@ -37,6 +38,8 @@ export class GalleryOwnerGuard implements CanActivate {
     if (gallery.userId !== user.id) {
       throw new ForbiddenException(GALLERY_MESSAGES.FORBIDDEN);
     }
+
+    request.gallery = gallery;
 
     return true;
   }

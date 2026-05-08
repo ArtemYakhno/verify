@@ -1,12 +1,12 @@
 import { useAuthStore } from '@/common/stores/auth.store';
 import { Navigate, Outlet } from 'react-router-dom';
 import { RoutePath } from './configs/root.config';
-import { Spinner } from '@/common/components/ui/spinner';
+import { LoadingPlug } from '../plugs/LoadingPlug';
 
 export function GuestRoute() {
   const { isAuthenticated, isInitialized } = useAuthStore();
 
-  if (!isInitialized) return <Spinner />;
+  if (!isInitialized) return <LoadingPlug />;
 
   if (isAuthenticated) return <Navigate to={RoutePath.Galleries} replace />;
 

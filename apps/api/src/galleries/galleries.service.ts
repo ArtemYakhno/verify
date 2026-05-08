@@ -14,12 +14,7 @@ export class GalleriesService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async findAll(query: PaginationQueryDto) {
-    const {
-      page = 1,
-      perPage = 10,
-      orderBy = 'createdAt',
-      orderDir = 'desc',
-    } = query;
+    const { page, perPage, orderBy = 'createdAt', orderDir = 'desc' } = query;
     const skip = (page - 1) * perPage;
 
     const [data, total] = await this.prismaService.$transaction([

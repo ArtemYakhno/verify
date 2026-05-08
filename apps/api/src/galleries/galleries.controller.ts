@@ -34,8 +34,9 @@ import {
   AUTH_MESSAGES,
   GALLERY_MESSAGES,
 } from '../../common/constants/messages.constants';
-import { GalleryOwnerGuard } from '../../common/guards/gallery-owner-guard';
+import { GalleryOwnerGuard } from './guards/gallery-owner.guard';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { Gallery } from '../../common/decorators/gallery.decorator';
 
 @ApiTags('Galleries')
 @Controller('galleries')
@@ -43,9 +44,11 @@ export class GalleriesController {
   constructor(private readonly galleriesService: GalleriesService) {}
 
   @Get()
+  @Auth()
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all galleries',
-    description: 'public, paginated',
+    description: 'auth required, paginated',
   })
   @ApiResponse({ status: HttpStatus.OK, type: PaginatedGalleriesDto })
   findAll(@Query() query: PaginationQueryDto) {
@@ -53,7 +56,9 @@ export class GalleriesController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get gallery by id', description: 'Public' })
+  @Auth()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get gallery by id', description: 'auth required' })
   @ApiResponse({ status: HttpStatus.OK, type: GalleryDetailResponseDto })
   @ApiNotFoundResponse({ description: GALLERY_MESSAGES.NOT_FOUND_DESCRIPTION })
   findOne(@Param('id', ParseIntPipe) id: number) {
@@ -91,7 +96,9 @@ export class GalleriesController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateGalleryDto: UpdateGalleryDto,
+    @Gallery('id') galleryId: number,
   ) {
+    console.log(galleryId);
     return this.galleriesService.update(id, updateGalleryDto);
   }
 

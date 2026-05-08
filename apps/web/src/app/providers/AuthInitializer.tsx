@@ -4,12 +4,11 @@ import { useEffect, type ReactNode } from "react";
 import { authService } from "../../common/api/services/auth.service";
 import { profileKeys } from "../../features/profile/queries/profile.keys";
 import { profileService } from "../../common/api/services/profile.service";
-import { useLogout } from "@/features/auth/queries/auth.mutations";
+import { globalLogout } from "@/common/utils/globalLogout";
 
 
 export function AuthInitializer({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
-  const { mutate: logout } = useLogout()
 
   useEffect(() => {
     const initialize = async () => {
@@ -22,15 +21,14 @@ export function AuthInitializer({ children }: { children: ReactNode }) {
           queryFn: profileService.getProfile,
         });
       } catch {
-        logout();
+        globalLogout();
       } finally {
         setInitialized();
       }
     };
 
     initialize();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [queryClient]);
 
   return <>{children}</>;
 }

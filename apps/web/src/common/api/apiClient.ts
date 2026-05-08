@@ -3,7 +3,8 @@ import axios, {
   type AxiosError,
   type InternalAxiosRequestConfig,
 } from "axios";
-import { getAuthState, logout, setAccessToken } from "../stores/auth.store";
+import { getAuthState, setAccessToken } from "../stores/auth.store";
+import { globalLogout } from "../utils/globalLogout";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
@@ -70,7 +71,7 @@ apiClient.interceptors.response.use(
         return apiClient(orig);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        logout();
+        globalLogout();
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

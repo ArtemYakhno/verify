@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-export const useIsMobile = (breakpoint = 768) => {
+import { BREAKPOINTS } from "../constants/breakpoints";
+export const useIsMobile = (breakpoint = BREAKPOINTS.MD) => {
   const [isMobile, setIsMobile] = useState<boolean>(
     () => window.matchMedia(`(max-width: ${breakpoint - 1}px)`).matches,
   );

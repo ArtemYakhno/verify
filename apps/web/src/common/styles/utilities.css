@@ -1,5 +1,5 @@
 @utility u-content-padding {
-  @apply px-4  lg:px-7.5 lg:py-7.5;
+  @apply px-4  lg:p-7.5;
 }
 
 @utility u-container {

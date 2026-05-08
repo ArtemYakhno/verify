@@ -20,6 +20,7 @@
   --layout-sidebar-height: calc(100dvh - 60px);
 }
 
+/* BREAKPOINTS.MD */
 @media (min-width: 768px) {
   :root {
     --layout-header-sticky-top: 30px;
@@ -53,6 +54,7 @@
   --color-strong-error: var(--strong-error);
   --color-warning: var(--warning);
 
+  /* Breakpoints sync with src/common/constants/breakpoints.ts */
   --breakpoint-xs: 375px;
   --breakpoint-sm: 425px;
   --breakpoint-md: 768px;

@@ -1,7 +1,5 @@
 import { cn } from "@/common/lib/utils";
 
-export const footerText = `© ${new Date().getFullYear()} Verify. All Rights Reserved.`;
-
 type FooterVariant = "mobile" | "desktop";
 
 interface FooterProps {
@@ -11,7 +9,7 @@ interface FooterProps {
 }
 
 const footerVariants: Record<FooterVariant, string> = {
-  mobile: " py-[50px]",
+  mobile: "py-[50px]",
   desktop: "w-full pt-6",
 };
 

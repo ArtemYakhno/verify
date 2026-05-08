@@ -2,7 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import App from '@/app/App';
 import { RoutePath } from './configs/root.config';
 import { NotFoundPage } from '@/features/not_found_page/NotFoundPage';
-import { Gallery } from '@/features/gallery/Gallery';
+import { Galleries } from '@/features/galleries/Galleries';
 import { SignInForm } from '@/features/auth/forms/SignInForm';
 import { PrivacyPolicy } from '@/features/privacy_policy/PrivacyPolicy';
 import { TermsConditions } from '@/features/terms_conditions/TermsConditions';
@@ -13,16 +13,18 @@ import { AuthLayout } from '../layouts/AuthLayout';
 import { SignUpForm } from '@/features/auth/forms/SignUpForm';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { UserManagement } from '@/features/user-management/UserManagement';
+import { ScrollToTop } from '../ScrollToTop';
 
 export const Root = () => {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path={RoutePath.Default} element={<App />}>
-          <Route path={RoutePath.Default} element={<Navigate to={RoutePath.Gallery} />} />
-          <Route element={<DashboardLayout />}>
-            <Route path={RoutePath.Gallery} element={<Gallery />} />
-            <Route element={<ProtectedRoute />}>
+          <Route path={RoutePath.Default} element={<Navigate to={RoutePath.Galleries} />} />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route path={RoutePath.Galleries} element={<Galleries />} />
               <Route path={RoutePath.Profile} element={<Profile />} />
               <Route path={RoutePath.UserManagement} element={<UserManagement />} />
             </Route>

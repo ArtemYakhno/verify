@@ -50,7 +50,6 @@ function DialogContent({
   children,
   showCloseButton = true,
   position = 'center',
-  isMobileFullWidth = false,
   ...props
 }: IDialogContentProps) {
   return (
@@ -62,9 +61,8 @@ function DialogContent({
         className={cn(
           'fixed z-50 duration-200 outline-none',
           'bg-nature-white shadow-block rounded-md',
-          'max-w-108 px-7 py-10 lg:px-14',
+          'max-w-108 px-7 py-10 lg:px-14 w-[calc(100vw-16px)] lg:w-auto',
 
-          isMobileFullWidth && 'w-[calc(100vw-16px)]',
 
           'data-[state=closed]:animate-out data-[state=open]:animate-in',
           'data-[position=center]:top-1/2 data-[position=center]:left-1/2',

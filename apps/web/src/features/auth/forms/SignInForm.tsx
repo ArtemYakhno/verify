@@ -14,7 +14,6 @@ import {
 import { Link } from "react-router-dom";
 import { RoutePath } from "@/app/routes/configs/root.config";
 import { useLogin } from "../queries/auth.mutations";
-import { scrollTop } from "@/common/utils/scrollTop";
 
 export const SignInForm = () => {
   const methods = useForm<LoginValues>({
@@ -40,13 +39,13 @@ export const SignInForm = () => {
     loginUser(values);
   };
 
-  const isDisabled = !isValid || isPending || isSubmitting;
+  const isDisabled = isPending || isSubmitting;
 
   return (
     <div>
       <h1 className="typo-h1 text-center lg:text-start leading-14">Sign In</h1>
 
-      <h2 className="mt-1.5 font-sans font-medium text-[16px] leading-[100%] text-grey text-center lg:text-start">
+      <h2 className="mt-1.5 typo-third text-[14px] text-grey text-center lg:text-start">
         Enter your email and password to sign in!
       </h2>
 
@@ -85,7 +84,7 @@ export const SignInForm = () => {
             <Button
               type="submit"
               disabled={isDisabled}
-              variant={isDisabled ? "lightDisabled" : "default"}
+              variant={!isValid ? "lightDisabled" : "default"}
             >
               {isPending ? "Loading..." : "Sign In"}
             </Button>
@@ -93,10 +92,9 @@ export const SignInForm = () => {
         </form>
       </FormProvider>
 
-      <p className="mt-8 typo-secondary font-medium">
+      <p className="mt-8 typo-third text-[14px] text-ui-black">
         Not registered yet?{" "}
         <Link
-          onClick={scrollTop}
           to={RoutePath.SignUp}
           className="typo-link font-bold"
         >

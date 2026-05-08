@@ -9,8 +9,8 @@ interface HeaderProps {
 }
 
 const HEADER_TITLES: Record<string, string> = {
-  [RoutePath.Gallery]: "Gallery",
-  [RoutePath.GallerySearch]: "Search among galleries",
+  [RoutePath.Galleries]: "Gallery",
+  [RoutePath.GalleriesSearch]: "Search among galleries",
   [RoutePath.Profile]: "Profile settings",
   [RoutePath.UserManagement]: "User management",
   [RoutePath.PrivacyPolicy]: "Privacy policy",

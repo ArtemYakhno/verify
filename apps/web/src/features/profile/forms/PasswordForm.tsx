@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/common/components/ui/button";
@@ -14,6 +13,7 @@ import {
   type ChangePasswordDto,
   type ChangePasswordValues,
 } from "../schemas/profile.schema";
+import { PasswordChecklist } from "@/common/components/blocks/PasswordChecklist";
 
 type Props = {
   email: string;
@@ -35,11 +35,22 @@ export const PasswordForm = ({ email, isPending, onSubmit }: Props) => {
   const {
     formState: { errors },
     handleSubmit,
+    control,
     reset,
   } = form;
 
+  const newPassword = useWatch({
+    control,
+    name: "newPassword",
+  });
+
+  const confirmPassword = useWatch({
+    control,
+    name: "confirmPassword",
+  });
+
   const submitHandler = async (values: ChangePasswordValues) => {
-    const { confirmPassword: _, ...rest } = values;
+    const { confirmPassword: _cp, ...rest } = values;
     await onSubmit(rest).then(() => reset());
   };
 
@@ -47,7 +58,7 @@ export const PasswordForm = ({ email, isPending, onSubmit }: Props) => {
     <section className="card">
       <h2 className="typo-h2 text-ui-black">Change Password</h2>
 
-      <p className="mt-2 typo-third text-grey">
+      <p className="mt-2 typo-main text-grey">
         Here you can set your new password.
       </p>
 
@@ -99,6 +110,15 @@ export const PasswordForm = ({ email, isPending, onSubmit }: Props) => {
                 autoComplete="new-password"
               />
             </CustomField>
+
+            {newPassword.length > 0 && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                <PasswordChecklist
+                  password={newPassword}
+                  confirmPassword={confirmPassword}
+                />
+              </div>
+            )}
 
             <Button
               type="submit"

@@ -4,7 +4,6 @@ import {
   useUpdateProfile,
 } from "../queries/profile.mutations";
 
-import { queryClient } from "@/common/queries/queryClient";
 import { profileKeys } from "../queries/profile.keys";
 import { ProfileHeader } from "../blocks/ProfileHeader";
 import { AccountForm } from "../forms/AccountForm";
@@ -13,6 +12,7 @@ import type { ChangePasswordDto, UpdateProfileValues } from "../schemas/profile.
 import type { Modal } from "@/common/types/Modal";
 import { useState } from "react";
 import { SuccessModal } from "@/app/modals/SuccessModal";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 
@@ -28,6 +28,8 @@ export const Profile = () => {
   const [successModal, setSuccessModal] = useState<Modal>({
     isOpen: false,
   });
+
+  const queryClient = useQueryClient();
 
   const openSuccessModal = () => {
     setSuccessModal((prev) => ({

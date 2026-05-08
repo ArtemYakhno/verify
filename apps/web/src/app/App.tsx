@@ -1,5 +1,5 @@
-import { Outlet } from "react-router-dom"
-import { Toaster } from "sonner"
+import { Outlet } from "react-router-dom";
+import { Toaster } from "sonner";
 
 function App() {
   return (
@@ -7,7 +7,7 @@ function App() {
       <Outlet />
       <Toaster position="top-right" richColors />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

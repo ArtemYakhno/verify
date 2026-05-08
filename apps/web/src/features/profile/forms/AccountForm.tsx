@@ -51,7 +51,7 @@ export const AccountForm = ({
     <section className="card">
       <h2 className="typo-h2 text-ui-black">Account Settings</h2>
 
-      <p className="mt-2 typo-third text-grey">
+      <p className="mt-2 typo-main text-grey">
         Here you can change your account information.
       </p>
 

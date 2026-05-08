@@ -1,5 +1,4 @@
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/common/components/ui/dialog";
-import { useIsMobile } from "@/common/hooks/useIsMobile";
 import { Check } from "lucide-react";
 
 
@@ -16,12 +15,10 @@ export const SuccessModal = ({
   title = "Changes saved",
   description = "Your changes were successfully saved.",
 }: SuccessModalProps) => {
-  const isMobile = useIsMobile()
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
         className="flex flex-col items-center gap-6 px-6 py-10 text-center lg:max-w-[420px]"
-        isMobileFullWidth={isMobile}
       >
         <DialogDescription className="sr-only">
           {description}

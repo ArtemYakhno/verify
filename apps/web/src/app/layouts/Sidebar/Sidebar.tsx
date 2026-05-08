@@ -23,7 +23,7 @@ interface SidebarProps {
 export const Sidebar = ({ onClose }: SidebarProps) => {
   const { mutate: logoutUser, isPending } = useLogout();
   const { data: user } = useGetMe();
-  const isGalleryActive = useMatch(`${RoutePath.Gallery}/*`);
+  const isGalleryActive = useMatch(`${RoutePath.Galleries}/*`);
 
   return (
     <div className="relative flex h-full w-[290px] flex-col justify-between rounded-lg bg-nature-white  py-9 shadow-block">
@@ -68,13 +68,13 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
               <AccordionContent className="mt-4 pb-0 h-fit">
                 <div className="flex flex-col gap-5 pl-8">
                   <NavItem
-                    to={RoutePath.Gallery}
+                    to={RoutePath.Galleries}
                     label="List of galleries"
                     onClose={onClose}
                     end
                   />
                   <NavItem
-                    to={RoutePath.GallerySearch}
+                    to={RoutePath.GalleriesSearch}
                     label="Search among galleries"
                     onClose={onClose}
                   />
@@ -106,10 +106,10 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
           >
             <UserAvatar name={`${user.firstname} ${user.lastname}`} />
             <div className="flex flex-col overflow-hidden">
-              <span className="truncate text-[16px] leading-[150%] font-bold text-ui-black">
+              <span className="truncate typo-h3 text-ui-black">
                 {user.firstname} {user.lastname}
               </span>
-              <span className="truncate typo-third  text-grey">{user.email}</span>
+              <span className="truncate typo-third text-grey">{user.email}</span>
             </div>
           </NavLink>
           <Button
@@ -120,7 +120,7 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
             disabled={isPending}
           >
             <LogOut className='size-6' />
-            <span >Log Out</span>
+            <span>Log Out</span>
           </Button>
         </div>)}
     </div>

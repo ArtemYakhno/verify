@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from "@/common/components/ui/button";
 import { FieldGroup } from "@/common/components/ui/field";
 import {
@@ -16,7 +14,7 @@ import {
 import { Link } from "react-router-dom";
 import { RoutePath } from "@/app/routes/configs/root.config";
 import { useRegister } from "../queries/auth.mutations";
-import { scrollTop } from "@/common/utils/scrollTop";
+import { PasswordChecklist } from "@/common/components/blocks/PasswordChecklist";
 
 export const SignUpForm = () => {
   const methods = useForm<RegisterValues>({
@@ -37,7 +35,6 @@ export const SignUpForm = () => {
     handleSubmit,
     setError,
     control,
-    trigger,
     formState: { errors, isSubmitting, isValid },
   } = methods;
 
@@ -53,22 +50,12 @@ export const SignUpForm = () => {
     name: "confirmPassword",
   });
 
-  useEffect(() => {
-    if (!confirmPassword) return;
-    void trigger("confirmPassword");
-  }, [password, confirmPassword, trigger]);
-
-  useEffect(() => {
-    if (!confirmPassword) return;
-    void trigger("confirmPassword");
-  }, [password, confirmPassword, trigger]);
-
   const onSubmit = ({
     confirmPassword: _cp,
     ...values
   }: RegisterValues) => registerUser(values);
 
-  const isDisabled = !isValid || isPending || isSubmitting;
+  const isDisabled = isPending || isSubmitting;
 
   return (
     <div>
@@ -127,7 +114,6 @@ export const SignUpForm = () => {
             <CustomField
               label="Password"
               required
-              error={errors.password?.message}
             >
               <PasswordField
                 name="password"
@@ -141,7 +127,6 @@ export const SignUpForm = () => {
             <CustomField
               label="Confirm password"
               required
-              error={errors.confirmPassword?.message}
             >
               <PasswordField
                 name="confirmPassword"
@@ -152,7 +137,16 @@ export const SignUpForm = () => {
               />
             </CustomField>
 
-            <p className="typo-secondary font-medium text-grey">
+            {password.length > 0 && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                <PasswordChecklist
+                  password={password}
+                  confirmPassword={confirmPassword}
+                />
+              </div>
+            )}
+
+            <p className="typo-third text-[14px] text-grey text-grey">
               By registering you agree to{" "}
               <Link
                 to={RoutePath.TermsConditions}
@@ -174,7 +168,7 @@ export const SignUpForm = () => {
             <Button
               type="submit"
               disabled={isDisabled}
-              variant={isDisabled ? "lightDisabled" : "default"}
+              variant={!isValid ? "lightDisabled" : "default"}
             >
               {isPending ? "Loading..." : "Continue"}
             </Button>
@@ -182,10 +176,9 @@ export const SignUpForm = () => {
         </form>
       </FormProvider>
 
-      <p className="mt-8 typo-secondary font-medium">
+      <p className="mt-8 typo-third text-[14px] text-ui-black">
         Already have an account?{" "}
         <Link
-          onClick={scrollTop}
           to={RoutePath.SignIn}
           className="typo-link font-bold"
         >

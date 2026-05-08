@@ -4,7 +4,6 @@ import { Sidebar } from "./Sidebar/Sidebar";
 import { Header } from "./Header";
 import { useIsMobile } from "@/common/hooks/useIsMobile";
 import { Footer } from "./Footer";
-import { scrollTop } from "@/common/utils/scrollTop";
 import { cn } from "@/common/lib/utils";
 
 export const DashboardLayout = () => {
@@ -27,7 +26,6 @@ export const DashboardLayout = () => {
           <div className="absolute left-4 top-4 bottom-4">
             <Sidebar onClose={() => {
               setSidebarOpen(false)
-              scrollTop()
             }} />
           </div>
         </div>

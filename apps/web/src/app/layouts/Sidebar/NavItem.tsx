@@ -10,7 +10,7 @@ interface NavItemProps {
   onClose?: () => void;
 }
 
-export const NavItem = ({ to, label, icon: IconComponent, end, onClose}: NavItemProps) => (
+export const NavItem = ({ to, label, icon: IconComponent, end, onClose }: NavItemProps) => (
   <NavLink
     to={to}
     end={end}
@@ -29,7 +29,7 @@ export const NavItem = ({ to, label, icon: IconComponent, end, onClose}: NavItem
         )}
         <span className={cn(
           "typo-nav",
-          isActive ? "text-ui-black" : "text-placeholder hover:text-grey"
+          isActive ? "text-ui-black font-medium" : "text-placeholder hover:text-grey"
         )}>{label}</span>
       </div>
     )}

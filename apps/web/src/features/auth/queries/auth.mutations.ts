@@ -1,8 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import type { UseFormSetError } from "react-hook-form";
 import { authService } from "@/common/api/services/auth.service";
-import { logout, setAccessToken } from "@/common/stores/auth.store";
+import { setAccessToken } from "@/common/stores/auth.store";
 import { RoutePath } from "@/app/routes/configs/root.config";
 import type {
   LoginValues,
@@ -10,6 +10,7 @@ import type {
   RegisterDto,
 } from "@/features/auth/schemas/auth.schemas";
 import { handleMutationError } from "@/common/utils/handleMutationError";
+import { globalLogout } from "@/common/utils/globalLogout";
 
 export function useLogin(setError?: UseFormSetError<LoginValues>) {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export function useLogin(setError?: UseFormSetError<LoginValues>) {
     mutationFn: (values: LoginValues) => authService.login(values),
     onSuccess: ({ accessToken }) => {
       setAccessToken(accessToken);
-      navigate(RoutePath.Gallery);
+      navigate(RoutePath.Galleries);
     },
     onError: (error) => handleMutationError(error, setError),
   });
@@ -31,20 +32,15 @@ export function useRegister(setError?: UseFormSetError<RegisterValues>) {
     mutationFn: (values: RegisterDto) => authService.register(values),
     onSuccess: ({ accessToken }) => {
       setAccessToken(accessToken);
-      navigate(RoutePath.Gallery);
+      navigate(RoutePath.Galleries);
     },
     onError: (error) => handleMutationError(error, setError),
   });
 }
 
 export function useLogout() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: authService.logout,
-    onSettled: () => {
-      logout();
-      queryClient.clear();
-    },
+    onSettled: () => globalLogout(),
   });
 }

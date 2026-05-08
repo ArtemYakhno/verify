@@ -27,7 +27,7 @@ export const ProfileHeader = ({ firstname, lastname, email }: Props) => {
           {firstname} {lastname}
         </h2>
 
-        <p className="mt-1 text-center typo-third text-grey">{email}</p>
+        <p className="mt-1 text-center typo-main text-grey">{email}</p>
       </div>
     </section>
   );

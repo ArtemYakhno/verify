@@ -1,4 +1,3 @@
-// src/app.setup.ts
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { validationConfig } from '../configs/validation.config';

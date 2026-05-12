@@ -1,0 +1,47 @@
+@layer components {
+  .typo-h1 {
+    @apply font-sans font-bold text-[24px] leading-[150%] tracking-[0%] text-ui-black lg:text-[32px];
+  }
+
+  .typo-h2 {
+    @apply font-sans font-bold text-[24px] leading-[150%] tracking-[0%] text-ui-black;
+  }
+
+  .typo-h3 {
+    @apply font-sans font-bold text-[16px] leading-[150%] tracking-[0%] text-placeholder;
+  }
+  .typo-main {
+    @apply font-sans font-normal text-[16px] leading-[150%] text-grey;
+  }
+
+  .typo-secondary {
+    @apply font-sans font-medium text-[14px] leading-[100%] tracking-[0%] text-ui-black;
+  }
+
+  .typo-third {
+    @apply font-sans font-normal text-[12px] leading-[100%]  tracking-[0%] text-placeholder;
+  }
+
+  .typo-link {
+    @apply relative inline-block text-green cursor-pointer transition-colors duration-200 font-sans font-normal text-[14px] leading-[24px]  tracking-[0%]
+
+  after:content-[''] after:absolute after:left-0 after:bottom-0
+  after:w-full after:h-px after:bg-green
+  after:transition-colors after:duration-200
+
+  hover:text-accent-green
+  hover:after:bg-accent-green;
+  }
+
+  .typo-button {
+    @apply font-sans font-bold text-[14px] leading-[100%] tracking-[0%] text-nature-white;
+  }
+
+  .typo-input {
+    @apply font-sans font-normal text-[14px] leading-[100%] text-ui-black;
+  }
+
+  .typo-nav {
+    @apply font-sans font-normal text-[16px] leading-[150%] text-placeholder;
+  }
+}

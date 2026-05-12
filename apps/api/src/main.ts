@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { setupApp } from '../common/setup/app.setup';
@@ -8,7 +7,4 @@ async function bootstrap() {
   setupApp(app);
   await app.listen(3000);
 }
-bootstrap();
-
-// Backend works on http://localhost:3000
-// Swagger: http://localhost:3000/api/docs;
+void bootstrap();

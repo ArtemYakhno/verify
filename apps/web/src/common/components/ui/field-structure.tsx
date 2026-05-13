@@ -77,6 +77,7 @@ export const PasswordField = ({
 interface CustomFieldProps {
   label: string;
   required?: boolean;
+  optional?: boolean
   error?: string;
   children: ReactNode;
 }
@@ -84,13 +85,14 @@ interface CustomFieldProps {
 export const CustomField = ({
   label,
   required,
+  optional,
   error,
   children,
 }: CustomFieldProps) => {
   return (
     <Field>
       <FieldLabel className="typo-secondary">
-        {label} {required && <span className="text-red">*</span>}
+        {label} {required && <span className="text-red">*</span>} {optional && <span className='typo-main text-[14px]'>(optional)</span>}
       </FieldLabel>
 
       {children}

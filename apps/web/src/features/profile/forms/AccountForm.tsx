@@ -14,19 +14,18 @@ import {
   updateProfileSchema,
   type UpdateProfileValues,
 } from "../schemas/profile.schema";
+import { useUpdateProfile } from "../queries/profile.mutations";
+import { openSuccessModal } from "@/common/stores/success-modal.store";
 
 type Props = {
   firstname: string;
   lastname: string;
-  isPending: boolean;
-  onSubmit: (values: UpdateProfileValues) => void;
 };
 
 export const AccountForm = ({
   firstname,
   lastname,
-  isPending,
-  onSubmit,
+
 }: Props) => {
   const form = useForm<UpdateProfileValues>({
     resolver: zodResolver(updateProfileSchema),
@@ -47,6 +46,19 @@ export const AccountForm = ({
     reset({ firstname, lastname });
   }, [firstname, lastname, reset]);
 
+  const { mutateAsync: updateProfile, isPending } =
+    useUpdateProfile();
+
+  const handleUpdateProfile = async (values: UpdateProfileValues) => {
+    try {
+      await updateProfile(values);
+      openSuccessModal()
+    }
+    catch {
+      return;
+    }
+  };
+
   return (
     <section className="card">
       <h2 className="typo-h2 text-ui-black">Account Settings</h2>
@@ -56,7 +68,7 @@ export const AccountForm = ({
       </p>
 
       <FormProvider {...form}>
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-9">
+        <form onSubmit={handleSubmit(handleUpdateProfile)} className="mt-9">
           <FieldGroup className="gap-6">
             <CustomField
               label="First name"

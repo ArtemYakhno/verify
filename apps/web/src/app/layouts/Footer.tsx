@@ -1,31 +1,25 @@
 import { cn } from "@/common/lib/utils";
-
-type FooterVariant = "mobile" | "desktop";
-
+import { useRouteMatch } from "../routes/hooks/useRouteMatch";
+import { Back } from "@/common/components/ui/back";
 interface FooterProps {
-  variant?: FooterVariant;
   className?: string;
   textClassName?: string;
 }
 
-const footerVariants: Record<FooterVariant, string> = {
-  mobile: "py-[50px]",
-  desktop: "w-full pt-6",
-};
-
-const textVariants: Record<FooterVariant, string> = {
-  mobile: "text-center text-ui-black",
-  desktop: "text-placeholder text-end",
-};
-
 export const Footer = ({
-  variant = "desktop",
   className,
   textClassName,
 }: FooterProps) => {
+  const { isGalleryDetail, isEditGallery, isUploadGallery } = useRouteMatch();
+  const isBackVisible = isGalleryDetail || isEditGallery || isUploadGallery;
   return (
-    <footer className={cn(footerVariants[variant], className)}>
-      <small className={cn("block font-medium text-[14px] leading-[24px]", textVariants[variant], textClassName)}>
+    <footer className={cn("w-full flex flex-col lg:items-center lg:justify-between gap-4 lg:flex-row mt-4 lg:mt-7.5", className)}>
+      {isBackVisible && <div className="pl-4 lg:pl-0">
+        <Back />
+      </div>}
+      <small className={cn("block w-full font-medium text-[14px] leading-[24px] text-ui-black",
+        "text-center py-[50px] lg:py-0 lg:text-end bg-nature-white lg:bg-transparent",
+        textClassName)}>
         © {new Date().getFullYear()} Verify. All Rights Reserved.
       </small>
     </footer>

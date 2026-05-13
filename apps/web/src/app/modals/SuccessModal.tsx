@@ -12,8 +12,8 @@ interface SuccessModalProps {
 export const SuccessModal = ({
   isOpen,
   onClose,
-  title = "Changes saved",
-  description = "Your changes were successfully saved.",
+  title,
+  description,
 }: SuccessModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

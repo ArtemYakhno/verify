@@ -36,7 +36,6 @@ import {
 } from '../../common/constants/messages.constants';
 import { GalleryOwnerGuard } from './guards/gallery-owner.guard';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { Gallery } from '../../common/decorators/gallery.decorator';
 
 @ApiTags('Galleries')
 @Controller('galleries')
@@ -96,9 +95,7 @@ export class GalleriesController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateGalleryDto: UpdateGalleryDto,
-    @Gallery('id') galleryId: number,
   ) {
-    console.log(galleryId);
     return this.galleriesService.update(id, updateGalleryDto);
   }
 

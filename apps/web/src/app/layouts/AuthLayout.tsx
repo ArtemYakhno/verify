@@ -12,7 +12,7 @@ export const AuthLayout = () => {
       <div className={clsx('flex flex-col  justify-between pt-7.5 px-4 box-content lg:mx-auto lg:w-[441px] lg:py-15 lg:px-8 ', isSignIn && 'lg:justify-center')}>
         <div className='lg:hidden'></div>
         <Outlet />
-        <Footer variant='mobile' className='lg:hidden' />
+        <Footer className='lg:hidden' />
       </div>
 
       <div className='hidden lg:block sticky top-0 h-dvh  bg-[url(/images/auth-bg.webp)] bg-cover bg-center rounded-bl-[200px]'>
@@ -22,7 +22,7 @@ export const AuthLayout = () => {
           <div className='flex flex-col items-center gap-10'>
             <div className='flex flex-col items-center justify-center rounded-md bg-nature-white/5 backdrop-blur-[20px] border border-nature-white/5 w-[clamp(260px,35dvh,375px)]
     h-[clamp(280px,38dvh,390px)]'>
-              <img src={logoText} alt='Verify logo' className='max-w-[80%] max-h-[80%] object-contain'/>
+              <img src={logoText} alt='Verify logo' className='max-w-[80%] max-h-[80%] object-contain' />
             </div>
 
             {isSignIn && <p className='typo-h1 text-nature-white '>
@@ -31,7 +31,7 @@ export const AuthLayout = () => {
 
           </div>
 
-          <Footer variant='desktop' textClassName='text-nature-white self-end ' />
+          <Footer textClassName='text-nature-white self-end ' />
         </div>
       </div>
 

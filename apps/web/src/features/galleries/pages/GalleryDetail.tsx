@@ -1,5 +1,4 @@
-import { Navigate, useParams } from "react-router-dom";
-import { RoutePath } from "@/app/routes/configs/root.config";
+import { useParams } from "react-router-dom";
 import { useGetGalleryById } from "../gueries/gallery.queries";
 import { LoadingPlug } from "@/common/components/ui/loading-plug";
 import { MOCK_PHOTOS } from "@/common/moks/gallery-detail.mock";
@@ -10,17 +9,9 @@ import { GalleryDetailPlug } from "../blocks/GalleryDetail/GalleryDetailPlug";
 
 export const GalleryDetail = () => {
   const { id } = useParams();
-  const numericId = id ? Number(id) : undefined;
-  const isValidId = !!numericId && !Number.isNaN(numericId);
+  const galleryId = Number(id);
 
-
-  const { data: gallery, isLoading, isError, error } = useGetGalleryById(
-    isValidId ? numericId : undefined
-  );
-
-  if (!isValidId) {
-    return <Navigate to={RoutePath.NotFoundPage} replace />;
-  }
+  const { data: gallery, isLoading, isError, error } = useGetGalleryById(galleryId);
 
   const photos = MOCK_PHOTOS;
 

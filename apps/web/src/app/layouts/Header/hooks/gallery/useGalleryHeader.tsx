@@ -9,6 +9,7 @@ export const useGalleryHeader = (): PayloadConfig | null => {
   const { id } = useParams();
   const numericId = id ? Number(id) : undefined;
 
+
   const { isOwner, gallery } = useGalleryOwner();
 
   const { isGalleries, isCreateGallery, isUploadGallery, isEditGallery, isGalleryDetail } = useRouteMatch()

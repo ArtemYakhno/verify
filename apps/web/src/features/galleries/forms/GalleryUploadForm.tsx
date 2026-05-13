@@ -10,19 +10,12 @@ import { GalleryFormContainer } from "../layouts/GalleryFormContainer";
 
 export const GalleryUploadForm = () => {
   const { id } = useParams();
-
   const galleryId = Number(id);
-
-  const isValidId =
-    Number.isInteger(galleryId) &&
-    galleryId > 0;
 
   const {
     data: gallery,
     isLoading,
-  } = useGetGalleryById(
-    isValidId ? galleryId : undefined
-  );
+  } = useGetGalleryById(galleryId);
 
 
   if (isLoading || !gallery) {

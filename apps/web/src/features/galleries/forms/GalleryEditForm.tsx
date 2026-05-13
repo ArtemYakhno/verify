@@ -26,19 +26,11 @@ import { toast } from "sonner";
 
 export const GalleryEditForm = () => {
   const { id } = useParams();
-
   const galleryId = Number(id);
-
-  const isValidId =
-    Number.isInteger(galleryId) &&
-    galleryId > 0;
-
   const {
     data: gallery,
     isLoading,
-  } = useGetGalleryById(
-    isValidId ? galleryId : undefined
-  );
+  } = useGetGalleryById(galleryId);
 
   const form = useForm<UpdateGalleryValues>({
     resolver: zodResolver(updateGallerySchema),

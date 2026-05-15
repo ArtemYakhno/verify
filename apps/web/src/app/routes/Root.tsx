@@ -16,12 +16,12 @@ import { UserManagement } from "@/features/user-management/UserManagement";
 import { GalleryLayout } from "@/features/galleries/layouts/GalleryLayout";
 import { Galleries } from "@/features/galleries/pages/Galleries";
 import { GalleryDetail } from "@/features/galleries/pages/GalleryDetail";
-import { GalleryOwnerGuard } from "../guards/GalleryOwnerGuard";
+import { GalleryOwnerGuard } from "../../common/guards/GalleryOwnerGuard";
 import { GalleryFormLayout } from "@/features/galleries/layouts/GalleryFormLayout";
 import { GalleryCreateForm } from "@/features/galleries/forms/GalleryCreateForm";
 import { GalleryEditForm } from "@/features/galleries/forms/GalleryEditForm";
 import { GalleryUploadForm } from "@/features/galleries/forms/GalleryUploadForm";
-import { InvalidIdGuard } from "../guards/InvalidIdGuard";
+import { InvalidIdGuard } from "../../common/guards/InvalidIdGuard";
 
 export const Root = () => (
   <BrowserRouter>

@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { LoggerMiddleware } from '../common/middleware/logger.middleware';
 import { GalleriesModule } from './galleries/galleries.module';
+import { ImagesModule } from './images/images.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { GalleriesModule } from './galleries/galleries.module';
     AuthModule,
     ProfileModule,
     GalleriesModule,
+    ImagesModule,
   ],
 })
 export class AppModule implements NestModule {

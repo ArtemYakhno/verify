@@ -23,7 +23,7 @@ import {
 import { GalleriesService } from './galleries.service';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
-import { PaginationQueryDto } from './dto/pagination-query.dto';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import {
   GalleryDetailResponseDto,
   PaginatedGalleriesDto,
@@ -34,7 +34,7 @@ import {
   AUTH_MESSAGES,
   GALLERY_MESSAGES,
 } from '../../common/constants/messages.constants';
-import { GalleryOwnerGuard } from './guards/gallery-owner.guard';
+import { GalleryOwnerGuard } from '../../common/guards/gallery-owner.guard';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 
 @ApiTags('Galleries')

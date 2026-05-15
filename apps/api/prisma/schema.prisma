@@ -33,8 +33,22 @@ model Gallery {
   description String?
   userId      Int
   user        User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  images      Image[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Image {
+  id               Int      @id @default(autoincrement())
+  path             String
+  cloudinaryId     String
+  galleryId        Int
+  gallery          Gallery  @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  originalFilename String
+  name             String?
+  comment          String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 enum Role {

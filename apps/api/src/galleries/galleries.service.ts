@@ -2,16 +2,20 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
-import { PaginationQueryDto } from './dto/pagination-query.dto';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { GALLERY_MESSAGES } from '../../common/constants/messages.constants';
 import {
   galleryDetailSelect,
   galleryListSelect,
 } from '../../common/types/gallery.types';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class GalleriesService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   async findAll(query: PaginationQueryDto) {
     const { page, perPage, orderBy = 'createdAt', orderDir = 'desc' } = query;
@@ -71,7 +75,24 @@ export class GalleriesService {
   }
 
   async delete(galleryId: number) {
-    await this.prismaService.gallery.delete({ where: { id: galleryId } });
+    const images = await this.prismaService.image.findMany({
+      where: { galleryId },
+      select: {
+        cloudinaryId: true,
+      },
+    });
+
+    await this.prismaService.gallery.delete({
+      where: { id: galleryId },
+    });
+
+    if (images.length === 0) {
+      return true;
+    }
+    await this.cloudinaryService.deleteManyImages(
+      images.map((img) => img.cloudinaryId),
+    );
+
     return true;
   }
 }

@@ -5,10 +5,21 @@ const baseGallerySelect = {
   title: true,
   description: true,
   userId: true,
+  _count: {
+    select: { images: true },
+  },
 } satisfies Prisma.GallerySelect;
 
 export const galleryListSelect = {
   ...baseGallerySelect,
+  images: {
+    select: {
+      id: true,
+      path: true,
+    },
+    orderBy: { createdAt: 'desc' as const },
+    take: 8,
+  },
 } satisfies Prisma.GallerySelect;
 
 export const galleryDetailSelect = {

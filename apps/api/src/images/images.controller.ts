@@ -33,30 +33,30 @@ import { memoryStorage } from 'multer';
 import { ImagesService } from './images.service';
 import { MoveCopyImageDto } from './dto/move-copy-image.dto';
 import { ImageResponseDto, PaginatedImagesDto } from './dto/image-response.dto';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { Auth } from '../../common/decorators/auth.decorator';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { GalleryOwnerGuard } from '../../common/guards/gallery-owner.guard';
 import { ImageOwnerGuard } from './guards/image-owner.guard';
-import { GalleryInfo } from '../../common/decorators/gallery-info.decorator';
+
+import { STATUS_CODES } from 'node:http';
+import { ImageMetadataDto } from './dto/image-metadata.dto';
+import { GalleryOwnerGuard } from '../common/guards/gallery-owner.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import {
   AUTH_MESSAGES,
   GALLERY_MESSAGES,
   IMAGE_MESSAGES,
-} from '../../common/constants/messages.constants';
-
-import { MulterExceptionFilter } from '../../common/filters/multer-exception-filter';
-import { STATUS_CODES } from 'node:http';
-import { ImageMetadataDto } from './dto/image-metadata.dto';
-import type { GalleryDetail } from '../../common/types/gallery.types';
-import { ImageInfo } from '../../common/decorators/image-info.decorator';
-import type { ImageInternal } from '../../common/types/image.types';
+} from '../common/constants/messages.constants';
+import { GalleryInfo } from '../common/decorators/gallery-info.decorator';
+import { Auth } from '../common/decorators/auth.decorator';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { MulterExceptionFilter } from '../common/filters/multer-exception-filter';
+import type { GalleryDetail } from '../common/types/gallery.types';
+import { ImageInfo } from '../common/decorators/image-info.decorator';
+import type { ImageInternal } from '../common/types/image.types';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import {
   ALLOWED_IMAGES_TYPES,
   MAX_FILE_SIZE,
   MAX_FILES,
-} from '../../common/constants/limits.constants';
+} from '../common/constants/limits.constants';
 
 @ApiTags('Images')
 @Controller('galleries/:id/images')

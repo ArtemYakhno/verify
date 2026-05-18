@@ -29,7 +29,7 @@ export const Galleries = () => {
 
     return (
       <>
-        <div ref={scrollRef} className="flex-1 min-h-0 lg:overflow-y-auto p-4 lg:p-7.5">
+        <div ref={scrollRef} className="flex-1 min-h-0 lg:overflow-y-auto p-4 pb-0 lg:p-7.5 lg:pb-0">
           <GalleryList galleries={galleries} />
         </div>
 

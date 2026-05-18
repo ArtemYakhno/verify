@@ -32,7 +32,7 @@ export const ActionsMenu = ({ actions, title = "Actions" }: ActionsMenuProps) =>
               <MoreVertical className="text-ui-black" size={20} />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[132px]">
+          <DropdownMenuContent align="end" className="w-[132px] absolute right-[9px]">
             {actions.map((action) => (
               <DropdownMenuItem
                 key={action.label}
@@ -45,7 +45,7 @@ export const ActionsMenu = ({ actions, title = "Actions" }: ActionsMenuProps) =>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
+      </div >
 
       <div className="lg:hidden">
         <Button
@@ -59,7 +59,7 @@ export const ActionsMenu = ({ actions, title = "Actions" }: ActionsMenuProps) =>
 
         <Dialog open={mobileOpen} onOpenChange={setMobileOpen}>
           <DialogContent position="bottom" className="rounded-none w-full max-w-none p-0 rounded-t-lg">
-            <DialogTitle className="typo-h3 text-ui-black p-6 bg-light-green rounded-t-md font-medium">
+            <DialogTitle className="typo-h3 text-ui-black py-5 px-6 bg-light-green rounded-t-md font-medium">
               {title}
             </DialogTitle>
             <div className="p-6 grid gap-4">

@@ -1,17 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { GALLERY_MESSAGES } from '../../common/constants/messages.constants';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import {
   galleryDetailSelect,
   galleryListSelect,
-} from '../../common/types/gallery.types';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
+} from '../common/types/gallery.types';
+import { GALLERY_MESSAGES } from '../common/constants/messages.constants';
 
 @Injectable()
 export class GalleriesService {
+  private readonly logger = new Logger(CloudinaryService.name);
+
   constructor(
     private readonly prismaService: PrismaService,
     private readonly cloudinaryService: CloudinaryService,
@@ -77,21 +79,25 @@ export class GalleriesService {
   async delete(galleryId: number) {
     const images = await this.prismaService.image.findMany({
       where: { galleryId },
-      select: {
-        cloudinaryId: true,
-      },
+      select: { cloudinaryId: true },
     });
 
-    await this.prismaService.gallery.delete({
-      where: { id: galleryId },
-    });
+    if (images.length > 0) {
+      const results = await Promise.allSettled(
+        images.map((img) =>
+          this.cloudinaryService.deleteImage(img.cloudinaryId),
+        ),
+      );
 
-    if (images.length === 0) {
-      return true;
+      const failed = results.filter((r) => r.status === 'rejected');
+      if (failed.length > 0) {
+        this.logger.warn(
+          `Gallery ${galleryId}: ${failed.length}/${images.length} Cloudinary deletes failed. Orphaned files may exist.`,
+        );
+      }
     }
-    await this.cloudinaryService.deleteManyImages(
-      images.map((img) => img.cloudinaryId),
-    );
+
+    await this.prismaService.gallery.delete({ where: { id: galleryId } });
 
     return true;
   }

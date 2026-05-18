@@ -4,8 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { GALLERY_MESSAGES } from '../../common/constants/messages.constants';
-import { galleryDetailSelect } from '../../common/types/gallery.types';
+import { galleryDetailSelect } from '../common/types/gallery.types';
+import { GALLERY_MESSAGES } from '../common/constants/messages.constants';
+
 
 @Injectable()
 export class GalleryAccessService {

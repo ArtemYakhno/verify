@@ -32,7 +32,7 @@
   }
 
   .typo-input {
-    @apply font-sans font-normal text-[14px] leading-[100%] text-ui-black;
+    @apply font-sans font-normal text-[14px] leading-[14px] text-ui-black;
   }
 
   .typo-nav {

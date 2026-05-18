@@ -13,7 +13,7 @@ interface GalleryPhotoCardProps {
 export const GalleryPhotoCard = ({ photo }: GalleryPhotoCardProps) => {
   return (
     <div>
-      <div className="relative aspect-square mb-2.5">
+      <div className="relative aspect-square mb-2 lg:mb-2.5">
         <img
           src={photo.src}
           alt={photo.name || "Gallery photo"}

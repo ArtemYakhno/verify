@@ -9,7 +9,7 @@ import {
 import {
   VALIDATION_MESSAGES,
   VALIDATION_RULES,
-} from '../../../common/constants/validation.constants';
+} from '../../common/constants/validation.constants';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'John' })

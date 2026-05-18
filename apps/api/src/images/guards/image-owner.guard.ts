@@ -7,10 +7,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { SafeUser } from '../../../common/types/user.types';
 import { PrismaService } from '../../prisma/prisma.service';
-import { IMAGE_MESSAGES } from '../../../common/constants/messages.constants';
-import { imageInternalSelect } from '../../../common/types/image.types';
+import { SafeUser } from '../../common/types/user.types';
+import { imageInternalSelect } from '../../common/types/image.types';
+import { IMAGE_MESSAGES } from '../../common/constants/messages.constants';
 
 @Injectable()
 export class ImageOwnerGuard implements CanActivate {

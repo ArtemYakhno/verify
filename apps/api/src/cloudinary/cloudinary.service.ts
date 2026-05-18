@@ -97,11 +97,10 @@ export class CloudinaryService {
       );
     } catch (error) {
       this.logCloudinaryError(error, 'delete', { publicId });
+      throw new InternalServerErrorException(
+        'Failed to delete image from Cloudinary',
+      );
     }
-  }
-
-  async deleteManyImages(publicIds: string[]): Promise<void> {
-    await Promise.allSettled(publicIds.map((id) => this.deleteImage(id)));
   }
 
   async downloadImageBuffer(url: string): Promise<Buffer> {

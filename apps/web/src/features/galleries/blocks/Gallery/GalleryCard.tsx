@@ -61,7 +61,7 @@ export const GalleryCard = ({ gallery }: GalleryCardProps) => {
           className="block"
         >
           {photos.length > 0 ? (
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-2.5">
               {items.map((photo) => (
                 <img
                   key={photo.id}

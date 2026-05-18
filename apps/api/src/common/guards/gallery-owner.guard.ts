@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { SafeUser } from '../types/user.types';
-import { GalleryAccessService } from '../../src/galleries/gallery-access.service';
+import { GalleryAccessService } from '../../galleries/gallery-access.service';
 
 @Injectable()
 export class GalleryOwnerGuard implements CanActivate {

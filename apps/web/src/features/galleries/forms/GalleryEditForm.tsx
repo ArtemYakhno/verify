@@ -38,7 +38,7 @@ export const GalleryEditForm = () => {
       title: "",
       description: "",
     },
-    mode: "onSubmit",
+    mode: "onChange",
   });
 
   const initializedRef = useRef(false);

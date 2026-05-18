@@ -2,12 +2,12 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
-import { CommonModule } from '../common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
-import { LoggerMiddleware } from '../common/middleware/logger.middleware';
 import { GalleriesModule } from './galleries/galleries.module';
 import { ImagesModule } from './images/images.module';
+import { CommonModule } from './common/common.module';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 @Module({
   imports: [

@@ -3,7 +3,7 @@ import { IsString, Matches, MinLength } from 'class-validator';
 import {
   VALIDATION_MESSAGES,
   VALIDATION_RULES,
-} from '../../../common/constants/validation.constants';
+} from '../../common/constants/validation.constants';
 
 export class ChangePasswordDto {
   @ApiProperty({ example: 'CurrentPassword1' })

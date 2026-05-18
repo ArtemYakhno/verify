@@ -5,10 +5,12 @@ import { Header } from "./Header/Header";
 import { useIsMobile } from "@/common/hooks/useIsMobile";
 import { Footer } from "./Footer";
 import { cn } from "@/common/lib/utils";
+import { useScrolled } from "@/common/hooks/useScrolled";
 
 export const DashboardLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
+  const isScrolled = useScrolled();
 
 
   return (
@@ -33,7 +35,8 @@ export const DashboardLayout = () => {
 
       <div className="flex flex-1 flex-col min-h-0">
 
-        <div className="sticky top-0 z-40 lg:block">
+        <div className={cn("sticky top-0 z-40 p-4 lg:px-0 lg:pt-1.5 lg:pb-10 lg:block", isScrolled && "bg-nature-white")}>
+
           < Header onMenuClick={() => setSidebarOpen(true)} />
         </div>
 

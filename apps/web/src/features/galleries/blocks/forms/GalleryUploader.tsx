@@ -2,7 +2,7 @@ import { Images, Upload } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
 
 export const GalleryUploader = () => (
-  <div className="flex flex-col items-center justify-center bg-light-green gap-5 border border-dashed border-green rounded-lg bg-primary-5 p-9 aspect-square">
+  <div className="flex flex-col items-center justify-center bg-light-green gap-5 border border-dashed border-green rounded-lg bg-primary-5 p-9 box-border">
     <Images className="text-placeholder" size={64} />
     <div>
       <h3 className="typo-h3 text-center">Drag and drop photo here</h3>

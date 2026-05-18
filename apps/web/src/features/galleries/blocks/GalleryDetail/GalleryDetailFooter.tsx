@@ -8,7 +8,7 @@ export const GalleryDetailFooter = ({
   onDeleteAll,
 }: GalleryDetailFooterProps) => {
   return (
-    <div className="px-4 lg:px-7.5 mt-4 lg:mt-10">
+    <div className="px-4 lg:px-7.5 mt-4 lg:mt-5">
       <button
         type="button"
         onClick={onDeleteAll}

@@ -23,17 +23,17 @@ export const Plug = ({
   return (
     <div className={cn("flex flex-col items-center text-center", className)}>
       <h1 className="typo-h1 capitalize text-[24px]">{title}</h1>
-      <p className="typo-main mt-2">{description}</p>
+      <p className="typo-main mt-1.5 lg:mt-2">{description}</p>
 
       <img
         src={imageSrc}
         alt={imageAlt}
         loading="lazy"
         decoding="async"
-        className={cn("mt-10 w-full h-[clamp(100px,16vw,200px)] lg:max-w-[511px] object-contain", imageClassName)}
+        className={cn("mt-6  w-full h-[clamp(100px,16vw,200px)] lg:mt-7.5 lg:max-w-[511px] object-contain", imageClassName)}
       />
 
-      {action && <div className="mt-10">{action}</div>}
+      {action && <div className="mt-7">{action}</div>}
     </div>
   );
 };

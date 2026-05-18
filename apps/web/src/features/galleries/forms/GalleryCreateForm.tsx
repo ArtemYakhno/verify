@@ -31,7 +31,7 @@ export const GalleryCreateForm = () => {
       title: "",
       description: "",
     },
-    mode: "onSubmit",
+    mode: "onChange",
   });
 
   const {

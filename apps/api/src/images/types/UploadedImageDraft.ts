@@ -1,4 +1,4 @@
-import { ImageInternal } from '../../../common/types/image.types';
+import { ImageInternal } from '../../common/types/image.types';
 
 export type UploadedImageDraft = Omit<
   ImageInternal,

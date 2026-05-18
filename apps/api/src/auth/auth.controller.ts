@@ -10,13 +10,13 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
-import { Auth } from '../../common/decorators/auth.decorator';
 import {
   AUTH_MESSAGES,
   USER_MESSAGES,
-} from '../../common/constants/messages.constants';
-import { REFRESH_TOKEN_COOKIE } from '../../common/constants/cookie.constants';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
+} from '../common/constants/messages.constants';
+import { REFRESH_TOKEN_COOKIE } from '../common/constants/cookie.constants';
+import { Auth } from '../common/decorators/auth.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')

@@ -5,19 +5,21 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { ImageInternal, imageSelect } from '../../common/types/image.types';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+
 import { MoveCopyImageDto } from './dto/move-copy-image.dto';
+
+import { ImageMetadataDto } from './dto/image-metadata.dto';
+import { GalleryAccessService } from '../galleries/gallery-access.service';
+import { UploadedImageDraft } from './types/UploadedImageDraft';
+import { ImageInternal, imageSelect } from '../common/types/image.types';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import {
   GALLERY_MESSAGES,
   IMAGE_MESSAGES,
-} from '../../common/constants/messages.constants';
-import { ImageMetadataDto } from './dto/image-metadata.dto';
-import { parseAndValidateJsonArray } from '../../common/utils/parseAndValidateJsonArray';
-import { GalleryDetail } from '../../common/types/gallery.types';
-import { MAX_IMAGES_PER_GALLERY } from '../../common/constants/limits.constants';
-import { GalleryAccessService } from '../galleries/gallery-access.service';
-import { UploadedImageDraft } from './types/UploadedImageDraft';
+} from '../common/constants/messages.constants';
+import { GalleryDetail } from '../common/types/gallery.types';
+import { parseAndValidateJsonArray } from '../common/utils/parseAndValidateJsonArray';
+import { MAX_IMAGES_PER_GALLERY } from '../common/constants/limits.constants';
 
 @Injectable()
 export class ImagesService {
@@ -163,11 +165,11 @@ export class ImagesService {
   }
 
   async deleteImage(image: ImageInternal) {
+    await this.cloudinaryService.deleteImage(image.cloudinaryId);
+
     await this.prismaService.image.delete({
       where: { id: image.id },
     });
-
-    await this.cloudinaryService.deleteImage(image.cloudinaryId);
 
     return true;
   }

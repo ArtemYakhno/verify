@@ -10,7 +10,7 @@ export const GalleryDetailHeader = ({
   return (
     <div className="px-4 lg:px-7.5">
       <h2 className="typo-h2 text-ui-black">{title}</h2>
-      <p className="typo-main text-placeholder mt-1">
+      <p className="typo-main text-placeholder mt-2">
         {description || "No description yet"}
       </p>
     </div>

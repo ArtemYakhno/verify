@@ -23,19 +23,19 @@ import {
 import { GalleriesService } from './galleries.service';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import {
   GalleryDetailResponseDto,
   PaginatedGalleriesDto,
 } from './dto/gallery-response.dto';
-import { Auth } from '../../common/decorators/auth.decorator';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { Auth } from '../common/decorators/auth.decorator';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import {
   AUTH_MESSAGES,
   GALLERY_MESSAGES,
-} from '../../common/constants/messages.constants';
-import { GalleryOwnerGuard } from '../../common/guards/gallery-owner.guard';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+} from '../common/constants/messages.constants';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { GalleryOwnerGuard } from '../common/guards/gallery-owner.guard';
 
 @ApiTags('Galleries')
 @Controller('galleries')

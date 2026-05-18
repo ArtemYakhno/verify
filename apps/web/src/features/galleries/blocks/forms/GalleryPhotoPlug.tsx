@@ -11,7 +11,7 @@ export const GalleryPhotoPlug = () => {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5">
         {slots.map((_, i) => {
           return (
             <div key={i} className="aspect-square flex flex-col items-center justify-center gap-1.5 rounded-md border-border border">

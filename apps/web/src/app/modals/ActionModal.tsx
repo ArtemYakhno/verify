@@ -18,9 +18,9 @@ export const ActionModal = ({
 }: ActionModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="flex flex-col items-center gap-6 px-6 py-10 text-center lg:max-w-[400px]">
+      <DialogContent className="flex flex-col items-center px-6 py-10 text-center lg:max-w-[400px]">
         {description && (
-          <DialogDescription className="sr-only typo-main text-[14px]">
+          <DialogDescription className="sr-only">
             {description}
           </DialogDescription>
         )}
@@ -30,10 +30,10 @@ export const ActionModal = ({
         </DialogTitle>
 
         {description && (
-          <p className="typo-main text-placeholder">{description}</p>
+          <p className="typo-main text-placeholder mt-4">{description}</p>
         )}
 
-        <div className="flex flex-col items-center gap-6 w-full">
+        <div className="flex flex-col items-center gap-6 w-full mt-7.5">
           {action}
 
           <Button

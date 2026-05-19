@@ -10,7 +10,6 @@ import { MoveCopyImageDto } from './dto/move-copy-image.dto';
 
 import { ImageMetadataDto } from './dto/image-metadata.dto';
 import { GalleryAccessService } from '../galleries/gallery-access.service';
-import { UploadedImageDraft } from './types/UploadedImageDraft';
 import { ImageInternal, imageSelect } from '../common/types/image.types';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import {
@@ -18,8 +17,8 @@ import {
   IMAGE_MESSAGES,
 } from '../common/constants/messages.constants';
 import { GalleryDetail } from '../common/types/gallery.types';
-import { parseAndValidateJsonArray } from '../common/utils/parseAndValidateJsonArray';
 import { MAX_IMAGES_PER_GALLERY } from '../common/constants/limits.constants';
+import { notDeletedWhere } from '../common/constants/constraints.constants';
 
 @Injectable()
 export class ImagesService {
@@ -31,13 +30,13 @@ export class ImagesService {
 
   async findAllByGallery(galleryId: number) {
     return await this.prismaService.image.findMany({
-      where: { galleryId },
+      where: { galleryId, ...notDeletedWhere },
       select: imageSelect,
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findByGallery(galleryId: number, query: PaginationQueryDto) {
+  async findPartByGallery(galleryId: number, query: PaginationQueryDto) {
     const galleryExists = await this.prismaService.gallery.findUnique({
       where: { id: galleryId },
       select: { id: true },
@@ -52,13 +51,15 @@ export class ImagesService {
 
     const [data, total] = await this.prismaService.$transaction([
       this.prismaService.image.findMany({
-        where: { galleryId },
+        where: { galleryId, ...notDeletedWhere },
         skip,
         take: perPage,
         select: imageSelect,
         orderBy: { createdAt: 'desc' },
       }),
-      this.prismaService.image.count({ where: { galleryId } }),
+      this.prismaService.image.count({
+        where: { galleryId, ...notDeletedWhere },
+      }),
     ]);
 
     const totalPages = Math.ceil(total / perPage);
@@ -76,82 +77,41 @@ export class ImagesService {
     };
   }
 
-  async uploadToGallery(
+  async uploadImage(
     gallery: GalleryDetail,
-    files: Express.Multer.File[],
-    metadataRaw?: string,
+    file: Express.Multer.File,
+    dto: ImageMetadataDto,
   ) {
-    const galleryId = gallery.id;
+    await this.ensureGalleryCapacity(gallery.id, 1, gallery._count.images);
 
-    if (!files.length) {
-      throw new BadRequestException(IMAGE_MESSAGES.NO_FILES);
-    }
-
-    let metadata: ImageMetadataDto[] = [];
-
-    if (metadataRaw) {
-      metadata = await parseAndValidateJsonArray(
-        metadataRaw,
-        ImageMetadataDto,
-        IMAGE_MESSAGES.INVALID_METADATA,
-      );
-    }
-
-    if (metadata.length && metadata.length !== files.length) {
-      throw new BadRequestException(IMAGE_MESSAGES.METADATA_MISMATCH);
-    }
-
-    await this.ensureGalleryCapacity(
-      gallery.id,
-      files.length,
-      gallery._count.images,
-    );
-
-    const uploaded: UploadedImageDraft[] = [];
+    let uploadedPublicId: string | null = null;
 
     try {
-      for (const [index, file] of files.entries()) {
-        const { secure_url, public_id } =
-          await this.cloudinaryService.uploadImage(
-            file.buffer,
-            file.originalname,
-          );
+      const { secure_url, public_id } =
+        await this.cloudinaryService.uploadImage(
+          file.buffer,
+          file.originalname,
+        );
 
-        uploaded.push({
+      uploadedPublicId = public_id;
+
+      return await this.prismaService.image.create({
+        data: {
           path: secure_url,
           cloudinaryId: public_id,
           originalFilename: file.originalname,
-          name: metadata[index]?.name ?? null,
-          comment: metadata[index]?.comment ?? null,
-        });
-      }
-
-      const createdImages = await this.prismaService.$transaction(
-        uploaded.map((item) =>
-          this.prismaService.image.create({
-            data: {
-              path: item.path,
-              cloudinaryId: item.cloudinaryId,
-              originalFilename: item.originalFilename,
-              name: item.name,
-              comment: item.comment,
-              galleryId,
-            },
-            select: imageSelect,
-          }),
-        ),
-      );
-
-      return createdImages;
+          name: dto.name ?? null,
+          comment: dto.comment ?? null,
+          galleryId: gallery.id,
+        },
+        select: imageSelect,
+      });
     } catch (error) {
-      if (uploaded.length > 0) {
-        await Promise.allSettled(
-          uploaded.map((item) =>
-            this.cloudinaryService.deleteImage(item.cloudinaryId),
-          ),
-        );
+      if (uploadedPublicId) {
+        await Promise.allSettled([
+          this.cloudinaryService.deleteImage(uploadedPublicId),
+        ]);
       }
-
       throw error;
     }
   }
@@ -164,17 +124,37 @@ export class ImagesService {
     });
   }
 
-  async deleteImage(image: ImageInternal) {
-    await this.cloudinaryService.deleteImage(image.cloudinaryId);
-
-    await this.prismaService.image.delete({
+  async softDelete(image: ImageInternal) {
+    await this.prismaService.image.update({
       where: { id: image.id },
+      data: { deletedAt: new Date() },
     });
-
     return true;
   }
 
-  async moveImage(
+  async purge(image: ImageInternal) {
+    await this.cloudinaryService.deleteImage(image.cloudinaryId);
+    await this.prismaService.image.delete({ where: { id: image.id } });
+    return true;
+  }
+
+  async restore(imageId: number) {
+    return await this.prismaService.image.update({
+      where: { id: imageId },
+      data: { deletedAt: null },
+      select: imageSelect,
+    });
+  }
+
+  async findDeleted(galleryId: number) {
+    return await this.prismaService.image.findMany({
+      where: { galleryId, deletedAt: { not: null } },
+      select: imageSelect,
+      orderBy: { deletedAt: 'desc' },
+    });
+  }
+
+  async move(
     imageId: number,
     galleryId: number,
     dto: MoveCopyImageDto,
@@ -197,7 +177,7 @@ export class ImagesService {
     });
   }
 
-  async copyImage(
+  async copy(
     image: ImageInternal,
     galleryId: number,
     dto: MoveCopyImageDto,
@@ -256,7 +236,7 @@ export class ImagesService {
     const count =
       currentCount ??
       (await this.prismaService.image.count({
-        where: { galleryId },
+        where: { galleryId, ...notDeletedWhere },
       }));
 
     if (count + adding > MAX_IMAGES_PER_GALLERY) {

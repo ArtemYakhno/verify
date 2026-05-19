@@ -13,6 +13,7 @@ export const imageSelect = {
 
 export const imageInternalSelect = {
   ...imageSelect,
+
   cloudinaryId: true,
 } satisfies Prisma.ImageSelect;
 

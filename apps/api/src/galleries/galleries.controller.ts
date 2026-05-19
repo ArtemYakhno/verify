@@ -51,7 +51,7 @@ export class GalleriesController {
   })
   @ApiResponse({ status: HttpStatus.OK, type: PaginatedGalleriesDto })
   findAll(@Query() query: PaginationQueryDto) {
-    return this.galleriesService.findAll(query);
+    return this.galleriesService.findPart(query);
   }
 
   @Get(':id')
@@ -62,6 +62,20 @@ export class GalleriesController {
   @ApiNotFoundResponse({ description: GALLERY_MESSAGES.NOT_FOUND_DESCRIPTION })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.galleriesService.findById(id);
+  }
+
+  @Get('deleted')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, GalleryOwnerGuard('active'))
+  @ApiOperation({ summary: 'Get deleted gallery', description: 'owner only' })
+  @ApiResponse({ status: HttpStatus.OK, type: GalleryDetailResponseDto })
+  @ApiUnauthorizedResponse({
+    description: AUTH_MESSAGES.UNAUTHORIZED_DESCRIPTION,
+  })
+  @ApiForbiddenResponse({ description: GALLERY_MESSAGES.FORBIDDEN })
+  @ApiNotFoundResponse({ description: GALLERY_MESSAGES.NOT_FOUND_DESCRIPTION })
+  findDeleted(@CurrentUser('id') userId: number) {
+    return this.galleriesService.findDeleted(userId);
   }
 
   @Post()
@@ -84,7 +98,7 @@ export class GalleriesController {
 
   @Patch(':id')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, GalleryOwnerGuard)
+  @UseGuards(JwtAuthGuard, GalleryOwnerGuard('active'))
   @ApiOperation({ summary: 'Update gallery', description: 'owner only' })
   @ApiResponse({ status: HttpStatus.OK, type: GalleryDetailResponseDto })
   @ApiUnauthorizedResponse({
@@ -99,17 +113,45 @@ export class GalleriesController {
     return this.galleriesService.update(id, updateGalleryDto);
   }
 
-  @Delete(':id')
+  @Patch(':id/soft-delete')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, GalleryOwnerGuard)
-  @ApiOperation({ summary: 'Delete gallery', description: 'owner only' })
+  @UseGuards(JwtAuthGuard, GalleryOwnerGuard('active'))
+  @ApiOperation({ summary: 'Soft delete gallery', description: 'owner only' })
   @ApiResponse({ status: HttpStatus.OK, type: Boolean })
   @ApiUnauthorizedResponse({
     description: AUTH_MESSAGES.UNAUTHORIZED_DESCRIPTION,
   })
   @ApiForbiddenResponse({ description: GALLERY_MESSAGES.FORBIDDEN })
   @ApiNotFoundResponse({ description: GALLERY_MESSAGES.NOT_FOUND_DESCRIPTION })
-  delete(@Param('id', ParseIntPipe) id: number) {
-    return this.galleriesService.delete(id);
+  softDelete(@Param('id', ParseIntPipe) id: number) {
+    return this.galleriesService.softDelete(id);
+  }
+
+  @Patch(':id/restore')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, GalleryOwnerGuard('deleted'))
+  @ApiOperation({ summary: 'Restore gallery', description: 'owner only' })
+  @ApiResponse({ status: HttpStatus.OK, type: GalleryDetailResponseDto })
+  @ApiUnauthorizedResponse({
+    description: AUTH_MESSAGES.UNAUTHORIZED_DESCRIPTION,
+  })
+  @ApiForbiddenResponse({ description: GALLERY_MESSAGES.FORBIDDEN })
+  @ApiNotFoundResponse({ description: GALLERY_MESSAGES.NOT_FOUND_DESCRIPTION })
+  restore(@Param('id', ParseIntPipe) id: number) {
+    return this.galleriesService.restore(id);
+  }
+
+  @Delete(':id/purge')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, GalleryOwnerGuard('deleted'))
+  @ApiOperation({ summary: 'Purge gallery', description: 'owner only' })
+  @ApiResponse({ status: HttpStatus.OK, type: Boolean })
+  @ApiUnauthorizedResponse({
+    description: AUTH_MESSAGES.UNAUTHORIZED_DESCRIPTION,
+  })
+  @ApiForbiddenResponse({ description: GALLERY_MESSAGES.FORBIDDEN })
+  @ApiNotFoundResponse({ description: GALLERY_MESSAGES.NOT_FOUND_DESCRIPTION })
+  purge(@Param('id', ParseIntPipe) id: number) {
+    return this.galleriesService.purge(id);
   }
 }

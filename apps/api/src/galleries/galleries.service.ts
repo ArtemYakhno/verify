@@ -9,6 +9,7 @@ import {
   galleryListSelect,
 } from '../common/types/gallery.types';
 import { GALLERY_MESSAGES } from '../common/constants/messages.constants';
+import { notDeletedWhere } from '../common/constants/constraints.constants';
 
 @Injectable()
 export class GalleriesService {
@@ -19,18 +20,19 @@ export class GalleriesService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async findAll(query: PaginationQueryDto) {
+  async findPart(query: PaginationQueryDto) {
     const { page, perPage, orderBy = 'createdAt', orderDir = 'desc' } = query;
     const skip = (page - 1) * perPage;
 
     const [data, total] = await this.prismaService.$transaction([
       this.prismaService.gallery.findMany({
+        where: { ...notDeletedWhere },
         skip,
         take: perPage,
         select: galleryListSelect,
         orderBy: { [orderBy]: orderDir },
       }),
-      this.prismaService.gallery.count(),
+      this.prismaService.gallery.count({ where: { ...notDeletedWhere } }),
     ]);
 
     const totalPages = Math.ceil(total / perPage);
@@ -49,8 +51,8 @@ export class GalleriesService {
   }
 
   async findById(galleryId: number) {
-    const gallery = await this.prismaService.gallery.findUnique({
-      where: { id: galleryId },
+    const gallery = await this.prismaService.gallery.findFirst({
+      where: { id: galleryId, ...notDeletedWhere },
       select: galleryDetailSelect,
     });
 
@@ -76,7 +78,28 @@ export class GalleriesService {
     });
   }
 
-  async delete(galleryId: number) {
+  async softDelete(galleryId: number) {
+    await this.prismaService.gallery.update({
+      where: { id: galleryId },
+      data: { deletedAt: new Date() },
+    });
+    await this.prismaService.image.updateMany({
+      where: { galleryId },
+      data: { deletedAt: new Date() },
+    });
+
+    return true;
+  }
+
+  async restore(galleryId: number) {
+    return await this.prismaService.gallery.update({
+      where: { id: galleryId },
+      data: { deletedAt: null },
+      select: galleryDetailSelect,
+    });
+  }
+
+  async purge(galleryId: number) {
     const images = await this.prismaService.image.findMany({
       where: { galleryId },
       select: { cloudinaryId: true },
@@ -88,17 +111,23 @@ export class GalleriesService {
           this.cloudinaryService.deleteImage(img.cloudinaryId),
         ),
       );
-
       const failed = results.filter((r) => r.status === 'rejected');
       if (failed.length > 0) {
         this.logger.warn(
-          `Gallery ${galleryId}: ${failed.length}/${images.length} Cloudinary deletes failed. Orphaned files may exist.`,
+          `Gallery ${galleryId}: ${failed.length}/${images.length} Cloudinary deletes failed.`,
         );
       }
     }
 
     await this.prismaService.gallery.delete({ where: { id: galleryId } });
-
     return true;
+  }
+
+  async findDeleted(userId: number) {
+    return await this.prismaService.gallery.findMany({
+      where: { userId, deletedAt: { not: null } },
+      select: galleryListSelect,
+      orderBy: { deletedAt: 'desc' },
+    });
   }
 }

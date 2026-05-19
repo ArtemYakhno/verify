@@ -6,13 +6,18 @@ const baseGallerySelect = {
   description: true,
   userId: true,
   _count: {
-    select: { images: true },
+    select: {
+      images: {
+        where: { deletedAt: null },
+      },
+    },
   },
 } satisfies Prisma.GallerySelect;
 
 export const galleryListSelect = {
   ...baseGallerySelect,
   images: {
+    where: { deletedAt: null },
     select: {
       id: true,
       path: true,

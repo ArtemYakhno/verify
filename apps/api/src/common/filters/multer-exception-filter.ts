@@ -20,9 +20,6 @@ export class MulterExceptionFilter implements ExceptionFilter {
       case 'LIMIT_FILE_SIZE':
         message = IMAGE_MESSAGES.LIMIT_FILE_SIZE;
         break;
-      case 'LIMIT_FILE_COUNT':
-        message = IMAGE_MESSAGES.LIMIT_FILE_COUNT;
-        break;
       case 'LIMIT_UNEXPECTED_FILE':
         message = IMAGE_MESSAGES.LIMIT_UNEXPECTED_FILE;
         break;

@@ -10,12 +10,12 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFiles,
+  UploadedFile,
   UseFilters,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -33,7 +33,6 @@ import { memoryStorage } from 'multer';
 import { ImagesService } from './images.service';
 import { MoveCopyImageDto } from './dto/move-copy-image.dto';
 import { ImageResponseDto, PaginatedImagesDto } from './dto/image-response.dto';
-import { ImageOwnerGuard } from './guards/image-owner.guard';
 
 import { STATUS_CODES } from 'node:http';
 import { ImageMetadataDto } from './dto/image-metadata.dto';
@@ -55,17 +54,19 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 import {
   ALLOWED_IMAGES_TYPES,
   MAX_FILE_SIZE,
-  MAX_FILES,
 } from '../common/constants/limits.constants';
+import { ImageOwnerGuard } from './guards/image-owner.guard';
 
 @ApiTags('Images')
 @Controller('galleries/:id/images')
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
 
+  //get all for gallery (no pagination, for edit) *******************
+
   @Get('all')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, GalleryOwnerGuard)
+  @UseGuards(JwtAuthGuard, GalleryOwnerGuard('active'))
   @ApiOperation({
     summary: 'Get all images for editing (owner only, no pagination)',
   })
@@ -86,6 +87,8 @@ export class ImagesController {
     return this.imagesService.findAllByGallery(galleryId);
   }
 
+  //get paginated ************
+
   @Get()
   @Auth()
   @ApiBearerAuth()
@@ -103,19 +106,21 @@ export class ImagesController {
   @ApiNotFoundResponse({ description: GALLERY_MESSAGES.NOT_FOUND_DESCRIPTION })
   @ApiResponse({ status: HttpStatus.OK, type: PaginatedImagesDto })
   findByGallery(
-    @GalleryInfo('id') galleryId: number,
+    @Param('id', ParseIntPipe) galleryId: number,
     @Query() query: PaginationQueryDto,
   ) {
-    return this.imagesService.findByGallery(galleryId, query);
+    return this.imagesService.findPartByGallery(galleryId, query);
   }
+
+  //Upload ***************
 
   @Post()
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, GalleryOwnerGuard)
+  @UseGuards(JwtAuthGuard, GalleryOwnerGuard('active'))
   @UseInterceptors(
-    FilesInterceptor('images', MAX_FILES, {
+    FileInterceptor('image', {
       storage: memoryStorage(),
-      limits: { fileSize: MAX_FILE_SIZE, files: MAX_FILES },
+      limits: { fileSize: MAX_FILE_SIZE },
       fileFilter: (_req, file, cb) => {
         if (ALLOWED_IMAGES_TYPES.includes(file.mimetype)) {
           cb(null, true);
@@ -135,19 +140,22 @@ export class ImagesController {
   @ApiBody({
     schema: {
       type: 'object',
+      required: ['image'],
       properties: {
-        images: {
-          type: 'array',
-          items: { type: 'string', format: 'binary' },
-        },
-        metadata: {
+        image: { type: 'string', format: 'binary' },
+        name: {
           type: 'string',
-          description: 'JSON array of metadata per image (same order as files)',
-          example:
-            '[{"name":"Jhon Snow","comment":"Actor"},{"name":null,"comment":null}]',
+          nullable: true,
+          maxLength: 100,
+          example: 'John Snow',
+        },
+        comment: {
+          type: 'string',
+          nullable: true,
+          maxLength: 100,
+          example: 'Conference photo',
         },
       },
-      required: ['images'],
     },
   })
   @ApiParam({
@@ -157,8 +165,8 @@ export class ImagesController {
     example: 1,
     description: 'Gallery id',
   })
-  @ApiOperation({ summary: 'Upload images to gallery (owner only)' })
-  @ApiResponse({ status: HttpStatus.CREATED, type: [ImageResponseDto] })
+  @ApiOperation({ summary: 'Upload single image to gallery (owner only)' })
+  @ApiResponse({ status: HttpStatus.CREATED, type: ImageResponseDto })
   @ApiUnauthorizedResponse({
     description: AUTH_MESSAGES.UNAUTHORIZED_DESCRIPTION,
   })
@@ -169,31 +177,14 @@ export class ImagesController {
     content: {
       'application/json': {
         examples: {
-          noFiles: {
-            summary: 'No files uploaded',
+          noFile: {
+            summary: 'No file uploaded',
             value: {
               statusCode: HttpStatus.BAD_REQUEST,
               message: IMAGE_MESSAGES.NO_FILES,
               error: STATUS_CODES[HttpStatus.BAD_REQUEST],
             },
           },
-          invalidMetadata: {
-            summary: 'Invalid metadata JSON',
-            value: {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: IMAGE_MESSAGES.INVALID_METADATA,
-              error: STATUS_CODES[HttpStatus.BAD_REQUEST],
-            },
-          },
-          metadataMismatch: {
-            summary: 'Metadata count mismatch',
-            value: {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: IMAGE_MESSAGES.METADATA_MISMATCH,
-              error: STATUS_CODES[HttpStatus.BAD_REQUEST],
-            },
-          },
-
           maxImages: {
             summary: 'Gallery limit exceeded',
             value: {
@@ -202,7 +193,6 @@ export class ImagesController {
               error: STATUS_CODES[HttpStatus.BAD_REQUEST],
             },
           },
-
           invalidFileType: {
             summary: 'Invalid file type',
             value: {
@@ -213,23 +203,13 @@ export class ImagesController {
             },
           },
           limitFileSize: {
-            summary: 'Size of file is too large',
+            summary: 'File too large',
             value: {
               statusCode: HttpStatus.BAD_REQUEST,
               message: IMAGE_MESSAGES.LIMIT_FILE_SIZE,
               error: STATUS_CODES[HttpStatus.BAD_REQUEST],
             },
           },
-
-          limitFileCount: {
-            summary: 'Files limit',
-            value: {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: IMAGE_MESSAGES.LIMIT_FILE_COUNT,
-              error: STATUS_CODES[HttpStatus.BAD_REQUEST],
-            },
-          },
-
           otherFileError: {
             summary: 'Other error with file upload',
             value: {
@@ -244,15 +224,21 @@ export class ImagesController {
   })
   upload(
     @GalleryInfo() gallery: GalleryDetail,
-    @UploadedFiles() files: Express.Multer.File[],
-    @Body('metadata') metadataRaw?: string,
+    @UploadedFile() file: Express.Multer.File | undefined,
+    @Body() dto: ImageMetadataDto,
   ) {
-    return this.imagesService.uploadToGallery(gallery, files, metadataRaw);
+    if (!file) {
+      throw new BadRequestException(IMAGE_MESSAGES.NO_FILES);
+    }
+
+    return this.imagesService.uploadImage(gallery, file, dto);
   }
+
+  //update metadata *****************
 
   @Patch(':imageId')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, ImageOwnerGuard)
+  @UseGuards(JwtAuthGuard, ImageOwnerGuard('active'))
   @ApiOperation({
     summary: 'Update image metadata auth + gallery owner + image owner',
   })
@@ -282,10 +268,12 @@ export class ImagesController {
     return this.imagesService.updateMetadata(imageId, dto);
   }
 
-  @Delete(':imageId')
+  //SoftDelete
+
+  @Patch(':imageId/soft-delete')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, ImageOwnerGuard)
-  @ApiOperation({ summary: 'Delete image (owner only)' })
+  @UseGuards(JwtAuthGuard, ImageOwnerGuard('active'))
+  @ApiOperation({ summary: 'Soft delete image (owner only)' })
   @ApiParam({
     name: 'id',
     type: Number,
@@ -306,13 +294,15 @@ export class ImagesController {
   })
   @ApiNotFoundResponse({ description: IMAGE_MESSAGES.NOT_FOUND_DESCRIPTION })
   @ApiForbiddenResponse({ description: IMAGE_MESSAGES.FORBIDDEN })
-  delete(@ImageInfo() image: ImageInternal) {
-    return this.imagesService.deleteImage(image);
+  softDelete(@ImageInfo() image: ImageInternal) {
+    return this.imagesService.softDelete(image);
   }
+
+  //move ******************
 
   @Patch(':imageId/move')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, ImageOwnerGuard)
+  @UseGuards(JwtAuthGuard, ImageOwnerGuard('active'))
   @ApiOperation({ summary: 'Move image to another gallery (owner only)' })
   @ApiParam({
     name: 'id',
@@ -389,12 +379,14 @@ export class ImagesController {
     @Body() dto: MoveCopyImageDto,
     @CurrentUser('id') userId: number,
   ) {
-    return this.imagesService.moveImage(imageId, galleryId, dto, userId);
+    return this.imagesService.move(imageId, galleryId, dto, userId);
   }
+
+  //copy *****************
 
   @Post(':imageId/copy')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, ImageOwnerGuard)
+  @UseGuards(JwtAuthGuard, ImageOwnerGuard('active'))
   @ApiOperation({ summary: 'Copy image to another gallery (owner only)' })
   @ApiParam({
     name: 'id',
@@ -471,6 +463,89 @@ export class ImagesController {
     @Param('id', ParseIntPipe) galleryId: number,
     @CurrentUser('id') userId: number,
   ) {
-    return this.imagesService.copyImage(image, galleryId, dto, userId);
+    return this.imagesService.copy(image, galleryId, dto, userId);
+  }
+
+  //restore ****************
+
+  @Patch(':imageId/restore')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, ImageOwnerGuard('deleted'))
+  @ApiOperation({ summary: 'Restore deleted image (owner only)' })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    required: true,
+    example: 1,
+    description: 'Gallery id',
+  })
+  @ApiParam({
+    name: 'imageId',
+    type: Number,
+    required: true,
+    example: 1,
+    description: 'Image id',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: ImageResponseDto })
+  @ApiUnauthorizedResponse({
+    description: AUTH_MESSAGES.UNAUTHORIZED_DESCRIPTION,
+  })
+  @ApiNotFoundResponse({ description: IMAGE_MESSAGES.NOT_FOUND_DESCRIPTION })
+  @ApiForbiddenResponse({ description: IMAGE_MESSAGES.FORBIDDEN })
+  restore(@ImageInfo('id') imageId: number) {
+    return this.imagesService.restore(imageId);
+  }
+
+  // deleted images ***********
+
+  @Get('deleted')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, GalleryOwnerGuard('active'))
+  @ApiOperation({ summary: 'Get deleted image (owner only)' })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    required: true,
+    example: 1,
+    description: 'Gallery id',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: ImageResponseDto })
+  @ApiUnauthorizedResponse({
+    description: AUTH_MESSAGES.UNAUTHORIZED_DESCRIPTION,
+  })
+  @ApiNotFoundResponse({ description: IMAGE_MESSAGES.NOT_FOUND_DESCRIPTION })
+  @ApiForbiddenResponse({ description: IMAGE_MESSAGES.FORBIDDEN })
+  getDeletedImage(@GalleryInfo('id') galleryId: number) {
+    return this.imagesService.findDeleted(galleryId);
+  }
+
+  //purge *****************
+
+  @Delete(':imageId/purge')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, ImageOwnerGuard('deleted'))
+  @ApiOperation({ summary: 'Permanently delete image (owner only)' })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    required: true,
+    example: 1,
+    description: 'Gallery id',
+  })
+  @ApiParam({
+    name: 'imageId',
+    type: Number,
+    required: true,
+    example: 1,
+    description: 'Image id',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: Boolean })
+  @ApiUnauthorizedResponse({
+    description: AUTH_MESSAGES.UNAUTHORIZED_DESCRIPTION,
+  })
+  @ApiNotFoundResponse({ description: IMAGE_MESSAGES.NOT_FOUND_DESCRIPTION })
+  @ApiForbiddenResponse({ description: IMAGE_MESSAGES.FORBIDDEN })
+  purge(@ImageInfo() image: ImageInternal) {
+    return this.imagesService.purge(image);
   }
 }

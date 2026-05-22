@@ -6,13 +6,17 @@ export const validationConfig: ValidationPipeOptions = {
   forbidNonWhitelisted: true,
   transform: true,
   exceptionFactory: (errors: ValidationError[]) => {
-    const result = errors.reduce(
+    const fieldErrors = errors.reduce(
       (acc, error) => {
         acc[error.property] = Object.values(error.constraints ?? {});
         return acc;
       },
       {} as Record<string, string[]>,
     );
-    return new BadRequestException(result);
+
+    return new BadRequestException({
+      message: 'Validation failed',
+      errors: fieldErrors,
+    });
   },
 };

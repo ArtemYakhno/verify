@@ -16,7 +16,7 @@ import {
   GALLERY_MESSAGES,
   IMAGE_MESSAGES,
 } from '../common/constants/messages.constants';
-import { GalleryDetail } from '../common/types/gallery.types';
+import { Gallery } from '../common/types/gallery.types';
 import { MAX_IMAGES_PER_GALLERY } from '../common/constants/limits.constants';
 import { notDeletedWhere } from '../common/constants/constraints.constants';
 
@@ -78,7 +78,7 @@ export class ImagesService {
   }
 
   async uploadImage(
-    gallery: GalleryDetail,
+    gallery: Gallery,
     file: Express.Multer.File,
     dto: ImageMetadataDto,
   ) {
@@ -244,5 +244,19 @@ export class ImagesService {
         IMAGE_MESSAGES.MAX_IMAGES(count, adding, MAX_IMAGES_PER_GALLERY),
       );
     }
+  }
+
+  async softDeleteAll(galleryId: number) {
+    await this.prismaService.image.updateMany({
+      where: {
+        galleryId,
+        ...notDeletedWhere,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+
+    return true;
   }
 }

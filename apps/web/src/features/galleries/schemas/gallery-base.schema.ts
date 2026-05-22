@@ -9,6 +9,15 @@ export const galleryDescriptionSchema = z
   .string()
   .max(255, "Description must be at most 255 characters");
 
+export const galleryPreviewImageSchema = z.object({
+  id: z.number(),
+  path: z.url(),
+});
+
+export const galleryImagesCountSchema = z.object({
+  images: z.number(),
+});
+
 export const gallerySchema = z.object({
   id: z.number(),
   title: galleryTitleSchema,
@@ -16,15 +25,5 @@ export const gallerySchema = z.object({
   userId: z.number(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
+  _count: galleryImagesCountSchema,
 });
-
-export type Gallery = z.infer<typeof gallerySchema>;
-
-export const galleryListItemSchema = gallerySchema.pick({
-  id: true,
-  title: true,
-  description: true,
-  userId: true,
-});
-
-export type GalleryListItem = z.infer<typeof galleryListItemSchema>;

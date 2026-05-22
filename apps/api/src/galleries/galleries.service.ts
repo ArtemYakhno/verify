@@ -5,7 +5,7 @@ import { UpdateGalleryDto } from './dto/update-gallery.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import {
-  galleryDetailSelect,
+  gallerySelect,
   galleryListSelect,
 } from '../common/types/gallery.types';
 import { GALLERY_MESSAGES } from '../common/constants/messages.constants';
@@ -53,7 +53,7 @@ export class GalleriesService {
   async findById(galleryId: number) {
     const gallery = await this.prismaService.gallery.findFirst({
       where: { id: galleryId, ...notDeletedWhere },
-      select: galleryDetailSelect,
+      select: gallerySelect,
     });
 
     if (!gallery) {
@@ -63,10 +63,17 @@ export class GalleriesService {
     return gallery;
   }
 
+  async findMy(userId: number) {
+    return this.prismaService.gallery.findMany({
+      where: { userId, ...notDeletedWhere },
+      select: gallerySelect,
+    });
+  }
+
   async create(userId: number, createGalleryDto: CreateGalleryDto) {
     return this.prismaService.gallery.create({
       data: { ...createGalleryDto, userId },
-      select: galleryDetailSelect,
+      select: gallerySelect,
     });
   }
 
@@ -74,19 +81,21 @@ export class GalleriesService {
     return this.prismaService.gallery.update({
       where: { id: galleryId },
       data: updateGalleryDto,
-      select: galleryDetailSelect,
+      select: gallerySelect,
     });
   }
 
   async softDelete(galleryId: number) {
-    await this.prismaService.gallery.update({
-      where: { id: galleryId },
-      data: { deletedAt: new Date() },
-    });
-    await this.prismaService.image.updateMany({
-      where: { galleryId },
-      data: { deletedAt: new Date() },
-    });
+    await this.prismaService.$transaction([
+      this.prismaService.gallery.update({
+        where: { id: galleryId },
+        data: { deletedAt: new Date() },
+      }),
+      this.prismaService.image.updateMany({
+        where: { galleryId },
+        data: { deletedAt: new Date() },
+      }),
+    ]);
 
     return true;
   }
@@ -95,7 +104,7 @@ export class GalleriesService {
     return await this.prismaService.gallery.update({
       where: { id: galleryId },
       data: { deletedAt: null },
-      select: galleryDetailSelect,
+      select: gallerySelect,
     });
   }
 

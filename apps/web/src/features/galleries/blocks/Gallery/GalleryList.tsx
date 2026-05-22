@@ -1,4 +1,4 @@
-import type { GalleryListItem } from "../../schemas/gallery-base.schema";
+import type { GalleryListItem } from "../../schemas/gallery-response.schema";
 import { GalleryCard } from "./GalleryCard";
 
 interface GalleryListProps {

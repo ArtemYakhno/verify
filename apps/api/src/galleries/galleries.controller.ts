@@ -54,16 +54,6 @@ export class GalleriesController {
     return this.galleriesService.findPart(query);
   }
 
-  @Get(':id')
-  @Auth()
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get gallery by id', description: 'auth required' })
-  @ApiResponse({ status: HttpStatus.OK, type: GalleryDetailResponseDto })
-  @ApiNotFoundResponse({ description: GALLERY_MESSAGES.NOT_FOUND_DESCRIPTION })
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.galleriesService.findById(id);
-  }
-
   @Get('deleted')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, GalleryOwnerGuard('active'))
@@ -76,6 +66,30 @@ export class GalleriesController {
   @ApiNotFoundResponse({ description: GALLERY_MESSAGES.NOT_FOUND_DESCRIPTION })
   findDeleted(@CurrentUser('id') userId: number) {
     return this.galleriesService.findDeleted(userId);
+  }
+
+  @Get('my')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get user gallery', description: 'owner only' })
+  @ApiResponse({ status: HttpStatus.OK, type: GalleryDetailResponseDto })
+  @ApiUnauthorizedResponse({
+    description: AUTH_MESSAGES.UNAUTHORIZED_DESCRIPTION,
+  })
+  @ApiForbiddenResponse({ description: GALLERY_MESSAGES.FORBIDDEN })
+  @ApiNotFoundResponse({ description: GALLERY_MESSAGES.NOT_FOUND_DESCRIPTION })
+  findMy(@CurrentUser('id') userId: number) {
+    return this.galleriesService.findMy(userId);
+  }
+
+  @Get(':id')
+  @Auth()
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get gallery by id', description: 'auth required' })
+  @ApiResponse({ status: HttpStatus.OK, type: GalleryDetailResponseDto })
+  @ApiNotFoundResponse({ description: GALLERY_MESSAGES.NOT_FOUND_DESCRIPTION })
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.galleriesService.findById(id);
   }
 
   @Post()

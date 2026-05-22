@@ -47,7 +47,6 @@ import { GalleryInfo } from '../common/decorators/gallery-info.decorator';
 import { Auth } from '../common/decorators/auth.decorator';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { MulterExceptionFilter } from '../common/filters/multer-exception-filter';
-import type { GalleryDetail } from '../common/types/gallery.types';
 import { ImageInfo } from '../common/decorators/image-info.decorator';
 import type { ImageInternal } from '../common/types/image.types';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -56,6 +55,7 @@ import {
   MAX_FILE_SIZE,
 } from '../common/constants/limits.constants';
 import { ImageOwnerGuard } from './guards/image-owner.guard';
+import type { Gallery } from '../common/types/gallery.types';
 
 @ApiTags('Images')
 @Controller('galleries/:id/images')
@@ -223,7 +223,7 @@ export class ImagesController {
     },
   })
   upload(
-    @GalleryInfo() gallery: GalleryDetail,
+    @GalleryInfo() gallery: Gallery,
     @UploadedFile() file: Express.Multer.File | undefined,
     @Body() dto: ImageMetadataDto,
   ) {
@@ -232,6 +232,27 @@ export class ImagesController {
     }
 
     return this.imagesService.uploadImage(gallery, file, dto);
+  }
+
+  @Patch('soft-delete-all')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, GalleryOwnerGuard('active'))
+  @ApiOperation({ summary: 'Soft delete all images in gallery (owner only)' })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    required: true,
+    example: 1,
+    description: 'Gallery id',
+  })
+  @ApiResponse({ status: HttpStatus.OK, type: Boolean })
+  @ApiUnauthorizedResponse({
+    description: AUTH_MESSAGES.UNAUTHORIZED_DESCRIPTION,
+  })
+  @ApiNotFoundResponse({ description: GALLERY_MESSAGES.NOT_FOUND_DESCRIPTION })
+  @ApiForbiddenResponse({ description: GALLERY_MESSAGES.FORBIDDEN })
+  softDeleteAll(@GalleryInfo('id') galleryId: number) {
+    return this.imagesService.softDeleteAll(galleryId);
   }
 
   //update metadata *****************

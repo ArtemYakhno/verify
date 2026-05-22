@@ -27,7 +27,7 @@ export const galleryListSelect = {
   },
 } satisfies Prisma.GallerySelect;
 
-export const galleryDetailSelect = {
+export const gallerySelect = {
   ...baseGallerySelect,
   createdAt: true,
   updatedAt: true,
@@ -37,6 +37,6 @@ export type GalleryList = Prisma.GalleryGetPayload<{
   select: typeof galleryListSelect;
 }>;
 
-export type GalleryDetail = Prisma.GalleryGetPayload<{
-  select: typeof galleryDetailSelect;
+export type Gallery = Prisma.GalleryGetPayload<{
+  select: typeof gallerySelect;
 }>;

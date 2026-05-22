@@ -12,46 +12,33 @@ export class ApiValidationError extends Error {
 }
 
 interface BackendErrorBody {
-  message?: string;
-  error?: string;
   statusCode?: number;
-  [field: string]: string | string[] | number | undefined;
+  message?: string;
+  errors?: Record<string, string[]>;
 }
-
-const RESERVED_KEYS = new Set(["message", "error", "statusCode"]);
 
 export function extractErrorMessage(error: unknown): string {
   if (error instanceof ApiValidationError) {
-    return "Server returned unexpected data. Please try again later.";
+    return "Server returned unexpected data";
   }
 
   const axiosError = error as AxiosError<BackendErrorBody>;
 
-  if (!axiosError.response) {
-    return "No server connection. Please check your network.";
+  if (!axiosError?.response) {
+    return "No server connection";
   }
 
-  const data = axiosError.response.data;
-
-  if (typeof data?.message === "string") {
-    return data.message;
-  }
-
-  return "An unknown error occurred.";
+  return axiosError.response.data?.message ?? "An unknown error occurred";
 }
 
 export function extractFieldErrors(error: unknown): Record<string, string> {
   const data = (error as AxiosError<BackendErrorBody>)?.response?.data;
-  if (!data) return {};
 
-  const result: Record<string, string> = {};
+  if (!data?.errors) return {};
 
-  Object.entries(data).forEach(([key, value]) => {
-    if (RESERVED_KEYS.has(key)) return;
-    if (Array.isArray(value) && value.length > 0) {
-      result[key] = value[0];
-    }
-  });
-
-  return result;
+  return Object.fromEntries(
+    Object.entries(data.errors)
+      .filter(([, messages]) => messages.length > 0)
+      .map(([field, messages]) => [field, messages[0]]),
+  );
 }

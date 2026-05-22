@@ -20,7 +20,11 @@ export const useUpdateProfile = (
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(profileKeys.me(), updatedUser);
     },
-    onError: (error) => handleMutationError(error, setError),
+    onError: (error) =>
+      handleMutationError(error, setError, {
+        firstname: "firstname",
+        lastname: "lastname",
+      }),
   });
 };
 
@@ -30,6 +34,10 @@ export const useChangePassword = (
   return useMutation({
     mutationFn: (body: ChangePasswordDto) =>
       profileService.changePassword(body),
-    onError: (error) => handleMutationError(error, setError),
+    onError: (error) =>
+      handleMutationError(error, setError, {
+        currentPassword: "currentPassword",
+        newPassword: "newPassword",
+      }),
   });
 };

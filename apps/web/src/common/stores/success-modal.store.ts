@@ -36,7 +36,7 @@ const successModalStore: StateCreator<
     set((state) => {
       state.isOpen = true;
 
-      state.title = data?.title || "Changes saved";
+      state.title = data?.title || "Success";
 
       state.description =
         data?.description || "Your changes were successfully saved";

@@ -23,6 +23,6 @@ export const profileService = {
   },
 
   deleteProfile: async (): Promise<void> => {
-    await apiClient.patch("/profile/delete");
+    await apiClient.delete("/profile");
   },
 };

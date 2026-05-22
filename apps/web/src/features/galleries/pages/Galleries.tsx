@@ -1,7 +1,7 @@
 import { LoadingPlug } from "@/common/components/ui/loading-plug";
-import { useGalleriesParams } from "../hooks/use-galleries-params";
+import { useGalleriesParams } from "../hooks/useGalleriesParams";
 import { useGetGalleries } from "../gueries/gallery.queries";
-import { GalleriesFooter } from "../blocks/GalleriesFooter";
+import { GalleryFooter } from "../blocks/Gallery/GalleryFooter";
 import { GalleryList } from "../blocks/Gallery/GalleryList";
 import { useRef } from "react";
 import { GalleryPlug } from "../blocks/Gallery/GalleryPlug";
@@ -25,7 +25,7 @@ export const Galleries = () => {
 
   const renderContent = () => {
     if (isLoading) return <LoadingPlug />;
-    if (isError || isEmpty) return <GalleryPlug error={error} />
+    if (isError || isEmpty) return <GalleryPlug variant={isError ? "error" : "empty"} error={error} />
 
     return (
       <>
@@ -34,7 +34,7 @@ export const Galleries = () => {
         </div>
 
         {meta && (
-          <GalleriesFooter
+          <GalleryFooter
             page={page}
             perPage={perPage}
             meta={meta}

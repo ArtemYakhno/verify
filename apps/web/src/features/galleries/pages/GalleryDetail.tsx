@@ -1,24 +1,62 @@
 import { useParams } from "react-router-dom";
-import { useGetGalleryById } from "../gueries/gallery.queries";
 import { LoadingPlug } from "@/common/components/ui/loading-plug";
-import { MOCK_PHOTOS } from "@/common/moks/gallery-detail.mock";
+
+import { useGetGalleryById } from "../gueries/gallery.queries";
 import { GalleryDetailHeader } from "../blocks/GalleryDetail/GalleryDetailHeader";
 import { GalleryPhotoList } from "../blocks/GalleryDetail/GalleryPhotoList";
-import { GalleryDetailFooter } from "../blocks/GalleryDetail/GalleryDetailFooter";
 import { GalleryDetailPlug } from "../blocks/GalleryDetail/GalleryDetailPlug";
+import { useGalleryImagesParams } from "@/features/images/hooks/useGalleryImagesParams";
+import { useGetImages } from "@/features/images/gueries/images.queries";
+import { useRef } from "react";
+import { GalleryPlug } from "../blocks/Gallery/GalleryPlug";
+import { GalleryDetailFooter } from "../blocks/GalleryDetail/GalleryDetailFooter";
 
 export const GalleryDetail = () => {
   const { id } = useParams();
   const galleryId = Number(id);
 
-  const { data: gallery, isLoading, isError, error } = useGetGalleryById(galleryId);
 
-  const photos = MOCK_PHOTOS;
+  const { page, perPage, setPage } = useGalleryImagesParams();
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+
+  const handlePageChange = (newPage: number) => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: "auto" });
+    window.scrollTo({ top: 0, behavior: "auto" });
+    setPage(newPage);
+  };
+
+  const {
+    data: gallery,
+    isLoading: isGalleryLoading,
+    isError: isGalleryError,
+    error: galleryError,
+  } = useGetGalleryById(galleryId);
+
+  const {
+    data: images,
+    isLoading: areImagesLoading,
+    isError: areImagesError,
+    error: imagesError,
+  } = useGetImages(galleryId, { page, perPage });
 
   const renderContent = () => {
-    if (isLoading || !gallery) return <LoadingPlug />;
-    if (isError) {
-      return <GalleryDetailPlug error={error} />;
+    const photos = images?.data ?? [];
+    const meta = images?.meta;
+    const isGalleryEmpty = !isGalleryLoading && gallery && !gallery.title;
+    const isImagesEmpty = !areImagesLoading && photos.length === 0;
+
+
+    if (isGalleryLoading || areImagesLoading) {
+      return <LoadingPlug />;
+    }
+
+    if (isGalleryEmpty || isGalleryError || !gallery) {
+      return <GalleryPlug variant={isGalleryError ? "error" : "empty"} error={galleryError} />
+    }
+
+    if (isImagesEmpty || areImagesError || !images) {
+      return <GalleryDetailPlug variant={areImagesError ? "error" : "empty"} error={imagesError} />;
     }
 
     return (
@@ -28,20 +66,24 @@ export const GalleryDetail = () => {
           description={gallery.description}
         />
 
-        <div className="flex-1 min-h-0 overflow-y-auto px-4 lg:px-7.5 pt-4 lg:pt-10">
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 lg:px-7.5 pt-4 lg:pt-10">
           <GalleryPhotoList photos={photos} />
         </div>
-
-        <GalleryDetailFooter
-          count={photos.length}
-          onDeleteAll={() => { }}
-        />
+        {meta && (
+          <GalleryDetailFooter
+            page={page}
+            perPage={perPage}
+            meta={meta}
+            onPageChange={handlePageChange}
+            gallery={gallery}
+          />
+        )}
       </>
     );
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-nature-white rounded-lg min-h-0 py-4 lg:py-7.5">
+    <div className="flex flex-col flex-1 min-h-0 pt-4 lg:pt-7.5">
       {renderContent()}
     </div>
   );

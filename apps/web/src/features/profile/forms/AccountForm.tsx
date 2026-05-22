@@ -16,6 +16,7 @@ import {
 } from "../schemas/profile.schema";
 import { useUpdateProfile } from "../queries/profile.mutations";
 import { openSuccessModal } from "@/common/stores/success-modal.store";
+import { toast } from "sonner";
 
 type Props = {
   firstname: string;
@@ -37,7 +38,7 @@ export const AccountForm = ({
   });
 
   const {
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
     reset,
   } = form;
@@ -50,6 +51,10 @@ export const AccountForm = ({
     useUpdateProfile();
 
   const handleUpdateProfile = async (values: UpdateProfileValues) => {
+    if (!isDirty) {
+      toast.warning('There are no changes')
+      return;
+    }
     try {
       await updateProfile(values);
       openSuccessModal()

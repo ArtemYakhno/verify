@@ -22,13 +22,14 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
+
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { Role } from '../../generated/prisma/enums';
 import {
   AUTH_MESSAGES,
   USER_MESSAGES,
-} from '../../common/constants/messages.constants';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { Auth } from '../../common/decorators/auth.decorator';
-import { Role } from '../../generated/prisma/enums';
+} from '../common/constants/messages.constants';
+import { Auth } from '../common/decorators/auth.decorator';
 
 @ApiTags('Users')
 @ApiUnauthorizedResponse({

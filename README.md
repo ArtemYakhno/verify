@@ -1,8 +1,6 @@
-
 # Verify
 
-Verify is a full-stack monorepo application with a React frontend and a NestJS backend.  
-
+Verify is a full-stack monorepo application with a React frontend and a NestJS backend.
 
 ## Project Structure
 
@@ -58,6 +56,11 @@ JWT_REFRESH_TOKEN_TTL=604800
 # LINKS
 VITE_API_URL=http://localhost:3000
 CORS_ORIGIN=http://localhost:5173
+
+# CLOUDINARY_CLOUD_NAME
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=123456789012345
+CLOUDINARY_API_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ## Installation
@@ -70,7 +73,7 @@ Install dependencies for all workspace packages:
 pnpm install
 ```
 
-Prisma Client is generated automatically after installation via the backend `postinstall` script. 
+Prisma Client is generated automatically after installation via the backend `postinstall` script.
 
 ## Database Setup
 
@@ -80,7 +83,7 @@ Start the PostgreSQL container:
 docker compose up -d
 ```
 
-This starts the database defined in `docker-compose.yml`. 
+This starts the database defined in `docker-compose.yml`.
 
 ## Apply Migrations
 
@@ -111,7 +114,6 @@ Swagger:
 
 - API Docs: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
 
-
 ## Troubleshooting
 
 ### Prisma client is missing
@@ -126,7 +128,7 @@ Prisma Client is generated code based on your Prisma schema, and it must exist f
 
 ### Frontend does not read environment variables
 
-Make sure the frontend is configured to read env variables from the monorepo root if you use a shared root `.env`. Also remember that only variables starting with `VITE_` are available in client-side code. 
+Make sure the frontend is configured to read env variables from the monorepo root if you use a shared root `.env`. Also remember that only variables starting with `VITE_` are available in client-side code.
 
 ## Notes
 

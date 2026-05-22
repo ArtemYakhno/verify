@@ -23,14 +23,8 @@
   }
 
   .typo-link {
-    @apply relative inline-block text-green cursor-pointer transition-colors duration-200 font-sans font-normal text-[14px] leading-[24px]  tracking-[0%]
-
-  after:content-[''] after:absolute after:left-0 after:bottom-0
-  after:w-full after:h-px after:bg-green
-  after:transition-colors after:duration-200
-
-  hover:text-accent-green
-  hover:after:bg-accent-green;
+    @apply relative inline-block text-green cursor-pointer transition-colors duration-200 font-sans font-normal text-[14px] leading-[24px]  tracking-[0%] after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-px after:bg-green
+  after:transition-colors after:duration-200 hover:text-accent-green hover:after:bg-accent-green;
   }
 
   .typo-button {
@@ -38,10 +32,20 @@
   }
 
   .typo-input {
-    @apply font-sans font-normal text-[14px] leading-[100%] text-ui-black;
+    @apply font-sans font-normal text-[14px] leading-[14px] text-ui-black;
   }
 
   .typo-nav {
     @apply font-sans font-normal text-[16px] leading-[150%] text-placeholder;
+  }
+
+  .typo-cancel {
+    @apply relative inline-block font-bold text-[14px] leading-[100%] tracking-[0%] text-ui-black cursor-pointer transition-colors duration-200
+  after:content-[''] after:absolute after:left-0 after:bottom-0
+  after:w-full after:h-px after:bg-green
+  after:transition-all after:duration-200
+  after:scale-x-0
+  hover:text-accent-green
+  hover:after:scale-x-100;
   }
 }

@@ -1,19 +1,21 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar/Sidebar";
-import { Header } from "./Header";
+import { Header } from "./Header/Header";
 import { useIsMobile } from "@/common/hooks/useIsMobile";
 import { Footer } from "./Footer";
 import { cn } from "@/common/lib/utils";
+import { useScrolled } from "@/common/hooks/useScrolled";
 
 export const DashboardLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
+  const isScrolled = useScrolled();
 
 
   return (
-    <div className="flex-1 flex lg:u-container">
-      <aside className="hidden lg:flex lg:mr-7.5 sticky top-7.5 h-(--layout-sidebar-height)">
+    <div className="flex-1 flex min-h-0 lg:u-container">
+      <aside className="hidden lg:flex lg:mr-7.5">
         <Sidebar />
       </aside>
 
@@ -31,17 +33,18 @@ export const DashboardLayout = () => {
         </div>
       )}
 
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col min-h-0">
 
-        <div className="sticky top-(--layout-header-sticky-top) z-40 lg:shadow-[0_-30px_0_0_#fcfcfc]">
+        <div className={cn("sticky top-0 z-40 p-4 lg:px-0 lg:pt-1.5 lg:pb-10 lg:block", isScrolled && "bg-nature-white")}>
+
           < Header onMenuClick={() => setSidebarOpen(true)} />
         </div>
 
-        <main className={cn("flex-1 mt-4", isMobile && "u-container")}>
+        <main className={cn("flex flex-col flex-1 min-h-0", isMobile && "u-container")}>
           <Outlet />
         </main>
 
-        <Footer variant={isMobile ? 'mobile' : 'desktop'} />
+        <Footer />
       </div>
     </div >
   );

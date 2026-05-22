@@ -7,7 +7,9 @@ const inputVariants = cva(
     'w-full min-w-0 rounded-md  outline-none transition-colors',
     'bg-transparent',
     'typo-input',
+    'box-border',
     'placeholder:text-placeholder',
+
 
     'border border-border',
 
@@ -26,7 +28,7 @@ const inputVariants = cva(
     variants: {
       size: {
         sm: 'h-10 px-4 py-2',
-        md: 'h-13.5 px-5 py-4.5',
+        md: 'h-12.5 px-5 py-4.5',
         lg: 'h-16 px-8 py-6',
       },
     },

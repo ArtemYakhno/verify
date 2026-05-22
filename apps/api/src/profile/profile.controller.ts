@@ -14,8 +14,6 @@ import {
   ApiUnauthorizedResponse,
   ApiNotFoundResponse,
 } from '@nestjs/swagger';
-import { Auth } from '../../common/decorators/auth.decorator';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { UsersService } from '../users/users.service';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { ChangePasswordDto } from '../users/dto/change-password.dto';
@@ -23,7 +21,9 @@ import { UserResponseDto } from '../users/dto/user-response.dto';
 import {
   AUTH_MESSAGES,
   USER_MESSAGES,
-} from '../../common/constants/messages.constants';
+} from '../common/constants/messages.constants';
+import { Auth } from '../common/decorators/auth.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 @ApiTags('Profile')
 @ApiUnauthorizedResponse({

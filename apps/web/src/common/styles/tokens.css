@@ -16,15 +16,6 @@
   --red: #e95a54;
   --strong-error: #d3221b;
   --warning: #f1c219;
-  --layout-header-sticky-top: 0px;
-  --layout-sidebar-height: calc(100dvh - 60px);
-}
-
-/* BREAKPOINTS.MD */
-@media (min-width: 768px) {
-  :root {
-    --layout-header-sticky-top: 30px;
-  }
 }
 /* saved in root, because the project can have theme swither in futhure (for example)  */
 

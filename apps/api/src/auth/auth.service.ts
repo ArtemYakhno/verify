@@ -2,15 +2,16 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { HashService } from '../../common/services/hash.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
 import { Response } from 'express';
-import { isDev } from '../../common/utils/is-dev.util';
-import { REFRESH_TOKEN_COOKIE } from '../../common/constants/cookie.constants';
-import { AUTH_MESSAGES } from '../../common/constants/messages.constants';
+
 import { LoginDto } from './dto/login.dto';
+import { HashService } from '../common/services/hash.service';
+import { AUTH_MESSAGES } from '../common/constants/messages.constants';
+import { JwtPayload } from '../common/interfaces/jwt-payload.interface';
+import { REFRESH_TOKEN_COOKIE } from '../common/constants/cookie.constants';
+import { isDev } from '../common/utils/is-dev.util';
 
 @Injectable()
 export class AuthService {

@@ -10,18 +10,17 @@ import { FieldGroup } from "@/common/components/ui/field";
 
 import {
   changePasswordSchema,
-  type ChangePasswordDto,
   type ChangePasswordValues,
 } from "../schemas/profile.schema";
 import { PasswordChecklist } from "@/common/components/blocks/PasswordChecklist";
+import { openSuccessModal } from "@/common/stores/success-modal.store";
+import { useChangePassword } from "../queries/profile.mutations";
 
 type Props = {
   email: string;
-  isPending: boolean;
-  onSubmit: (values: ChangePasswordDto) => Promise<void>;
 };
 
-export const PasswordForm = ({ email, isPending, onSubmit }: Props) => {
+export const PasswordForm = ({ email }: Props) => {
   const form = useForm<ChangePasswordValues>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: {
@@ -31,6 +30,10 @@ export const PasswordForm = ({ email, isPending, onSubmit }: Props) => {
     },
     mode: "onSubmit",
   });
+
+
+  const { mutateAsync: changePassword, isPending } =
+    useChangePassword();
 
   const {
     formState: { errors },
@@ -50,9 +53,17 @@ export const PasswordForm = ({ email, isPending, onSubmit }: Props) => {
   });
 
   const submitHandler = async (values: ChangePasswordValues) => {
-    const { confirmPassword: _cp, ...rest } = values;
-    await onSubmit(rest).then(() => reset());
+    try {
+      const { confirmPassword: _cp, ...rest } = values;
+      await changePassword(rest);
+      reset();
+      openSuccessModal()
+    }
+    catch {
+      return;
+    }
   };
+
 
   return (
     <section className="card">

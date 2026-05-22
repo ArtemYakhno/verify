@@ -1,7 +1,7 @@
 import { useAuthStore } from '@/common/stores/auth.store';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { RoutePath } from './configs/root.config';
-import { LoadingPlug } from '../plugs/LoadingPlug';
+import { LoadingPlug } from '@/common/components/ui/loading-plug';
 
 export function ProtectedRoute() {
   const { isAuthenticated, isInitialized } = useAuthStore();

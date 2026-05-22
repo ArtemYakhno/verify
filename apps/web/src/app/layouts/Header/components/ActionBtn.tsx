@@ -1,0 +1,16 @@
+import { Button } from "@/common/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+
+export const ActionBtn = ({ to, label }: { to: string; label: string }) => (
+  <Button asChild variant="secondary" className="group whitespace-nowrap w-full lg:w-[250px]">
+    <Link to={to}>
+      {label}
+      <ArrowRight
+        size={20}
+        strokeWidth={1.5}
+        className="text-accent-green group-hover:text-nature-white transition-colors"
+      />
+    </Link>
+  </Button>
+);

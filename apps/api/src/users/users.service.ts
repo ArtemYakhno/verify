@@ -7,10 +7,10 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { USER_MESSAGES } from '../../common/constants/messages.constants';
-import { HashService } from '../../common/services/hash.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { safeUserSelect } from '../../common/types/user.types';
+import { HashService } from '../common/services/hash.service';
+import { USER_MESSAGES } from '../common/constants/messages.constants';
+import { safeUserSelect } from '../common/types/user.types';
 
 @Injectable()
 export class UsersService {

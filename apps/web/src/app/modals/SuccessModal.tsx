@@ -12,13 +12,13 @@ interface SuccessModalProps {
 export const SuccessModal = ({
   isOpen,
   onClose,
-  title = "Changes saved",
-  description = "Your changes were successfully saved.",
+  title,
+  description,
 }: SuccessModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="flex flex-col items-center gap-6 px-6 py-10 text-center lg:max-w-[420px]"
+        className="flex flex-col items-center gap-4 px-6 py-10 text-center lg:max-w-[420px]"
       >
         <DialogDescription className="sr-only">
           {description}

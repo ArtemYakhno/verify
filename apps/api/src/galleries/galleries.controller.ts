@@ -56,7 +56,7 @@ export class GalleriesController {
 
   @Get('deleted')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, GalleryOwnerGuard('active'))
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get deleted gallery', description: 'owner only' })
   @ApiResponse({ status: HttpStatus.OK, type: GalleryDetailResponseDto })
   @ApiUnauthorizedResponse({

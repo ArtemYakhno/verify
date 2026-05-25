@@ -17,6 +17,7 @@ import {
   ApiBearerAuth,
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
+  ApiConflictResponse,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -91,6 +92,7 @@ export class UsersController {
     status: HttpStatus.NOT_FOUND,
     description: USER_MESSAGES.NOT_FOUND_DESCRIPTION,
   })
+  @ApiConflictResponse({ description: USER_MESSAGES.DELETE_ALL_RELATIVE_DATA })
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.delete(id);

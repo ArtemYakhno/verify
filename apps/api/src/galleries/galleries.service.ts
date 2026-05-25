@@ -51,7 +51,7 @@ export class GalleriesService {
   }
 
   async findById(galleryId: number) {
-    const gallery = await this.prismaService.gallery.findFirst({
+    const gallery = await this.prismaService.gallery.findUnique({
       where: { id: galleryId, ...notDeletedWhere },
       select: gallerySelect,
     });
@@ -101,11 +101,18 @@ export class GalleriesService {
   }
 
   async restore(galleryId: number) {
-    return await this.prismaService.gallery.update({
-      where: { id: galleryId },
-      data: { deletedAt: null },
-      select: gallerySelect,
-    });
+    await this.prismaService.$transaction([
+      this.prismaService.gallery.update({
+        where: { id: galleryId },
+        data: { deletedAt: null },
+      }),
+      this.prismaService.image.updateMany({
+        where: { galleryId, deletedAt: { not: null } },
+        data: { deletedAt: null },
+      }),
+    ]);
+
+    return true;
   }
 
   async purge(galleryId: number) {

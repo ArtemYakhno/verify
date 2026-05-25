@@ -38,7 +38,7 @@ export class ImagesService {
 
   async findPartByGallery(galleryId: number, query: PaginationQueryDto) {
     const galleryExists = await this.prismaService.gallery.findUnique({
-      where: { id: galleryId },
+      where: { id: galleryId, ...notDeletedWhere },
       select: { id: true },
     });
 
@@ -133,7 +133,9 @@ export class ImagesService {
   }
 
   async purge(image: ImageInternal) {
-    await this.cloudinaryService.deleteImage(image.cloudinaryId);
+    await Promise.allSettled([
+      this.cloudinaryService.deleteImage(image.cloudinaryId),
+    ]);
     await this.prismaService.image.delete({ where: { id: image.id } });
     return true;
   }

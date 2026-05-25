@@ -3,6 +3,8 @@ export const USER_MESSAGES = {
   NOT_FOUND: (id: number) => `User #${id} not found`,
   NOT_FOUND_DESCRIPTION: 'User not found',
   INVALID_CURRENT_PASSWORD: 'Current password is incorrect',
+  DELETE_ALL_RELATIVE_DATA:
+    'You cannot delete account while you still have data like: galleries. Delete all data first.',
 } as const;
 
 export const AUTH_MESSAGES = {

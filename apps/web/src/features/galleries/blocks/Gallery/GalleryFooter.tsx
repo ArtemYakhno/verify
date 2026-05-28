@@ -1,6 +1,6 @@
 import { Pagination } from "@/common/components/ui/pagination";
 
-interface GalleriesFooterProps {
+interface GalleryFooterProps {
   page: number;
   perPage: number;
   meta: { total: number; totalPages: number };
@@ -9,7 +9,7 @@ interface GalleriesFooterProps {
 
 
 
-export const GalleriesFooter = ({ page, perPage, meta, onPageChange }: GalleriesFooterProps) => {
+export const GalleryFooter = ({ page, perPage, meta, onPageChange }: GalleryFooterProps) => {
   return (
     <div className="relative flex flex-col items-center justify-between gap-3 py-5 lg:flex-row lg:p-5 ">
       <span className="typo-small text-gray">

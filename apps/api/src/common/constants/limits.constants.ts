@@ -7,7 +7,6 @@ export const ALLOWED_IMAGES_TYPES = [
   'image/avif',
 ];
 
-export const MAX_FILES = 50;
 export const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 export const MAX_IMAGES_PER_RESPONSE = 8;

@@ -4,40 +4,44 @@ import { FieldGroup } from "@/common/components/ui/field";
 import { Input } from "@/common/components/ui/input";
 import { Textarea } from "@/common/components/ui/textarea";
 
-type GalleryFormValues = {
-  title: string;
-  description?: string;
+type FormGalleryFieldsProps = {
+  gallery: {
+    title: string;
+    description?: string;
+  };
 };
 
-export const GalleryInfoFields = () => {
+export const FormGalleryFields = () => {
   const {
     register,
-    formState: { errors },
-  } = useFormContext<GalleryFormValues>();
+    formState: { errors, isSubmitting },
+  } = useFormContext<FormGalleryFieldsProps>();
 
   return (
     <FieldGroup className="gap-4">
       <CustomField
         label="Gallery name"
-        error={errors.title?.message?.toString()}
+        error={errors.gallery?.title?.message?.toString()}
       >
         <Input
-          {...register("title")}
-          aria-invalid={!!errors.title}
+          {...register("gallery.title")}
+          aria-invalid={!!errors.gallery?.title}
           placeholder="Gallery name"
+          disabled={isSubmitting}
         />
       </CustomField>
 
       <CustomField
         label="Description"
         optional
-        error={errors.description?.message?.toString()}
+        error={errors.gallery?.description?.message?.toString()}
       >
         <Textarea
-          {...register("description")}
+          {...register("gallery.description")}
           placeholder="Type here..."
-          aria-invalid={!!errors.description}
+          aria-invalid={!!errors.gallery?.description}
           maxLength={255}
+          disabled={isSubmitting}
         />
       </CustomField>
     </FieldGroup>

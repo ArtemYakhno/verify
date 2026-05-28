@@ -21,7 +21,11 @@ export function useLogin(setError?: UseFormSetError<LoginValues>) {
       setAccessToken(accessToken);
       navigate(RoutePath.Galleries);
     },
-    onError: (error) => handleMutationError(error, setError),
+    onError: (error) =>
+      handleMutationError(error, setError, {
+        email: "email",
+        password: "password",
+      }),
   });
 }
 
@@ -34,7 +38,13 @@ export function useRegister(setError?: UseFormSetError<RegisterValues>) {
       setAccessToken(accessToken);
       navigate(RoutePath.Galleries);
     },
-    onError: (error) => handleMutationError(error, setError),
+    onError: (error) =>
+      handleMutationError(error, setError, {
+        firstname: "firstname",
+        lastname: "lastname",
+        email: "email",
+        password: "password",
+      }),
   });
 }
 

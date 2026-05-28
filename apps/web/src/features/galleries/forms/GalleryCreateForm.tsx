@@ -1,26 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
 import { RoutePath } from "@/app/routes/configs/root.config";
-
+import { handleMutationError } from "@/common/utils/handleMutationError";
+import { useCreateGallery } from "../gueries/gallery.mutations";
+import { GalleryFormHeader } from "../blocks/Form/FormHeader";
 import {
   createGallerySchema,
   type CreateGalleryValues,
-} from "../schemas/gallery-dto.schema";
-
-import { useCreateGallery } from "../gueries/gallery.mutations";
-
-import { Button } from "@/common/components/ui/button";
-
-import { GalleryFormHeader } from "../blocks/forms/GalleryFormHeader";
-import { GalleryUploader } from "../blocks/forms/GalleryUploader";
-import { GalleryInfoFields } from "../blocks/forms/GalleryInfoFields";
-import { GalleryPhotoPlug } from "../blocks/forms/GalleryPhotoPlug";
-
-import { GalleryFormContainer } from "../layouts/GalleryFormContainer";
-
-import { toast } from "sonner";
+} from "../schemas/gallery-request.schema";
+import { GalleryUploadsFormBody } from "../layouts/GalleryUploadsFormBody";
+import { useSubmitUpload } from "../hooks/useSubmitUpload";
 
 export const GalleryCreateForm = () => {
   const navigate = useNavigate();
@@ -28,30 +20,62 @@ export const GalleryCreateForm = () => {
   const form = useForm<CreateGalleryValues>({
     resolver: zodResolver(createGallerySchema),
     defaultValues: {
-      title: "",
-      description: "",
+      gallery: {
+        title: "",
+        description: undefined,
+      },
+      uploads: [],
     },
     mode: "onChange",
   });
 
+  const { mutateAsync: createGallery, isPending: isCreatingGallery } =
+    useCreateGallery();
+
   const {
-    mutateAsync: createGallery,
-    isPending,
-  } = useCreateGallery(form.setError);
+    uploadProgress,
+    resetUploadProgress,
+    uploadFiles,
+    isUploadingImages,
+  } = useSubmitUpload();
 
-  const onSubmit = async (
-    values: CreateGalleryValues
-  ) => {
+  const onSubmit = async (values: CreateGalleryValues) => {
+    form.clearErrors("uploads");
+
     try {
-      await createGallery(values);
+      const createdGallery = await createGallery(values.gallery);
+      const uploads = values.uploads ?? [];
 
-      toast.success(
-        "A new gallery has been created in the gallery list."
-      );
+      const { successCount } = await uploadFiles({
+        galleryId: createdGallery.id,
+        uploads,
+        setError: form.setError,
+        onItemSuccess: (index) => {
+          toast.success(`Photo ${index + 1} uploaded successfully.`);
+        },
+      });
+
+      if (uploads.length > 0) {
+        toast.success(
+          `Gallery created successfully. ${successCount} of ${uploads.length} photos uploaded.`
+        );
+      } else {
+        toast.success("A new gallery has been created in the gallery list.");
+      }
 
       navigate(RoutePath.Galleries);
-    } catch { return }
+    } catch (error) {
+      resetUploadProgress();
+
+      handleMutationError(error, form.setError, {
+        title: "gallery.title",
+        description: "gallery.description",
+      });
+    }
   };
+
+  const isSubmitting =
+    form.formState.isSubmitting || isCreatingGallery || isUploadingImages;
 
   return (
     <>
@@ -61,35 +85,14 @@ export const GalleryCreateForm = () => {
       />
 
       <FormProvider {...form}>
-        <form
+        <GalleryUploadsFormBody
+          mode="create"
+          totalExisting={0}
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col flex-1 min-h-0"
-        >
-          <GalleryFormContainer
-            sidebar={
-              <>
-                <GalleryUploader />
-                <GalleryInfoFields />
-              </>
-            }
-            content={<GalleryPhotoPlug />}
-            footer={
-              <Button
-                type="submit"
-                disabled={
-                  form.formState.isSubmitting ||
-                  isPending
-                }
-                variant={form.formState.isValid ? 'default' : 'lightDisabled'}
-                className="w-full lg:w-[250px]"
-              >
-                {isPending
-                  ? "Creating..."
-                  : "Create a new gallery"}
-              </Button>
-            }
-          />
-        </form>
+          isSubmitting={isSubmitting}
+          isValid={form.formState.isValid}
+          uploadProgress={uploadProgress}
+        />
       </FormProvider>
     </>
   );

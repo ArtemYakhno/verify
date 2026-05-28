@@ -4,7 +4,6 @@ import { Plug } from "@/common/components/ui/plug"
 import { extractErrorMessage } from "@/common/utils/errors"
 import { ArrowRight, RefreshCcw } from "lucide-react"
 import { Link } from "react-router-dom"
-
 interface GalleryPlugProps {
   variant?: "empty" | "error";
   error?: unknown;
@@ -19,7 +18,7 @@ export const GalleryPlug = ({ variant = "empty", error }: GalleryPlugProps) => {
         <Plug
           title={isError ? extractErrorMessage(error) : "List of galleries is empty"}
           description={isError
-            ? "Failed to load galleries. Please, try refreshing the page."
+            ? "Failed to load galleries. Please try again later and contact support if the problem persists."
             : `You don't have any galleries. Please, click on the "Create a new gallery".`
           }
           imageSrc={isError ? "/images/no-images.webp" : "/images/upload-images.webp"}

@@ -47,7 +47,7 @@ const Textarea = React.forwardRef<
     };
 
     return (
-      <div className="relative w-full">
+      <div className="relative">
         <textarea
           ref={ref}
           maxLength={maxLength}
@@ -55,7 +55,7 @@ const Textarea = React.forwardRef<
           value={value}
           defaultValue={defaultValue}
           className={cn(
-            "w-full min-w-0 resize-none rounded-md border border-border bg-transparent outline-none transition-colors",
+            "block w-full min-w-0 resize-none rounded-md border border-border bg-transparent outline-none transition-colors",
             "typo-input",
             "placeholder:text-placeholder",
             "hover:border-green focus:border-green",

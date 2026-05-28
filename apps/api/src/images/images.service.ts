@@ -16,7 +16,7 @@ import {
   GALLERY_MESSAGES,
   IMAGE_MESSAGES,
 } from '../common/constants/messages.constants';
-import { GalleryDetail } from '../common/types/gallery.types';
+import { Gallery } from '../common/types/gallery.types';
 import { MAX_IMAGES_PER_GALLERY } from '../common/constants/limits.constants';
 import { notDeletedWhere } from '../common/constants/constraints.constants';
 
@@ -38,7 +38,7 @@ export class ImagesService {
 
   async findPartByGallery(galleryId: number, query: PaginationQueryDto) {
     const galleryExists = await this.prismaService.gallery.findUnique({
-      where: { id: galleryId },
+      where: { id: galleryId, ...notDeletedWhere },
       select: { id: true },
     });
 
@@ -78,7 +78,7 @@ export class ImagesService {
   }
 
   async uploadImage(
-    gallery: GalleryDetail,
+    gallery: Gallery,
     file: Express.Multer.File,
     dto: ImageMetadataDto,
   ) {
@@ -133,7 +133,9 @@ export class ImagesService {
   }
 
   async purge(image: ImageInternal) {
-    await this.cloudinaryService.deleteImage(image.cloudinaryId);
+    await Promise.allSettled([
+      this.cloudinaryService.deleteImage(image.cloudinaryId),
+    ]);
     await this.prismaService.image.delete({ where: { id: image.id } });
     return true;
   }
@@ -244,5 +246,19 @@ export class ImagesService {
         IMAGE_MESSAGES.MAX_IMAGES(count, adding, MAX_IMAGES_PER_GALLERY),
       );
     }
+  }
+
+  async softDeleteAll(galleryId: number) {
+    await this.prismaService.image.updateMany({
+      where: {
+        galleryId,
+        ...notDeletedWhere,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+
+    return true;
   }
 }

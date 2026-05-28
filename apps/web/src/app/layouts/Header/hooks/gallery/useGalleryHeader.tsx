@@ -29,14 +29,15 @@ export const useGalleryHeader = (): PayloadConfig | null => {
   if (isEditGallery && numericId) return {
     title: "Edit gallery",
     action: isOwner
-      ? <ActionBtn to={buildPath.galleryUpload(numericId)} label="Upload photos" />
+      ? <ActionBtn to={buildPath.galleryUpload(numericId)} label="Upload photos" backTo={buildPath.galleryEdit(numericId)} />
       : undefined,
   };
 
   if (isGalleryDetail && numericId) return {
     title: gallery?.title ?? `Gallery: #${numericId}`,
     action: isOwner
-      ? <ActionBtn to={buildPath.galleryUpload(numericId)} label="Upload photos" />
+      ? <ActionBtn to={buildPath.galleryUpload(numericId)} label="Upload photos" backTo={buildPath.galleryDetail(numericId)}
+      />
       : undefined,
   };
 

@@ -1,8 +1,8 @@
-import type { GalleryPhoto } from "@/common/types/GalleryPhoto";
 import { GalleryPhotoCard } from "./GalleryPhotoCard";
+import type { Image } from "@/features/images/schemas/image-response.schema";
 
 interface GalleryPhotoListProps {
-  photos: GalleryPhoto[];
+  photos: Image[];
 }
 
 export const GalleryPhotoList = ({ photos }: GalleryPhotoListProps) => {

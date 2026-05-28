@@ -66,6 +66,14 @@ export class UsersService {
 
   async delete(userId: number) {
     await this.findByIdOrThrow(userId);
+    const galleryExists = await this.prismaService.gallery.findFirst({
+      where: { userId },
+      select: { id: true },
+    });
+
+    if (galleryExists) {
+      throw new ConflictException(USER_MESSAGES.DELETE_ALL_RELATIVE_DATA);
+    }
     await this.prismaService.user.delete({ where: { id: userId } });
     return true;
   }

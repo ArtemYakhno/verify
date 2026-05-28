@@ -13,6 +13,7 @@ import {
   ApiResponse,
   ApiUnauthorizedResponse,
   ApiNotFoundResponse,
+  ApiConflictResponse,
 } from '@nestjs/swagger';
 import { UsersService } from '../users/users.service';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
@@ -67,6 +68,7 @@ export class ProfileController {
   @Delete()
   @ApiOperation({ summary: 'Delete current user account' })
   @ApiResponse({ status: HttpStatus.OK, type: Boolean })
+  @ApiConflictResponse({ description: USER_MESSAGES.DELETE_ALL_RELATIVE_DATA })
   deleteProfile(@CurrentUser('id') userId: number) {
     return this.usersService.delete(userId);
   }

@@ -5,18 +5,26 @@ import { extractErrorMessage, extractFieldErrors } from "./errors";
 export function handleMutationError<T extends FieldValues>(
   error: unknown,
   setError?: UseFormSetError<T>,
+  fieldMap?: Partial<Record<string, Path<T>>>,
 ) {
   const fieldErrors = extractFieldErrors(error);
 
-  if (setError && Object.keys(fieldErrors).length > 0) {
-    Object.entries(fieldErrors).forEach(([field, message]) => {
-      setError(field as Path<T>, {
-        type: "server",
-        message,
-      });
-    });
-    return;
-  }
+  let mappedCount = 0;
 
-  toast.error(extractErrorMessage(error));
+  if (setError && fieldMap && Object.keys(fieldErrors).length > 0) {
+    Object.entries(fieldErrors).forEach(([backendField, message]) => {
+      const formField = fieldMap[backendField];
+      if (!formField) return;
+
+      setError(formField, { type: "server", message });
+      mappedCount += 1;
+    });
+  }
+  const hasUnmappedErrors =
+    Object.keys(fieldErrors).length === 0 ||
+    mappedCount < Object.keys(fieldErrors).length;
+
+  if (hasUnmappedErrors) {
+    toast.error(extractErrorMessage(error));
+  }
 }

@@ -1,11 +1,11 @@
-import { GalleryDetail } from './gallery.types';
-import { Image } from './image.types';
+import { Gallery } from './gallery.types';
+import { ImageInternal } from './image.types';
 import { SafeUser } from './user.types';
 
 declare module 'express' {
   interface Request {
     user?: SafeUser;
-    gallery?: GalleryDetail;
-    image?: Image;
+    gallery?: Gallery;
+    image?: ImageInternal;
   }
 }

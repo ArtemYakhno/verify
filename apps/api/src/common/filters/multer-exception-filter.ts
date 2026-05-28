@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MulterError } from 'multer';
-import { STATUS_CODES } from 'node:http';
 import { IMAGE_MESSAGES } from '../constants/messages.constants';
 
 @Catch(MulterError)
@@ -28,7 +27,6 @@ export class MulterExceptionFilter implements ExceptionFilter {
     response.status(HttpStatus.BAD_REQUEST).json({
       statusCode: HttpStatus.BAD_REQUEST,
       message,
-      error: STATUS_CODES[HttpStatus.BAD_REQUEST],
     });
   }
 }

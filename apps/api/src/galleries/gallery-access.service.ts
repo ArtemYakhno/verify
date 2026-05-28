@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { galleryDetailSelect } from '../common/types/gallery.types';
+import { gallerySelect } from '../common/types/gallery.types';
 import { GALLERY_MESSAGES } from '../common/constants/messages.constants';
 import { Prisma } from '../../generated/prisma/client';
 import type { ResourceState } from '../common/types/resource-state.type';
@@ -26,7 +26,7 @@ export class GalleryAccessService {
 
     const gallery = await this.prismaService.gallery.findFirst({
       where,
-      select: galleryDetailSelect,
+      select: gallerySelect,
     });
 
     if (!gallery) {

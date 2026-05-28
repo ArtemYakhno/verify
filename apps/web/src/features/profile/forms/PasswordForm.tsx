@@ -15,6 +15,7 @@ import {
 import { PasswordChecklist } from "@/common/components/blocks/PasswordChecklist";
 import { openSuccessModal } from "@/common/stores/success-modal.store";
 import { useChangePassword } from "../queries/profile.mutations";
+import { toast } from "sonner";
 
 type Props = {
   email: string;
@@ -36,7 +37,7 @@ export const PasswordForm = ({ email }: Props) => {
     useChangePassword();
 
   const {
-    formState: { errors },
+    formState: { errors, isDirty },
     handleSubmit,
     control,
     reset,
@@ -53,6 +54,11 @@ export const PasswordForm = ({ email }: Props) => {
   });
 
   const submitHandler = async (values: ChangePasswordValues) => {
+    if (!isDirty) {
+      toast.warning('There are no changes')
+      return;
+    }
+
     try {
       const { confirmPassword: _cp, ...rest } = values;
       await changePassword(rest);

@@ -18,7 +18,7 @@ export const ActionModal = ({
 }: ActionModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="flex flex-col items-center px-6 py-10 text-center lg:max-w-[400px]">
+      <DialogContent className="flex flex-col items-center text-center lg:max-w-[400px]">
         {description && (
           <DialogDescription className="sr-only">
             {description}

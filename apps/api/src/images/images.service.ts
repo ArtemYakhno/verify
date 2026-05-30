@@ -1,24 +1,26 @@
 import {
-  BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
-
+import { CloudinaryService } from '../common/services/cloudinary.service';
 import { MoveCopyImageDto } from './dto/move-copy-image.dto';
-
 import { ImageMetadataDto } from './dto/image-metadata.dto';
 import { GalleryAccessService } from '../galleries/gallery-access.service';
-import { ImageInternal, imageSelect } from '../common/types/image.types';
-import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { GalleryCountersService } from '../galleries/gallery-counters.service';
 import {
-  GALLERY_MESSAGES,
-  IMAGE_MESSAGES,
-} from '../common/constants/messages.constants';
+  ImageInternal,
+  imageInternalSelect,
+  imageSelect,
+} from '../common/types/image.types';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { IMAGE_MESSAGES } from '../common/constants/messages.constants';
 import { Gallery } from '../common/types/gallery.types';
-import { MAX_IMAGES_PER_GALLERY } from '../common/constants/limits.constants';
 import { notDeletedWhere } from '../common/constants/constraints.constants';
+import { User } from '../common/types/user.types';
+import { ResourceState } from '../common/types/resource-state.type';
+import { DeletionReason, Prisma } from '../../generated/prisma/client';
 
 @Injectable()
 export class ImagesService {
@@ -26,27 +28,11 @@ export class ImagesService {
     private readonly prismaService: PrismaService,
     private readonly cloudinaryService: CloudinaryService,
     private readonly galleryAccessService: GalleryAccessService,
+    private readonly galleryCountersService: GalleryCountersService,
   ) {}
 
-  async findAllByGallery(galleryId: number) {
-    return await this.prismaService.image.findMany({
-      where: { galleryId, ...notDeletedWhere },
-      select: imageSelect,
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
   async findPartByGallery(galleryId: number, query: PaginationQueryDto) {
-    const galleryExists = await this.prismaService.gallery.findUnique({
-      where: { id: galleryId, ...notDeletedWhere },
-      select: { id: true },
-    });
-
-    if (!galleryExists) {
-      throw new NotFoundException(GALLERY_MESSAGES.NOT_FOUND(galleryId));
-    }
-
-    const { page, perPage } = query;
+    const { page, perPage, orderDir } = query;
     const skip = (page - 1) * perPage;
 
     const [data, total] = await this.prismaService.$transaction([
@@ -55,7 +41,7 @@ export class ImagesService {
         skip,
         take: perPage,
         select: imageSelect,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: orderDir },
       }),
       this.prismaService.image.count({
         where: { galleryId, ...notDeletedWhere },
@@ -77,13 +63,54 @@ export class ImagesService {
     };
   }
 
+  async findAllByGallery(galleryId: number) {
+    return await this.prismaService.image.findMany({
+      where: { galleryId, ...notDeletedWhere },
+      select: imageSelect,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findById(imageId: number, state: ResourceState = 'active') {
+    const where: Prisma.ImageWhereInput =
+      state === 'active'
+        ? { id: imageId, deletedAt: null }
+        : state === 'deleted'
+          ? { id: imageId, deletedAt: { not: null } }
+          : { id: imageId };
+
+    const image = await this.prismaService.image.findFirst({
+      where,
+      select: {
+        ...imageInternalSelect,
+        gallery: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+
+    if (!image) {
+      throw new NotFoundException(IMAGE_MESSAGES.NOT_FOUND(imageId));
+    }
+
+    return image;
+  }
+
+  async findDeletedByGallery(galleryId: number) {
+    return await this.prismaService.image.findMany({
+      where: { galleryId, deletedAt: { not: null } },
+      select: imageSelect,
+      orderBy: { deletedAt: 'desc' },
+    });
+  }
+
   async uploadImage(
     gallery: Gallery,
     file: Express.Multer.File,
     dto: ImageMetadataDto,
   ) {
-    await this.ensureGalleryCapacity(gallery.id, 1, gallery._count.images);
-
     let uploadedPublicId: string | null = null;
 
     try {
@@ -95,16 +122,28 @@ export class ImagesService {
 
       uploadedPublicId = public_id;
 
-      return await this.prismaService.image.create({
-        data: {
-          path: secure_url,
-          cloudinaryId: public_id,
-          originalFilename: file.originalname,
-          name: dto.name ?? null,
-          comment: dto.comment ?? null,
-          galleryId: gallery.id,
-        },
-        select: imageSelect,
+      return await this.prismaService.$transaction(async (tx) => {
+        await this.galleryCountersService.ensureGalleryCapacity(
+          tx,
+          gallery.id,
+          1,
+        );
+
+        const created = await tx.image.create({
+          data: {
+            path: secure_url,
+            cloudinaryId: public_id,
+            originalFilename: file.originalname,
+            name: dto.name ?? null,
+            comment: dto.comment ?? null,
+            galleryId: gallery.id,
+          },
+          select: imageSelect,
+        });
+
+        await this.galleryCountersService.changeImagesCount(tx, gallery.id, 1);
+
+        return created;
       });
     } catch (error) {
       if (uploadedPublicId) {
@@ -112,6 +151,7 @@ export class ImagesService {
           this.cloudinaryService.deleteImage(uploadedPublicId),
         ]);
       }
+
       throw error;
     }
   }
@@ -124,58 +164,58 @@ export class ImagesService {
     });
   }
 
-  async softDelete(image: ImageInternal) {
-    await this.prismaService.image.update({
-      where: { id: image.id },
-      data: { deletedAt: new Date() },
-    });
-    return true;
-  }
-
-  async purge(image: ImageInternal) {
-    await Promise.allSettled([
-      this.cloudinaryService.deleteImage(image.cloudinaryId),
-    ]);
-    await this.prismaService.image.delete({ where: { id: image.id } });
-    return true;
-  }
-
-  async restore(imageId: number) {
-    return await this.prismaService.image.update({
-      where: { id: imageId },
-      data: { deletedAt: null },
-      select: imageSelect,
-    });
-  }
-
-  async findDeleted(galleryId: number) {
-    return await this.prismaService.image.findMany({
-      where: { galleryId, deletedAt: { not: null } },
-      select: imageSelect,
-      orderBy: { deletedAt: 'desc' },
-    });
-  }
-
   async move(
     imageId: number,
     galleryId: number,
     dto: MoveCopyImageDto,
-    userId: number,
+    user: User,
   ) {
-    if (galleryId === dto.targetGalleryId) {
-      throw new BadRequestException(IMAGE_MESSAGES.SAME_GALLERY_MOVE);
-    }
-
-    await this.galleryAccessService.getOwnedGalleryOrThrow(
+    const targetGallery = await this.checkMoveCopyConflicts(
+      galleryId,
       dto.targetGalleryId,
-      userId,
+      user,
     );
-    await this.ensureGalleryCapacity(dto.targetGalleryId, 1);
 
-    return this.prismaService.image.update({
-      where: { id: imageId },
-      data: { galleryId: dto.targetGalleryId },
-      select: imageSelect,
+    return this.prismaService.$transaction(async (tx) => {
+      const image = await tx.image.findUnique({
+        where: { id: imageId },
+        select: {
+          id: true,
+          galleryId: true,
+          deletedAt: true,
+        },
+      });
+
+      if (!image) {
+        throw new NotFoundException(IMAGE_MESSAGES.NOT_FOUND(imageId));
+      }
+
+      await this.galleryCountersService.ensureGalleryCapacity(
+        tx,
+        targetGallery.id,
+        1,
+      );
+
+      const moved = await tx.image.update({
+        where: { id: imageId },
+        data: { galleryId: dto.targetGalleryId },
+        select: imageSelect,
+      });
+
+      if (image.deletedAt === null) {
+        await this.galleryCountersService.changeImagesCount(
+          tx,
+          image.galleryId,
+          -1,
+        );
+        await this.galleryCountersService.changeImagesCount(
+          tx,
+          dto.targetGalleryId,
+          1,
+        );
+      }
+
+      return moved;
     });
   }
 
@@ -183,18 +223,13 @@ export class ImagesService {
     image: ImageInternal,
     galleryId: number,
     dto: MoveCopyImageDto,
-    userId: number,
+    user: User,
   ) {
-    if (galleryId === dto.targetGalleryId) {
-      throw new BadRequestException(IMAGE_MESSAGES.SAME_GALLERY_MOVE);
-    }
-
-    await this.galleryAccessService.getOwnedGalleryOrThrow(
+    const targetGallery = await this.checkMoveCopyConflicts(
+      galleryId,
       dto.targetGalleryId,
-      userId,
+      user,
     );
-    await this.ensureGalleryCapacity(dto.targetGalleryId, 1);
-
     const buffer = await this.cloudinaryService.downloadImageBuffer(image.path);
 
     let uploadedPublicId: string | null = null;
@@ -208,16 +243,32 @@ export class ImagesService {
 
       uploadedPublicId = public_id;
 
-      return await this.prismaService.image.create({
-        data: {
-          path: secure_url,
-          cloudinaryId: public_id,
-          originalFilename: image.originalFilename,
-          name: image.name,
-          comment: image.comment,
-          galleryId: dto.targetGalleryId,
-        },
-        select: imageSelect,
+      return await this.prismaService.$transaction(async (tx) => {
+        await this.galleryCountersService.ensureGalleryCapacity(
+          tx,
+          targetGallery.id,
+          1,
+        );
+
+        const created = await tx.image.create({
+          data: {
+            path: secure_url,
+            cloudinaryId: public_id,
+            originalFilename: image.originalFilename,
+            name: image.name,
+            comment: image.comment,
+            galleryId: dto.targetGalleryId,
+          },
+          select: imageSelect,
+        });
+
+        await this.galleryCountersService.changeImagesCount(
+          tx,
+          dto.targetGalleryId,
+          1,
+        );
+
+        return created;
       });
     } catch (error) {
       if (uploadedPublicId) {
@@ -230,35 +281,149 @@ export class ImagesService {
     }
   }
 
-  private async ensureGalleryCapacity(
-    galleryId: number,
-    adding: number,
-    currentCount?: number,
-  ): Promise<void> {
-    const count =
-      currentCount ??
-      (await this.prismaService.image.count({
-        where: { galleryId, ...notDeletedWhere },
-      }));
+  async softDelete(
+    image: ImageInternal,
+    reason: DeletionReason = DeletionReason.MANUAL,
+    tx?: Prisma.TransactionClient,
+  ) {
+    const execute = async (db: Prisma.TransactionClient) => {
+      const result = await db.image.updateMany({
+        where: {
+          id: image.id,
+          galleryId: image.galleryId,
+          ...notDeletedWhere,
+        },
+        data: {
+          deletedAt: new Date(),
+          deletionReason: reason,
+        },
+      });
 
-    if (count + adding > MAX_IMAGES_PER_GALLERY) {
-      throw new BadRequestException(
-        IMAGE_MESSAGES.MAX_IMAGES(count, adding, MAX_IMAGES_PER_GALLERY),
+      if (result.count === 0) {
+        return;
+      }
+
+      await this.galleryCountersService.changeImagesCount(
+        db,
+        image.galleryId,
+        -1,
       );
-    }
-  }
+    };
 
-  async softDeleteAll(galleryId: number) {
-    await this.prismaService.image.updateMany({
-      where: {
-        galleryId,
-        ...notDeletedWhere,
-      },
-      data: {
-        deletedAt: new Date(),
-      },
+    if (tx) {
+      await execute(tx);
+      return true;
+    }
+
+    await this.prismaService.$transaction(async (innerTx) => {
+      await execute(innerTx);
     });
 
     return true;
+  }
+
+  async softDeleteAll(
+    galleryId: number,
+    reason: DeletionReason = DeletionReason.MANUAL,
+    tx?: Prisma.TransactionClient,
+  ) {
+    const execute = async (db: Prisma.TransactionClient) => {
+      const result = await db.image.updateMany({
+        where: {
+          galleryId,
+          ...notDeletedWhere,
+        },
+        data: {
+          deletedAt: new Date(),
+          deletionReason: reason,
+        },
+      });
+
+      if (result.count > 0) {
+        await this.galleryCountersService.resetImagesCount(db, galleryId);
+      }
+    };
+
+    if (tx) {
+      await execute(tx);
+      return true;
+    }
+
+    await this.prismaService.$transaction(async (innerTx) => {
+      await execute(innerTx);
+    });
+
+    return true;
+  }
+
+  async purge(image: ImageInternal) {
+    await Promise.allSettled([
+      this.cloudinaryService.deleteImage(image.cloudinaryId),
+    ]);
+
+    await this.prismaService.$transaction(async (tx) => {
+      await tx.image.delete({
+        where: { id: image.id },
+      });
+
+      if (image.deletedAt === null) {
+        await this.galleryCountersService.changeImagesCount(
+          tx,
+          image.galleryId,
+          -1,
+        );
+      }
+    });
+
+    return true;
+  }
+
+  async restore(image: ImageInternal) {
+    return await this.prismaService.$transaction(async (tx) => {
+      await this.galleryCountersService.ensureGalleryCapacity(
+        tx,
+        image.galleryId,
+        1,
+      );
+
+      const result = await tx.image.updateMany({
+        where: {
+          id: image.id,
+          deletedAt: { not: null },
+        },
+        data: {
+          deletedAt: null,
+          deletionReason: null,
+        },
+      });
+
+      if (result.count > 0) {
+        await this.galleryCountersService.changeImagesCount(
+          tx,
+          image.galleryId,
+          1,
+        );
+      }
+
+      return true;
+    });
+  }
+
+  async checkMoveCopyConflicts(
+    galleryId: number,
+    targetGalleryId: number,
+    user: User,
+  ) {
+    if (galleryId === targetGalleryId) {
+      throw new ConflictException(IMAGE_MESSAGES.SAME_GALLERY);
+    }
+
+    const targetGallery =
+      await this.galleryAccessService.getAccessibleGalleryOrThrow(
+        targetGalleryId,
+        user,
+      );
+
+    return targetGallery;
   }
 }

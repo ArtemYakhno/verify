@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { galleriesService } from "@/common/api/services/galleries.service";
 import { galleryKeys } from "./gallery.keys";
-import type { GalleriesQuery } from "../schemas/gallery-query.schema";
+import type { InputGalleriesQuery } from "../schemas/gallery-query.schema";
 
-export const useGetGalleries = (params: GalleriesQuery) => {
+export const useGetGalleries = (params: InputGalleriesQuery) => {
   return useQuery({
     queryKey: galleryKeys.list(params),
     queryFn: () => galleriesService.getGalleries(params),

@@ -3,13 +3,14 @@
 import { ActionModal } from "@/app/modals/ActionModal";
 import { Button } from "@/common/components/ui/button";
 import { Pagination } from "@/common/components/ui/pagination";
-import { extractErrorMessage } from "@/common/utils/errors";
+import { extractErrorMessage } from "@/common/utils/erros/errors";
 import { useSoftDeleteAllImages } from "@/features/images/gueries/images.mutations";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { Gallery } from "../../schemas/gallery-response.schema";
 import { Trash2 } from "lucide-react";
 import { openSuccessModal } from "@/common/stores/success-modal.store";
+import { useGalleryOwner } from "@/common/hooks/useGalleryOwner";
 
 interface GalleryDetailFooterProps {
   page: number;
@@ -22,6 +23,8 @@ interface GalleryDetailFooterProps {
 export const GalleryDetailFooter = ({ page, perPage, meta, onPageChange, gallery }: GalleryDetailFooterProps) => {
   const { mutateAsync: softDeleteAllImages, isPending: isDeleting } = useSoftDeleteAllImages();
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const { isOwner } = useGalleryOwner({ fetchById: gallery.id });
+
 
   const handleConfirmDeleteAll = async () => {
     try {
@@ -39,8 +42,8 @@ export const GalleryDetailFooter = ({ page, perPage, meta, onPageChange, gallery
 
   return (
     <>
-      <div className="p-4  lg:p-5">
-        <Button
+      <div className="mt-4  lg:mt-5">
+        {isOwner && <Button
           type="button"
           onClick={() => setDeleteOpen(true)}
           variant='transparent'
@@ -48,7 +51,8 @@ export const GalleryDetailFooter = ({ page, perPage, meta, onPageChange, gallery
           size='auto'
         >
           {isDeleting ? "Deleting..." : "Delete All"} ({meta.total})
-        </Button>
+        </Button>}
+
         <div className="relative flex flex-col items-center justify-between gap-3  lg:flex-row mt-4 ">
           <span className="typo-small text-gray">
             <span className="font-semibold text-primary">{Math.min(page * perPage, meta.total)}</span>

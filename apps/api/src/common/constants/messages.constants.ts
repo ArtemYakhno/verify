@@ -3,8 +3,6 @@ export const USER_MESSAGES = {
   NOT_FOUND: (id: number) => `User #${id} not found`,
   NOT_FOUND_DESCRIPTION: 'User not found',
   INVALID_CURRENT_PASSWORD: 'Current password is incorrect',
-  DELETE_ALL_RELATIVE_DATA:
-    'You cannot delete account while you still have data like: galleries. Delete all data first.',
 } as const;
 
 export const AUTH_MESSAGES = {
@@ -12,7 +10,6 @@ export const AUTH_MESSAGES = {
   INVALID_CREDENTIALS: 'Invalid credentials',
   INVALID_REFRESH_TOKEN: 'Invalid refresh token',
   FORBIDDEN_MESSAGE: 'You do not have access to perform this action',
-  UNAUTHORIZED_DESCRIPTION: 'Bearer token is missing or invalid',
 } as const;
 
 export const GALLERY_MESSAGES = {
@@ -31,9 +28,7 @@ export const IMAGE_MESSAGES = {
     `Your file type is not allowed. Allowed: ${allowed.join(', ')} `,
 
   INVALID_FILE_TYPE: 'Only JPEG, PNG and WebP files are allowed',
-
-  SAME_GALLERY_MOVE: 'Cannot move image to the same gallery',
-  SAME_GALLERY_COPY: 'Cannot copy image to the same gallery',
+  SAME_GALLERY: 'Source and target galleries must be different',
   MAX_IMAGES: (currentCount: number, addCount: number, maxImages: number) =>
     `Gallery can have at most ${maxImages} images. Current: ${currentCount}, trying to add: ${addCount}.`,
   MAX_IMAGES_DESCRIPTION: "Gallery can't have more images.",

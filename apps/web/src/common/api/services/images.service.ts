@@ -1,7 +1,7 @@
 import { imageSchema } from "@/features/images/schemas/image-base.schema";
 import { apiClient } from "../apiClient";
-import { parseApiResponse } from "@/common/utils/parse-api-response";
-import type { ImagesQuery } from "@/features/images/schemas/image-query.schema";
+import { parseApiResponse } from "@/common/utils/erros/parse-api-response";
+import type { InputImagesQuery } from "@/features/images/schemas/image-query.schema";
 import type {
   ActionImageValues,
   UpdateImageMetadataValues,
@@ -16,11 +16,10 @@ import {
 import { toFormData } from "axios";
 import type { UploadImageProgressHandler } from "@/features/galleries/types/upload-progress";
 
-
 export const imagesService = {
   getImages: async (
     galleryId: number,
-    params: ImagesQuery,
+    params: InputImagesQuery,
   ): Promise<PaginatedImages> => {
     const { page = 1, perPage = 10 } = params;
     const { data } = await apiClient.get(`/galleries/${galleryId}/images`, {
@@ -29,8 +28,8 @@ export const imagesService = {
     return parseApiResponse(paginatedImagesSchema, data);
   },
 
-  getAllImages: async (galleryId: number): Promise<Image[]> => {
-    const { data } = await apiClient.get(`/galleries/${galleryId}/images/all`);
+  getMyImages: async (galleryId: number): Promise<Image[]> => {
+    const { data } = await apiClient.get(`/galleries/${galleryId}/images/my`);
     return parseApiResponse(galleryImagesSchema, data);
   },
 

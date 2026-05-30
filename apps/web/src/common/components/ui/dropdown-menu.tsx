@@ -78,7 +78,7 @@ function DropdownMenuItem({
       data-variant={variant}
       className={cn(
         "group/dropdown-menu-item relative flex cursor-default items-center gap-1.5  cursor-pointer",
-        "p-3 typo-secondary text-ui-black outline-hidden select-none hover:bg-light-green",
+        "py-3 px-6 typo-secondary text-ui-black outline-hidden select-none hover:bg-light-green",
         "focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground ",
         "data-inset:pl-7 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 ",
         "data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 ",

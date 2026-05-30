@@ -6,8 +6,8 @@ import type {
   UpdateProfileValues,
 } from "../schemas/profile.schema";
 import type { UseFormSetError } from "react-hook-form";
-import { handleMutationError } from "@/common/utils/handleMutationError";
 import { profileKeys } from "./profile.keys";
+import { handleMutationError } from "@/common/utils/erros/handleMutationError";
 
 export const useUpdateProfile = (
   setError?: UseFormSetError<UpdateProfileValues>,

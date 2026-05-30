@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { imageKeys } from "./images.keys";
-import type { ImagesQuery } from "../schemas/image-query.schema";
+import type { InputImagesQuery } from "../schemas/image-query.schema";
 import { imagesService } from "@/common/api/services/images.service";
 
-export const useGetImages = (galleryId: number, params: ImagesQuery) => {
+export const useGetImages = (galleryId: number, params: InputImagesQuery) => {
   return useQuery({
     queryKey: imageKeys.list(galleryId, params),
     queryFn: () => imagesService.getImages(galleryId, params),
@@ -13,10 +13,10 @@ export const useGetImages = (galleryId: number, params: ImagesQuery) => {
   });
 };
 
-export const useGetImagesAll = (galleryId: number) => {
+export const useGetMyImages = (galleryId: number) => {
   return useQuery({
-    queryKey: imageKeys.all(galleryId),
-    queryFn: () => imagesService.getAllImages(galleryId),
+    queryKey: imageKeys.my(galleryId),
+    queryFn: () => imagesService.getMyImages(galleryId),
     enabled: !!galleryId,
   });
 };

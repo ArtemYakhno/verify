@@ -15,7 +15,7 @@ export const Profile = () => {
   }
 
   return (
-    <div className="flex flex-col flex-1 lg:overflow-y-scroll gap-4 lg:gap-5">
+    <div className="flex flex-col flex-1 gap-4 lg:gap-5">
       <ProfileHeader
         firstname={user.firstname}
         lastname={user.lastname}

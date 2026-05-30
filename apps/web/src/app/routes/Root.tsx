@@ -17,7 +17,6 @@ import { GalleryLayout } from "@/features/galleries/layouts/GalleryLayout";
 import { Galleries } from "@/features/galleries/pages/Galleries";
 import { GalleryDetail } from "@/features/galleries/pages/GalleryDetail";
 import { GalleryOwnerGuard } from "../../common/guards/GalleryOwnerGuard";
-import { GalleryFormLayout } from "@/features/galleries/layouts/GalleryFormLayout";
 import { GalleryCreateForm } from "@/features/galleries/forms/GalleryCreateForm";
 import { GalleryEditForm } from "@/features/galleries/forms/GalleryEditForm";
 import { GalleryUploadForm } from "@/features/galleries/forms/GalleryUploadForm";
@@ -34,20 +33,13 @@ export const Root = () => (
           <Route element={<DashboardLayout />}>
             <Route path={RouteSegment.galleries} element={<GalleryLayout />}>
               <Route index element={<Galleries />} />
-
-              <Route element={<GalleryFormLayout />}>
-                <Route path={RouteSegment.create} element={<GalleryCreateForm />} />
-              </Route>
-
+              <Route path={RouteSegment.create} element={<GalleryCreateForm />} />
               <Route element={<InvalidIdGuard />}>
                 <Route path={RouteSegment.id} element={<GalleryDetail />} />
-
-                <Route element={<GalleryFormLayout />}>
-                  <Route element={<GalleryOwnerGuard />}>
-                    <Route path={`${RouteSegment.id}/${RouteSegment.edit}`}>
-                      <Route index element={<GalleryEditForm />} />
-                      <Route path={RouteSegment.upload} element={<GalleryUploadForm />} />
-                    </Route>
+                <Route element={<GalleryOwnerGuard />}>
+                  <Route path={`${RouteSegment.id}/${RouteSegment.edit}`}>
+                    <Route index element={<GalleryEditForm />} />
+                    <Route path={RouteSegment.upload} element={<GalleryUploadForm />} />
                   </Route>
                 </Route>
               </Route>

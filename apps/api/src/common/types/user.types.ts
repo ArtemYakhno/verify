@@ -1,6 +1,6 @@
 import { Prisma } from '../../../generated/prisma/client';
 
-export const safeUserSelect = {
+export const userSelect = {
   id: true,
   firstname: true,
   lastname: true,
@@ -10,4 +10,4 @@ export const safeUserSelect = {
   updatedAt: true,
 } satisfies Prisma.UserSelect;
 
-export type SafeUser = Prisma.UserGetPayload<{ select: typeof safeUserSelect }>;
+export type User = Prisma.UserGetPayload<{ select: typeof userSelect }>;

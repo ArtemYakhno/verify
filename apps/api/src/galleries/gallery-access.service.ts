@@ -4,17 +4,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { gallerySelect } from '../common/types/gallery.types';
 import { GALLERY_MESSAGES } from '../common/constants/messages.constants';
-import { Prisma } from '../../generated/prisma/client';
+import { Role, Prisma } from '../../generated/prisma/client';
 import type { ResourceState } from '../common/types/resource-state.type';
+import { User } from '../common/types/user.types';
+import { gallerySelect } from '../common/types/gallery.types';
+
 @Injectable()
 export class GalleryAccessService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getOwnedGalleryOrThrow(
+  async getAccessibleGalleryOrThrow(
     galleryId: number,
-    userId: number,
+    user: User,
     state: ResourceState = 'active',
   ) {
     const where: Prisma.GalleryWhereInput =
@@ -33,7 +35,7 @@ export class GalleryAccessService {
       throw new NotFoundException(GALLERY_MESSAGES.NOT_FOUND(galleryId));
     }
 
-    if (gallery.userId !== userId) {
+    if (user.role !== Role.ADMIN && gallery.userId !== user.id) {
       throw new ForbiddenException(GALLERY_MESSAGES.FORBIDDEN);
     }
 

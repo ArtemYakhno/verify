@@ -12,6 +12,7 @@ import { AUTH_MESSAGES } from '../common/constants/messages.constants';
 import { JwtPayload } from '../common/interfaces/jwt-payload.interface';
 import { REFRESH_TOKEN_COOKIE } from '../common/constants/cookie.constants';
 import { isDev } from '../common/utils/is-dev.util';
+import { notDeletedWhere } from '../common/constants/constraints.constants';
 
 @Injectable()
 export class AuthService {
@@ -47,7 +48,7 @@ export class AuthService {
 
   async login(dto: LoginDto, res: Response) {
     const user = await this.prismaService.user.findUnique({
-      where: { email: dto.email },
+      where: { email: dto.email, ...notDeletedWhere },
       select: {
         id: true,
         password: true,
@@ -80,7 +81,7 @@ export class AuthService {
     }
 
     const user = await this.prismaService.user.findUnique({
-      where: { id: payload.sub },
+      where: { id: payload.sub, ...notDeletedWhere },
       select: {
         id: true,
         refreshToken: true,

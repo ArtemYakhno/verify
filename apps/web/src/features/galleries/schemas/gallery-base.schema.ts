@@ -14,10 +14,6 @@ export const galleryPreviewImageSchema = z.object({
   path: z.url(),
 });
 
-export const galleryImagesCountSchema = z.object({
-  images: z.number(),
-});
-
 export const gallerySchema = z.object({
   id: z.number(),
   title: galleryTitleSchema,
@@ -25,5 +21,5 @@ export const gallerySchema = z.object({
   userId: z.number(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
-  _count: galleryImagesCountSchema,
+  imagesCount: z.number(),
 });

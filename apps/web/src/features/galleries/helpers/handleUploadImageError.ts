@@ -1,5 +1,8 @@
 import type { UseFormSetError } from "react-hook-form";
-import { extractFieldErrors, extractErrorMessage } from "@/common/utils/errors";
+import {
+  extractFieldErrors,
+  extractErrorMessage,
+} from "@/common/utils/erros/errors";
 import { toast } from "sonner";
 import type { CreateGalleryValues } from "../schemas/gallery-request.schema";
 

@@ -1,6 +1,6 @@
 import type { User } from "@/common/types/User";
 import { apiClient } from "../apiClient";
-import { parseApiResponse } from "@/common/utils/parse-api-response";
+import { parseApiResponse } from "@/common/utils/erros/parse-api-response";
 import { userSchema } from "@/common/schemas/user.schemas";
 import type {
   ChangePasswordDto,

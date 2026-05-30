@@ -1,4 +1,4 @@
-import type { GalleriesQuery } from "@/features/galleries/schemas/gallery-query.schema";
+import type { InputGalleriesQuery } from "@/features/galleries/schemas/gallery-query.schema";
 import { apiClient } from "../apiClient";
 import {
   paginatedGalleriesSchema,
@@ -9,14 +9,17 @@ import type {
   FieldsGalleryValues,
   UpdateFieldsGalleryValues,
 } from "@/features/galleries/schemas/gallery-request.schema";
-import { parseApiResponse } from "@/common/utils/parse-api-response";
 import { gallerySchema } from "@/features/galleries/schemas/gallery-base.schema";
+import { parseApiResponse } from "@/common/utils/erros/parse-api-response";
+import { removeEmptyParams } from "@/common/utils/search/searchHelper";
 
 export const galleriesService = {
-  getGalleries: async (params: GalleriesQuery): Promise<PaginatedGalleries> => {
-    const { page = 1, perPage = 10 } = params;
+  getGalleries: async (
+    params: InputGalleriesQuery,
+  ): Promise<PaginatedGalleries> => {
+    const cleanedParams = removeEmptyParams(params);
     const { data } = await apiClient.get("/galleries", {
-      params: { page, perPage },
+      params: cleanedParams,
     });
     return parseApiResponse(paginatedGalleriesSchema, data);
   },

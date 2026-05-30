@@ -8,115 +8,143 @@ import {
   Param,
   ParseIntPipe,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
-  ApiBearerAuth,
-  ApiUnauthorizedResponse,
-  ApiForbiddenResponse,
-  ApiConflictResponse,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserResponseDto } from './dto/user-response.dto';
-
+import { PaginatedUsersDto, UserResponseDto } from './dto/user-response.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { Role } from '../../generated/prisma/enums';
-import {
-  AUTH_MESSAGES,
-  USER_MESSAGES,
-} from '../common/constants/messages.constants';
 import { Auth } from '../common/decorators/auth.decorator';
+import { ApiBadRequestError } from '../common/decorators/swagger.decorator';
+import {
+  CreateUserValidation,
+  UpdateUserValidation,
+  EmailConfliction,
+  InvalidCurrentPassword,
+  ChangePasswordValidation,
+  ApiUserIdParam,
+  InviteUserValidation,
+} from './decorators/user-swagger.decorator';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { BASE_PAGINATION_VALIDATION_ERRORS } from '../common/constants/validation.constants';
+import { InviteUserDto } from './dto/invite-user.dto';
 
 @ApiTags('Users')
-@ApiUnauthorizedResponse({
-  description: AUTH_MESSAGES.UNAUTHORIZED_DESCRIPTION,
-})
-@ApiForbiddenResponse({ description: AUTH_MESSAGES.FORBIDDEN_MESSAGE })
-@ApiBearerAuth()
 @Auth(Role.ADMIN)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({ summary: 'Create a user' })
-  @ApiResponse({ status: HttpStatus.CREATED, type: UserResponseDto })
-  @ApiResponse({
-    status: HttpStatus.CONFLICT,
-    description: USER_MESSAGES.EMAIL_CONFLICT,
+  @Get()
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiBadRequestError(BASE_PAGINATION_VALIDATION_ERRORS)
+  @ApiResponse({ status: HttpStatus.OK, type: PaginatedUsersDto })
+  findPart(@Query() query: PaginationQueryDto) {
+    return this.usersService.findPart(query);
+  }
+
+  @Get(':userId')
+  @ApiOperation({
+    summary: 'Get a user by ID',
+    description: 'admin only, auth required',
   })
+  @ApiUserIdParam()
+  @ApiResponse({ status: HttpStatus.OK, type: UserResponseDto })
+  findOne(@Param('userId', ParseIntPipe) id: number) {
+    return this.usersService.findById(id);
+  }
+
   @Post()
+  @ApiOperation({
+    summary: 'Create a user',
+    description: 'admin only, auth required',
+  })
+  @CreateUserValidation()
+  @EmailConfliction()
+  @ApiResponse({ status: HttpStatus.CREATED, type: UserResponseDto })
   create(@Body() dto: CreateUserDto) {
     return this.usersService.create(dto);
   }
 
-  @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: HttpStatus.OK, type: [UserResponseDto] })
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @Post('invite')
+  @ApiOperation({
+    summary: 'Invite a user',
+    description: 'admin only, auth required',
+  })
+  @InviteUserValidation()
+  @EmailConfliction()
+  @ApiResponse({ status: HttpStatus.CREATED, type: UserResponseDto })
+  invite(@Body() dto: InviteUserDto) {
+    return this.usersService.invite(dto);
   }
 
-  @ApiOperation({ summary: 'Get a user by ID' })
-  @ApiParam({ name: 'id', type: Number })
-  @ApiResponse({ status: HttpStatus.OK, type: UserResponseDto })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: USER_MESSAGES.NOT_FOUND_DESCRIPTION,
+  @Patch(':userId')
+  @ApiOperation({
+    summary: 'Update a user',
+    description: 'admin only, auth required',
   })
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findByIdOrThrow(id);
-  }
-
-  @ApiOperation({ summary: 'Update a user' })
-  @ApiParam({ name: 'id', type: Number })
+  @ApiUserIdParam()
+  @UpdateUserValidation()
   @ApiResponse({ status: HttpStatus.OK, type: UserResponseDto })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: USER_MESSAGES.NOT_FOUND_DESCRIPTION,
-  })
-  @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUserDto) {
+  update(
+    @Param('userId', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserDto,
+  ) {
     return this.usersService.update(id, dto);
   }
 
-  @ApiOperation({ summary: 'Delete a user' })
-  @ApiParam({ name: 'id', type: Number })
-  @ApiResponse({ status: HttpStatus.OK, type: Boolean })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: USER_MESSAGES.NOT_FOUND_DESCRIPTION,
+  @Patch(':userId/change-password')
+  @ApiOperation({
+    summary: 'Change user password',
+    description: 'admin only, auth required',
   })
-  @ApiConflictResponse({ description: USER_MESSAGES.DELETE_ALL_RELATIVE_DATA })
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.delete(id);
-  }
-
-  @ApiOperation({ summary: 'Change user password' })
-  @ApiParam({ name: 'id', type: Number })
+  @ApiUserIdParam()
+  @ChangePasswordValidation()
+  @InvalidCurrentPassword()
   @ApiResponse({
     status: HttpStatus.OK,
     type: Boolean,
   })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: USER_MESSAGES.INVALID_CURRENT_PASSWORD,
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: USER_MESSAGES.NOT_FOUND_DESCRIPTION,
-  })
-  @Patch(':id/change-password')
   changePassword(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('userId', ParseIntPipe) id: number,
     @Body() dto: ChangePasswordDto,
   ) {
     return this.usersService.changePassword(id, dto);
+  }
+
+  @ApiOperation({
+    summary: 'Soft delete a user',
+    description: 'admin only, auth required',
+  })
+  @ApiUserIdParam()
+  @ApiResponse({ status: HttpStatus.OK, type: Boolean })
+  @Patch(':userId/soft-delete')
+  softDelete(@Param('userId', ParseIntPipe) id: number) {
+    return this.usersService.softDelete(id);
+  }
+
+  @ApiOperation({
+    summary: 'Purge delete a user',
+    description: 'admin only, auth required',
+  })
+  @ApiUserIdParam()
+  @ApiResponse({ status: HttpStatus.OK, type: Boolean })
+  @Delete(':userId')
+  purge(@Param('userId', ParseIntPipe) id: number) {
+    return this.usersService.purge(id);
+  }
+
+  @Patch(':userId/restore')
+  @ApiOperation({
+    summary: 'Restore user',
+    description: 'admin only, auth required',
+  })
+  @ApiUserIdParam()
+  @ApiResponse({ status: HttpStatus.OK, type: Boolean })
+  restore(@Param('userId', ParseIntPipe) id: number) {
+    return this.usersService.restore(id);
   }
 }

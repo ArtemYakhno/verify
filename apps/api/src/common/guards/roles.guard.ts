@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY_METADATA } from '../constants/metadata.constants';
 import { AUTH_MESSAGES } from '../constants/messages.constants';
-import { SafeUser } from '../types/user.types';
+import { User } from '../types/user.types';
 import { Role } from '../../../generated/prisma/enums';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class RolesGuard implements CanActivate {
 
     if (!requiredRoles?.length) return true;
 
-    const { user } = context.switchToHttp().getRequest<{ user: SafeUser }>();
+    const { user } = context.switchToHttp().getRequest<{ user: User }>();
 
     if (!requiredRoles.includes(user.role)) {
       throw new ForbiddenException(AUTH_MESSAGES.FORBIDDEN_MESSAGE);

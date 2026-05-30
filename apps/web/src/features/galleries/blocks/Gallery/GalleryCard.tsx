@@ -8,9 +8,9 @@ import { Button } from "@/common/components/ui/button";
 import { openSuccessModal } from "@/common/stores/success-modal.store";
 import { useGalleryOwner } from "@/common/hooks/useGalleryOwner";
 import { ActionsMenu } from "@/common/components/blocks/ActionsMenu";
-import { handleMutationError } from "@/common/utils/handleMutationError";
 import type { GalleryListItem } from "../../schemas/gallery-response.schema";
 import { getGalleryPreview } from "../../helpers/getGalleryPreview";
+import { handleMutationError } from "@/common/utils/erros/handleMutationError";
 
 interface GalleryCardProps {
   gallery: GalleryListItem;
@@ -71,7 +71,7 @@ export const GalleryCard = ({ gallery }: GalleryCardProps) => {
                 />
               ))}
 
-              {gallery._count.images > 8 && (
+              {gallery.imagesCount > 8 && (
                 <div className="flex aspect-square items-center justify-center rounded-sm bg-transparent typo-secondary text-[12px]">
                   + more
                 </div>

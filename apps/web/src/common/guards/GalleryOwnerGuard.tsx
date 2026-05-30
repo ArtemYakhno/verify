@@ -3,7 +3,7 @@ import { RoutePath } from "@/app/routes/configs/root.config";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useGalleryOwner } from "@/common/hooks/useGalleryOwner";
-import { extractErrorMessage } from "@/common/utils/errors";
+import { extractErrorMessage } from "@/common/utils/erros/errors";
 
 
 export const GalleryOwnerGuard = () => {

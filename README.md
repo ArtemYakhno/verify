@@ -61,6 +61,11 @@ CORS_ORIGIN=http://localhost:5173
 CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=123456789012345
 CLOUDINARY_API_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
+
+# MAIL
+EMAIL_HOST=127.0.0.1
+EMAIL_PORT=1025
+EMAIL_FROM=no-reply@example.com
 ```
 
 ## Installation
@@ -135,3 +140,5 @@ Make sure the frontend is configured to read env variables from the monorepo roo
 - Use `pnpm install` only once from the root of the monorepo.
 - Do not commit the `.env` file.
 - Commit `.env.example` so other developers can configure the project locally.
+
+docker run -d --name mailpit --restart unless-stopped -p 8025:8025 -p 1025:1025 axllent/mailpit

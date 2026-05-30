@@ -14,46 +14,56 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique
-  password     String
-  firstname    String
-  lastname     String
-  refreshToken String?
-  role         Role      @default(USER)
-  tokenVersion String    @default(uuid())
-  galleries    Gallery[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id             Int             @id @default(autoincrement())
+  email          String          @unique
+  password       String
+  firstname      String
+  lastname       String
+  refreshToken   String?
+  role           Role            @default(USER)
+  tokenVersion   String          @default(uuid())
+  galleries      Gallery[]
+  deletedAt      DateTime?
+  deletionReason DeletionReason?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Gallery {
-  id          Int       @id @default(autoincrement())
-  title       String
-  description String?
-  userId      Int
-  user        User      @relation(fields: [userId], references: [id], onDelete: Restrict)
-  images      Image[]
-  deletedAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id             Int             @id @default(autoincrement())
+  title          String
+  description    String?
+  userId         Int
+  user           User            @relation(fields: [userId], references: [id], onDelete: Restrict)
+  images         Image[]
+  imagesCount    Int             @default(0)
+  deletedAt      DateTime?
+  deletionReason DeletionReason?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 }
 
 model Image {
-  id               Int       @id @default(autoincrement())
+  id               Int             @id @default(autoincrement())
   path             String
   cloudinaryId     String
   galleryId        Int
-  gallery          Gallery   @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  gallery          Gallery         @relation(fields: [galleryId], references: [id], onDelete: Cascade)
   originalFilename String
   name             String?
   comment          String?
   deletedAt        DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  deletionReason   DeletionReason?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+enum DeletionReason {
+  MANUAL
+  INHERIT
 }

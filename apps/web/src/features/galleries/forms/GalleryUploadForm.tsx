@@ -65,7 +65,7 @@ export const GalleryUploadForm = () => {
     return <LoadingPlug />;
   }
 
-  const existingCount = gallery._count.images;
+  const existingCount = gallery.imagesCount;
 
   const isSubmitting =
     form.formState.isSubmitting || isUploadingImages;

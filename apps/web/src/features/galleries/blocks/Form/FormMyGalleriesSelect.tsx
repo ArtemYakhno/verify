@@ -8,7 +8,7 @@ import {
 } from "@/common/components/ui/select";
 import type { Gallery } from "../../schemas/gallery-response.schema";
 import { useGetMyGalleries } from "../../gueries/gallery.queries";
-import { extractErrorMessage } from "@/common/utils/errors";
+import { extractErrorMessage } from "@/common/utils/erros/errors";
 
 type FormMyGalleriesSelectProps = {
   value?: number | null;

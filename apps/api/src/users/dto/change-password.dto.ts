@@ -7,7 +7,7 @@ import {
 
 export class ChangePasswordDto {
   @ApiProperty({ example: 'CurrentPassword1' })
-  @IsString()
+  @IsString({ message: VALIDATION_MESSAGES.IS_STRING })
   @MinLength(8, { message: VALIDATION_MESSAGES.PASSWORD_MIN })
   @Matches(VALIDATION_RULES.PASSWORD_REGEX, {
     message: VALIDATION_MESSAGES.PASSWORD_COMPLEXITY,
@@ -15,7 +15,7 @@ export class ChangePasswordDto {
   currentPassword!: string;
 
   @ApiProperty({ example: 'NewPassword2' })
-  @IsString()
+  @IsString({ message: VALIDATION_MESSAGES.IS_STRING })
   @MinLength(8, { message: VALIDATION_MESSAGES.PASSWORD_MIN })
   @Matches(VALIDATION_RULES.PASSWORD_REGEX, {
     message: VALIDATION_MESSAGES.PASSWORD_COMPLEXITY,

@@ -32,7 +32,6 @@ export const Pagination = ({
   totalPages,
   onPageChange,
 }: PaginationProps) => {
-  if (totalPages <= 1) return null;
 
   const pages = getPageNumbers(page, totalPages);
 

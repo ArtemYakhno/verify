@@ -5,10 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { LoadingPlug } from "@/common/components/ui/loading-plug";
 import { Button } from "@/common/components/ui/button";
-import { handleMutationError } from "@/common/utils/handleMutationError";
 import { useGetGalleryById } from "../gueries/gallery.queries";
 import { useUpdateGallery } from "../gueries/gallery.mutations";
-import { useGetImagesAll } from "@/features/images/gueries/images.queries";
+import { useGetMyImages } from "@/features/images/gueries/images.queries";
 import {
   useSoftDeleteImage,
   useUpdateImage,
@@ -22,6 +21,7 @@ import {
   type UpdateFieldsGalleryValues,
   type UpdateGalleryValues,
 } from "../schemas/gallery-request.schema";
+import { handleMutationError } from "@/common/utils/erros/handleMutationError";
 
 export const GalleryEditForm = () => {
   const { id } = useParams();
@@ -31,7 +31,7 @@ export const GalleryEditForm = () => {
     useGetGalleryById(galleryId);
 
   const { data: images, isLoading: areImagesLoading } =
-    useGetImagesAll(galleryId);
+    useGetMyImages(galleryId);
 
   const form = useForm<UpdateGalleryValues>({
     resolver: zodResolver(updateGallerySchema),
@@ -189,7 +189,7 @@ export const GalleryEditForm = () => {
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col flex-1 min-h-0"
+          className="flex flex-col flex-1"
         >
           <GalleryFormContainer
             sidebar={<FormGalleryFields />}

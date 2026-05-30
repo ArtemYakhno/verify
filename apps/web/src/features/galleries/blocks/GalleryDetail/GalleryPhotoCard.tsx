@@ -5,7 +5,7 @@ import { ActionsMenu } from "@/common/components/blocks/ActionsMenu";
 import { Button } from "@/common/components/ui/button";
 import { ActionModal } from "@/app/modals/ActionModal";
 import { openSuccessModal } from "@/common/stores/success-modal.store";
-import { extractErrorMessage } from "@/common/utils/errors";
+import { extractErrorMessage } from "@/common/utils/erros/errors";
 
 import type { Image } from "@/features/images/schemas/image-response.schema";
 import {
@@ -16,6 +16,7 @@ import {
 
 import { EditImageModal } from "../../modals/EditImageModal";
 import { FormMyGalleriesSelect } from "../Form/FormMyGalleriesSelect";
+import { useGalleryOwner } from "@/common/hooks/useGalleryOwner";
 
 interface GalleryPhotoCardProps {
   photo: Image;
@@ -27,6 +28,7 @@ export const GalleryPhotoCard = ({ photo }: GalleryPhotoCardProps) => {
   const [moveOpen, setMoveOpen] = useState(false);
   const [copyOpen, setCopyOpen] = useState(false);
   const [targetGalleryId, setTargetGalleryId] = useState<number | null>(null);
+  const { isOwner } = useGalleryOwner({ fetchById: photo.galleryId });
 
   const { mutateAsync: deleteImage, isPending: isDeleting } = useSoftDeleteImage();
   const { mutateAsync: moveImage, isPending: isMoving } = useMoveImage();
@@ -113,8 +115,7 @@ export const GalleryPhotoCard = ({ photo }: GalleryPhotoCardProps) => {
           alt={photo.name || "Gallery photo"}
           className="h-full w-full rounded-md object-cover"
         />
-
-        <div className="absolute -right-2 -top-2">
+        {isOwner && (<div className="absolute -right-2 -top-2">
           <ActionsMenu
             actions={[
               {
@@ -139,7 +140,8 @@ export const GalleryPhotoCard = ({ photo }: GalleryPhotoCardProps) => {
               },
             ]}
           />
-        </div>
+        </div>)}
+
       </div>
 
       {photo.name && (

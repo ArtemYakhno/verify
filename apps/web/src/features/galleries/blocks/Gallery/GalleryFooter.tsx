@@ -11,7 +11,7 @@ interface GalleryFooterProps {
 
 export const GalleryFooter = ({ page, perPage, meta, onPageChange }: GalleryFooterProps) => {
   return (
-    <div className="relative flex flex-col items-center justify-between gap-3 py-5 lg:flex-row lg:p-5 ">
+    <div className="relative flex flex-col items-center justify-between gap-3 lg:flex-row mt-4 lg:mt-5">
       <span className="typo-small text-gray">
         <span className="font-semibold text-primary">{Math.min(page * perPage, meta.total)}</span>
         {" of "}

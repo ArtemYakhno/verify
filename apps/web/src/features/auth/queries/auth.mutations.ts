@@ -9,8 +9,8 @@ import type {
   RegisterValues,
   RegisterDto,
 } from "@/features/auth/schemas/auth.schemas";
-import { handleMutationError } from "@/common/utils/handleMutationError";
 import { globalLogout } from "@/common/utils/globalLogout";
+import { handleMutationError } from "@/common/utils/erros/handleMutationError";
 
 export function useLogin(setError?: UseFormSetError<LoginValues>) {
   const navigate = useNavigate();

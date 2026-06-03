@@ -14,8 +14,8 @@ export const DashboardLayout = () => {
 
 
   return (
-    <div className="flex-1 flex min-h-0 lg:u-container">
-      <aside className="hidden lg:flex lg:mr-7.5">
+    <div className="flex-1 flex lg:u-content-padding">
+      <aside className="hidden lg:flex lg:mr-7.5 sticky top-7.5 h-(--layout-sidebar-height)">
         <Sidebar />
       </aside>
 
@@ -33,14 +33,13 @@ export const DashboardLayout = () => {
         </div>
       )}
 
-      <div className="flex flex-1 flex-col min-h-0">
+      <div className="flex flex-1 flex-col">
 
-        <div className={cn("sticky top-0 z-40 p-4 lg:px-0 lg:pt-1.5 lg:pb-10 lg:block", isScrolled && "bg-nature-white")}>
-
-          < Header onMenuClick={() => setSidebarOpen(true)} />
+        <div className={cn("sticky top-0 z-40 p-4 lg:rounded-b-lg lg:pt-0 lg:px-4 lg:pb-10", isScrolled && "bg-nature-white lg:py-6")}>
+          <Header onMenuClick={() => setSidebarOpen(true)} />
         </div>
 
-        <main className={cn("flex flex-col flex-1 min-h-0", isMobile && "u-container")}>
+        <main className={cn("flex flex-col flex-1", isMobile && 'u-content-padding')}>
           <Outlet />
         </main>
 

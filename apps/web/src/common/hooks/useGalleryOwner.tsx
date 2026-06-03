@@ -20,7 +20,7 @@ export const useGalleryOwner = (options: Options = {}) => {
   const targetUserId = options.userId ?? gallery?.userId;
 
   return {
-    isOwner: !!me && !!targetUserId && me.id === targetUserId,
+    isOwner: !!me && !!targetUserId && (me.id === targetUserId || me.role === 'ADMIN'),
     isLoaded: !!me && (!!options.userId || !!gallery),
     isError,
     error,

@@ -7,7 +7,6 @@ import { GalleryPhotoList } from "../blocks/GalleryDetail/GalleryPhotoList";
 import { GalleryDetailPlug } from "../blocks/GalleryDetail/GalleryDetailPlug";
 import { useGalleryImagesParams } from "@/features/images/hooks/useGalleryImagesParams";
 import { useGetImages } from "@/features/images/gueries/images.queries";
-import { useRef } from "react";
 import { GalleryPlug } from "../blocks/Gallery/GalleryPlug";
 import { GalleryDetailFooter } from "../blocks/GalleryDetail/GalleryDetailFooter";
 
@@ -16,12 +15,11 @@ export const GalleryDetail = () => {
   const galleryId = Number(id);
 
 
-  const { page, perPage, setPage } = useGalleryImagesParams();
-  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const { params, setPage } = useGalleryImagesParams();
+  const { page, perPage } = params
 
 
   const handlePageChange = (newPage: number) => {
-    scrollRef.current?.scrollTo({ top: 0, behavior: "auto" });
     window.scrollTo({ top: 0, behavior: "auto" });
     setPage(newPage);
   };
@@ -38,7 +36,7 @@ export const GalleryDetail = () => {
     isLoading: areImagesLoading,
     isError: areImagesError,
     error: imagesError,
-  } = useGetImages(galleryId, { page, perPage });
+  } = useGetImages(galleryId, params);
 
   const renderContent = () => {
     const photos = images?.data ?? [];
@@ -56,7 +54,7 @@ export const GalleryDetail = () => {
     }
 
     if (isImagesEmpty || areImagesError || !images) {
-      return <GalleryDetailPlug variant={areImagesError ? "error" : "empty"} error={imagesError} />;
+      return <GalleryDetailPlug variant={areImagesError ? "error" : "empty"} error={imagesError} galleryId={gallery.id} />;
     }
 
     return (
@@ -66,7 +64,7 @@ export const GalleryDetail = () => {
           description={gallery.description}
         />
 
-        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 lg:px-7.5 pt-4 lg:pt-10">
+        <div className="flex-1 mt-4 lg:mt-10">
           <GalleryPhotoList photos={photos} />
         </div>
         {meta && (
@@ -83,8 +81,8 @@ export const GalleryDetail = () => {
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 pt-4 lg:pt-7.5">
+    <>
       {renderContent()}
-    </div>
+    </>
   );
 };

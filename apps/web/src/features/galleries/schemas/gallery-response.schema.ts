@@ -11,7 +11,7 @@ const galleryListItemSchema = gallerySchema
     title: true,
     description: true,
     userId: true,
-    _count: true,
+    imagesCount: true,
   })
   .extend({
     images: z.array(galleryPreviewImageSchema),

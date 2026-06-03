@@ -1,36 +1,32 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { VALIDATION_MESSAGES } from '../constants/validation.constants';
+import { SortDirection } from '../types/sort-direction.types';
 
 export class PaginationQueryDto {
   @ApiPropertyOptional({ default: 1, minimum: 1 })
   @IsOptional()
   @Type(() => Number)
-  @IsInt()
-  @Min(1)
+  @IsInt({ message: VALIDATION_MESSAGES.IS_INT })
+  @Min(1, { message: VALIDATION_MESSAGES.MIN(1) })
   page: number = 1;
 
   @ApiPropertyOptional({ default: 10, minimum: 1, maximum: 50 })
   @IsOptional()
   @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(50)
+  @IsInt({ message: VALIDATION_MESSAGES.IS_INT })
+  @Min(1, { message: VALIDATION_MESSAGES.MIN(1) })
+  @Max(50, { message: VALIDATION_MESSAGES.MAX(50) })
   perPage: number = 10;
 
   @ApiPropertyOptional({
-    enum: ['createdAt', 'title'],
-    default: 'createdAt',
+    enum: SortDirection,
+    default: SortDirection.DESC,
   })
   @IsOptional()
-  @IsIn(['createdAt', 'title'])
-  orderBy: 'createdAt' | 'title' = 'createdAt';
-
-  @ApiPropertyOptional({
-    enum: ['asc', 'desc'],
-    default: 'desc',
+  @IsEnum(SortDirection, {
+    message: VALIDATION_MESSAGES.IS_IN(Object.values(SortDirection)),
   })
-  @IsOptional()
-  @IsIn(['asc', 'desc'])
-  orderDir: 'asc' | 'desc' = 'desc';
+  orderDir: SortDirection = SortDirection.DESC;
 }

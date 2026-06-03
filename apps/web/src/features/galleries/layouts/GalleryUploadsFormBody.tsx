@@ -46,7 +46,7 @@ export const GalleryUploadsFormBody = ({
         : "Upload photos";
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col flex-1 min-h-0">
+    <form onSubmit={onSubmit} className="flex flex-col flex-1">
       <GalleryFormContainer
         sidebar={
           <>

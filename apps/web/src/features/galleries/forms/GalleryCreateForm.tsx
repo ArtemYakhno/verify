@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
 import { RoutePath } from "@/app/routes/configs/root.config";
-import { handleMutationError } from "@/common/utils/handleMutationError";
 import { useCreateGallery } from "../gueries/gallery.mutations";
 import { GalleryFormHeader } from "../blocks/Form/FormHeader";
 import {
@@ -13,6 +12,7 @@ import {
 } from "../schemas/gallery-request.schema";
 import { GalleryUploadsFormBody } from "../layouts/GalleryUploadsFormBody";
 import { useSubmitUpload } from "../hooks/useSubmitUpload";
+import { handleMutationError } from "@/common/utils/erros/handleMutationError";
 
 export const GalleryCreateForm = () => {
   const navigate = useNavigate();

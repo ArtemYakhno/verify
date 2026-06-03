@@ -7,32 +7,33 @@ import {
   mixin,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { SafeUser } from '../types/user.types';
+import { User } from '../types/user.types';
 import { GalleryAccessService } from '../../galleries/gallery-access.service';
 import { ResourceState } from '../types/resource-state.type';
 
-export function GalleryOwnerGuard(
+export function GalleryAccessGuard(
   state: ResourceState = 'active',
 ): Type<CanActivate> {
   @Injectable()
-  class GalleryOwnerGuardMixin implements CanActivate {
+  class GalleryAccessGuardMixin implements CanActivate {
     constructor(private readonly galleryAccessService: GalleryAccessService) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
       const request = context.switchToHttp().getRequest<Request>();
-      const user = request.user as SafeUser;
+      const user = request.user as User;
 
       if (!user) {
         throw new UnauthorizedException();
       }
 
-      const galleryId = Number(request.params.id);
+      const galleryId = Number(request.params.galleryId);
 
-      const gallery = await this.galleryAccessService.getOwnedGalleryOrThrow(
-        galleryId,
-        user.id,
-        state,
-      );
+      const gallery =
+        await this.galleryAccessService.getAccessibleGalleryOrThrow(
+          galleryId,
+          user,
+          state,
+        );
 
       request.gallery = gallery;
 
@@ -40,5 +41,5 @@ export function GalleryOwnerGuard(
     }
   }
 
-  return mixin(GalleryOwnerGuardMixin);
+  return mixin(GalleryAccessGuardMixin);
 }

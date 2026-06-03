@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationMetaDto } from '../../common/dto/pagination-meta.dto';
 
 export class ImageResponseDto {
   @ApiProperty() id!: number;
@@ -15,13 +16,6 @@ export class PaginatedImagesDto {
   @ApiProperty({ type: [ImageResponseDto] })
   data!: ImageResponseDto[];
 
-  @ApiProperty()
-  meta!: {
-    total: number;
-    page: number;
-    perPage: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-  };
+  @ApiProperty({ type: PaginationMetaDto })
+  meta!: PaginationMetaDto;
 }

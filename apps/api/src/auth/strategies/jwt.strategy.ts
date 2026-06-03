@@ -6,9 +6,9 @@ import { ConfigService } from '@nestjs/config';
 
 import { PrismaService } from '../../prisma/prisma.service';
 import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
-import { safeUserSelect } from '../../common/types/user.types';
+import { userSelect } from '../../common/types/user.types';
 import { AUTH_MESSAGES } from '../../common/constants/messages.constants';
-
+import { notDeletedWhere } from '../../common/constants/constraints.constants';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -26,8 +26,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: JwtPayload) {
     const user = await this.prismaService.user.findUnique({
-      where: { id: payload.sub },
-      select: { ...safeUserSelect, tokenVersion: true },
+      where: { id: payload.sub, ...notDeletedWhere },
+      select: { ...userSelect, tokenVersion: true },
     });
 
     if (!user) {

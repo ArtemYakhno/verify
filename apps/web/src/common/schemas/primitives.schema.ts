@@ -24,4 +24,3 @@ export function nullableNormalizedSchema(schema: z.ZodString) {
     .nullable()
     .pipe(schema.nullable());
 }
-

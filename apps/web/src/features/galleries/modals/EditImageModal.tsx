@@ -8,7 +8,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/common/components/ui/dialog";
-import { extractErrorMessage } from "@/common/utils/errors";
+import { extractErrorMessage } from "@/common/utils/erros/errors";
 import { openSuccessModal } from "@/common/stores/success-modal.store";
 
 import { useUpdateImage } from "@/features/images/gueries/images.mutations";
@@ -99,7 +99,7 @@ export const EditImageModal = ({
         if (!nextOpen) onClose();
       }}
     >
-      <DialogContent className="flex flex-col px-6 py-10 lg:px-10 lg:max-w-[400px]">
+      <DialogContent className="flex flex-col  lg:max-w-[400px]">
         <DialogDescription className="sr-only">
           Here you can add or change image details.
         </DialogDescription>

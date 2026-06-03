@@ -61,7 +61,7 @@ function DialogContent({
         className={cn(
           'fixed z-50 duration-200 outline-none',
           'bg-nature-white shadow-block rounded-md',
-          'max-w-108 px-7 py-10 lg:p-14 w-[calc(100vw-16px)] lg:w-auto',
+          'max-w-108 p-5 pt-10 lg:p-6 lg:pt-10 w-[calc(100vw-16px)] lg:w-auto',
 
 
           'data-[state=closed]:animate-out data-[state=open]:animate-in',

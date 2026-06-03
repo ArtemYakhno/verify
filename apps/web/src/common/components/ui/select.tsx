@@ -27,7 +27,7 @@ function SelectGroup({
 function SelectValue({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Value>) {
-  return <SelectPrimitive.Value data-slot="select-value" {...props} />
+  return <SelectPrimitive.Value data-slot="select-value"  {...props} />
 }
 
 const selectTriggerVariants = cva(
@@ -44,11 +44,9 @@ const selectTriggerVariants = cva(
 
     "data-[placeholder]:text-placeholder",
 
+    "[&>span]:block",
     "[&>span]:truncate",
-    "[&>span]:flex",
-    "[&>span]:min-w-0",
-    "[&>span]:items-center",
-    "[&>span]:gap-1.5",
+    "[&>span]:leading-5",
 
     "[&_svg]:pointer-events-none",
     "[&_svg]:shrink-0",
@@ -57,7 +55,7 @@ const selectTriggerVariants = cva(
     variants: {
       size: {
         sm: "h-10 px-4 py-2",
-        md: "h-12.5 px-5 py-4.5",
+        md: "h-12.5 px-5",
         lg: "h-16 px-8 py-6",
       },
     },
@@ -153,7 +151,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "w-full cursor-pointer rounded-md px-5 py-4 typo-input",
+        "w-full cursor-pointer rounded-md px-8 py-4 typo-input",
         "focus:bg-light-green",
         "focus:border-none",
         "focus:outline-none",

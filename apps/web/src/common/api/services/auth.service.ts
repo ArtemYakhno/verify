@@ -4,7 +4,7 @@ import {
   type RegisterDto,
 } from "@/features/auth/schemas/auth.schemas";
 import { apiClient } from "../apiClient";
-import { parseApiResponse } from "@/common/utils/parse-api-response";
+import { parseApiResponse } from "@/common/utils/erros/parse-api-response";
 
 export const authService = {
   register: async (body: RegisterDto) => {

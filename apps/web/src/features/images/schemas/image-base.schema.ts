@@ -2,10 +2,12 @@ import { z } from "zod";
 
 export const imageNameSchema = z
   .string()
+  .trim()
   .max(100, "Name must be at most 100 characters");
 
 export const imageCommentSchema = z
   .string()
+  .trim()
   .max(100, "Comment must be at most 100 characters");
 
 export const imageSchema = z.object({
@@ -18,4 +20,3 @@ export const imageSchema = z.object({
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });
-

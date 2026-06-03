@@ -39,13 +39,13 @@ export const PasswordChecklist = ({
   ];
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul data-testid="password-checklist" className="flex flex-col gap-2">
       {checks.map(({ label, valid }) => (
         <li key={label} className="flex items-center gap-2">
           {valid ? (
-            <Check size={16} className="shrink-0 text-green" />
+            <Check data-testid="check-icon" size={16} className="shrink-0 text-green" />
           ) : (
-            <X size={16} className="shrink-0 text-red" />
+            <X data-testid="x-icon" size={16} className="shrink-0 text-red" />
           )}
           <span
             className={cn(

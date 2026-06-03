@@ -17,7 +17,7 @@ export const ActionModal = ({
   action,
 }: ActionModalProps) => {
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog data-testid="action-modal" open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex flex-col items-center text-center lg:max-w-[400px]">
         {description && (
           <DialogDescription className="sr-only">

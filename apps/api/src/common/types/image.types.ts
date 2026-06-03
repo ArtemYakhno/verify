@@ -14,7 +14,6 @@ export const imageSelect = {
 export const imageInternalSelect = {
   ...imageSelect,
   deletedAt: true,
-
   cloudinaryId: true,
 } satisfies Prisma.ImageSelect;
 

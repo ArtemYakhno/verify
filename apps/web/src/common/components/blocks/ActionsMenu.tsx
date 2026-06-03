@@ -28,8 +28,8 @@ export const ActionsMenu = ({ actions, title = "Actions" }: ActionsMenuProps) =>
       <div className="hidden lg:block">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="transparent" size="auto" className="p-1 rounded-circle bg-statuses">
-              <MoreVertical className="text-ui-black" size={20} />
+            <Button  variant="transparent" size="auto" className="p-1 rounded-circle bg-statuses">
+              <MoreVertical data-testid="more-icon" className="text-ui-black" size={20} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[132px] absolute right-[9px]">
@@ -54,11 +54,11 @@ export const ActionsMenu = ({ actions, title = "Actions" }: ActionsMenuProps) =>
           className="p-1 rounded-circle bg-statuses"
           onClick={() => setMobileOpen(true)}
         >
-          <MoreVertical className="text-ui-black" size={18} />
+          <MoreVertical data-testid="more-icon" className="text-ui-black" size={18} />
         </Button>
 
         <Dialog open={mobileOpen} onOpenChange={setMobileOpen}>
-          <DialogContent position="bottom" className="rounded-none w-full max-w-none p-0 rounded-t-lg">
+          <DialogContent data-testid="mobile-actions-dialog" position="bottom" className="rounded-none w-full max-w-none p-0 rounded-t-lg">
             <DialogTitle className="typo-h3 text-ui-black py-5 px-6 bg-light-green rounded-t-md font-medium">
               {title}
             </DialogTitle>

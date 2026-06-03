@@ -1,10 +1,14 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
 import {
+  ApiConflictResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiParam,
 } from '@nestjs/swagger';
-import { GALLERY_MESSAGES } from '../../common/constants/messages.constants';
+import {
+  GALLERY_MESSAGES,
+  IMAGE_MESSAGES,
+} from '../../common/constants/messages.constants';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ResourceState } from '../../common/types/resource-state.type';
 import { GalleryAccessGuard } from '../../common/guards/gallery-access.guard';
@@ -17,6 +21,10 @@ import {
   VALIDATION_MESSAGES,
 } from '../../common/constants/validation.constants';
 import { GalleryOrderBy } from '../types/gallery-order-by.type';
+import {
+  MAX_IMAGES_PER_GALLERY,
+  MIN_IMAGES_PER_GALLERY,
+} from '../../common/constants/limits.constants';
 
 export const galleryNotFoundExample = {
   summary: 'Gallery not found',
@@ -92,10 +100,22 @@ export function GalleryForbidden() {
   });
 }
 
+export function GalleryLimitImages() {
+  return ApiConflictResponse({
+    description: IMAGE_MESSAGES.LIMIT_IMAGES(
+      MIN_IMAGES_PER_GALLERY,
+      MAX_IMAGES_PER_GALLERY,
+    ),
+  });
+}
+
 export function GalleryPaginationValidation() {
   return ApiBadRequestError({
     ...BASE_PAGINATION_VALIDATION_ERRORS,
-    search: [VALIDATION_MESSAGES.MAX(50), VALIDATION_MESSAGES.IS_STRING],
+    search: [
+      VALIDATION_MESSAGES.MAX(MAX_IMAGES_PER_GALLERY),
+      VALIDATION_MESSAGES.IS_STRING,
+    ],
     createdFrom: [
       VALIDATION_MESSAGES.IS_DATE,
       VALIDATION_MESSAGES.MIN_DATE('2000-01-01'),
@@ -109,14 +129,14 @@ export function GalleryPaginationValidation() {
     ],
     minImages: [
       VALIDATION_MESSAGES.IS_INT,
-      VALIDATION_MESSAGES.MIN(0),
-      VALIDATION_MESSAGES.MIN(50),
+      VALIDATION_MESSAGES.MIN(MIN_IMAGES_PER_GALLERY),
+      VALIDATION_MESSAGES.MAX(MAX_IMAGES_PER_GALLERY),
       VALIDATION_MESSAGES.IMAGE_COUNT,
     ],
     maxImages: [
       VALIDATION_MESSAGES.IS_INT,
-      VALIDATION_MESSAGES.MIN(0),
-      VALIDATION_MESSAGES.MIN(50),
+      VALIDATION_MESSAGES.MIN(MIN_IMAGES_PER_GALLERY),
+      VALIDATION_MESSAGES.MAX(MAX_IMAGES_PER_GALLERY),
     ],
     orderBy: [VALIDATION_MESSAGES.IS_IN(Object.values(GalleryOrderBy))],
   });

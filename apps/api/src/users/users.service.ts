@@ -20,6 +20,7 @@ import { PasswordGeneratorService } from '../common/services/password-generator.
 import { CreateUserBase } from './types/create-user-base.types';
 import { GalleriesService } from '../galleries/galleries.service';
 import { DeletionReason, Prisma } from '../../generated/prisma/client';
+import { MediaCleanupService } from '../common/services/media-cleanup.service';
 
 @Injectable()
 export class UsersService {
@@ -29,6 +30,7 @@ export class UsersService {
     private readonly userInvitationService: UserInvitationService,
     private readonly passwordGeneratorService: PasswordGeneratorService,
     private readonly galleriesService: GalleriesService,
+    private readonly mediaCleanupService: MediaCleanupService,
   ) {}
 
   async findPart(query: PaginationQueryDto) {
@@ -80,6 +82,7 @@ export class UsersService {
   async findDeleted() {
     return await this.prismaService.user.findMany({
       where: { deletedAt: { not: null } },
+      select: userSelect,
     });
   }
 
@@ -90,22 +93,25 @@ export class UsersService {
 
   async invite(inviteUserDto: InviteUserDto) {
     const temporaryPassword = this.passwordGeneratorService.generate(12);
-
     const user = await this.createUserWithPassword(
       inviteUserDto,
       temporaryPassword,
     );
 
-    await this.userInvitationService.sendInviteEmail({
-      email: inviteUserDto.email,
-      firstname: inviteUserDto.firstname,
-      temporaryPassword,
-    });
-
-    //TODO: Rolback or invited email
+    try {
+      await this.userInvitationService.sendInviteEmail({
+        email: inviteUserDto.email,
+        firstname: inviteUserDto.firstname,
+        temporaryPassword,
+      });
+    } catch (error) {
+      await this.prismaService.user.delete({ where: { id: user.id } });
+      throw error;
+    }
 
     return user;
   }
+
   async update(userId: number, updateUserDto: UpdateUserDto) {
     await this.findById(userId);
 
@@ -135,7 +141,12 @@ export class UsersService {
     );
 
     if (!isMatch) {
-      throw new UnauthorizedException(USER_MESSAGES.INVALID_CURRENT_PASSWORD);
+      throw new UnauthorizedException({
+        message: 'Validation failed',
+        errors: {
+          currentPassword: [USER_MESSAGES.INVALID_CURRENT_PASSWORD],
+        },
+      });
     }
 
     const newPassword = await this.hashService.hash(
@@ -212,25 +223,37 @@ export class UsersService {
     return true;
   }
 
-  async purge(userId: number) {
-    await this.findById(userId, 'any');
+  async purge(userId: number, options?: { allowActive?: boolean }) {
+    await this.findById(userId, options?.allowActive ? 'any' : 'deleted');
 
     const galleries = await this.prismaService.gallery.findMany({
-      where: {
-        userId,
-        deletedAt: { not: null },
-      },
+      where: { userId },
       select: { id: true },
     });
 
-    await this.prismaService.$transaction(async (tx) => {
-      for (const gallery of galleries) {
-        await this.galleriesService.purge(gallery.id, tx);
-      }
+    const cloudinaryIds = await this.prismaService.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        const collectedCloudinaryIds: string[] = [];
 
-      await tx.user.delete({
-        where: { id: userId },
-      });
+        for (const gallery of galleries) {
+          const ids = await this.galleriesService.purge(gallery.id, tx);
+
+          if (Array.isArray(ids)) {
+            collectedCloudinaryIds.push(...ids);
+          }
+        }
+
+        await tx.user.delete({
+          where: { id: userId },
+        });
+
+        return collectedCloudinaryIds;
+      },
+    );
+
+    await this.mediaCleanupService.deleteCloudinaryImages(cloudinaryIds, {
+      scope: 'user',
+      userId,
     });
 
     return true;
@@ -246,7 +269,12 @@ export class UsersService {
     });
 
     if (exists) {
-      throw new ConflictException(USER_MESSAGES.EMAIL_CONFLICT);
+      throw new ConflictException({
+        message: USER_MESSAGES.EMAIL_CONFLICT,
+        errors: {
+          email: [USER_MESSAGES.EMAIL_CONFLICT],
+        },
+      });
     }
 
     const hashedPassword = await this.hashService.hash(rawPassword);

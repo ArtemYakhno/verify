@@ -15,12 +15,20 @@ export interface CloudinaryUploadResponse {
   public_id: string;
 }
 
+export type CloudinaryDeleteResult =
+  | { status: 'deleted'; publicId: string }
+  | { status: 'not_found'; publicId: string };
+
+interface CloudinaryDestroyResponse {
+  result: string;
+}
+
 @Injectable()
 export class CloudinaryService {
   private readonly cloudName: string;
   private readonly apiKey: string;
   private readonly apiSecret: string;
-  private readonly folder = 'uploads';
+  private readonly folder: string;
   private readonly logger = new Logger(CloudinaryService.name);
 
   constructor(
@@ -30,6 +38,7 @@ export class CloudinaryService {
     this.cloudName = this.configService.getOrThrow('CLOUDINARY_CLOUD_NAME');
     this.apiKey = this.configService.getOrThrow('CLOUDINARY_API_KEY');
     this.apiSecret = this.configService.getOrThrow('CLOUDINARY_API_SECRET');
+    this.folder = this.configService.getOrThrow('CLOUDINART_FOLDER');
   }
 
   async uploadImage(
@@ -58,6 +67,14 @@ export class CloudinaryService {
         ),
       );
 
+      this.logger.log(
+        `Cloudinary upload succeeded | meta=${JSON.stringify({
+          originalFilename,
+          publicId: data.public_id,
+          folder: this.folder,
+        })}`,
+      );
+
       return {
         secure_url: data.secure_url,
         public_id: data.public_id,
@@ -74,7 +91,7 @@ export class CloudinaryService {
     }
   }
 
-  async deleteImage(publicId: string): Promise<void> {
+  async deleteImage(publicId: string): Promise<CloudinaryDeleteResult> {
     const timestamp = Math.round(Date.now() / 1000);
     const signature = this.generateSignature({
       public_id: publicId,
@@ -88,18 +105,28 @@ export class CloudinaryService {
     formData.append('signature', signature);
 
     try {
-      await firstValueFrom(
-        this.httpService.post(
+      const { data } = await firstValueFrom(
+        this.httpService.post<CloudinaryDestroyResponse>(
           `https://api.cloudinary.com/v1_1/${this.cloudName}/image/destroy`,
           formData,
           { headers: formData.getHeaders() },
         ),
       );
+
+      if (data?.result === 'not found') {
+        this.logger.warn(
+          `Cloudinary delete returned not found | meta=${JSON.stringify({
+            publicId,
+          })}`,
+        );
+
+        return { status: 'not_found', publicId };
+      }
+
+      return { status: 'deleted', publicId };
     } catch (error) {
       this.logCloudinaryError(error, 'delete', { publicId });
-      throw new InternalServerErrorException(
-        'Failed to delete image from Cloudinary',
-      );
+      throw new Error();
     }
   }
 
@@ -107,6 +134,7 @@ export class CloudinaryService {
     const { data } = await this.httpService.axiosRef.get<ArrayBuffer>(url, {
       responseType: 'arraybuffer',
     });
+
     return Buffer.from(data);
   }
 
@@ -125,7 +153,6 @@ export class CloudinaryService {
         ].join(' | '),
         error.stack,
       );
-
       return;
     }
 

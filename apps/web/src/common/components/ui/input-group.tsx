@@ -89,11 +89,11 @@ const InputGroupInput = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, size = 'md', ...props }, ref) => {
     return (
       <Input
-        ref={ref}
         size={size}
         data-slot='input-group-control'
         className={cn('border-0 bg-transparent', className)}
         {...props}
+        ref={ref}
       />
     );
   }

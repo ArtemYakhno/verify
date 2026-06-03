@@ -34,7 +34,7 @@ export const PasswordForm = ({ email }: Props) => {
 
 
   const { mutateAsync: changePassword, isPending } =
-    useChangePassword();
+    useChangePassword(form.setError);
 
   const {
     formState: { errors, isDirty },
@@ -72,7 +72,7 @@ export const PasswordForm = ({ email }: Props) => {
 
 
   return (
-    <section className="card">
+    <section data-testid="password-form" className="card">
       <h2 className="typo-h2 text-ui-black">Change Password</h2>
 
       <p className="mt-2 typo-main text-grey">

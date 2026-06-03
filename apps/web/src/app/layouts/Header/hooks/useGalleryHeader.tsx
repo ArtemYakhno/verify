@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { buildPath, RoutePath } from "@/app/routes/configs/root.config";
-import type { PayloadConfig } from "../../configs/payload.config";
-import { ActionBtn } from "../../components/ActionBtn";
+import type { PayloadConfig } from "../configs/payload.config";
+import { ActionBtn } from "../components/ActionBtn";
 import { useGalleryOwner } from "@/common/hooks/useGalleryOwner";
 import { useRouteMatch } from "@/app/routes/hooks/useRouteMatch";
 

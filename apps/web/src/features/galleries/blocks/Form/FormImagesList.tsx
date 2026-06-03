@@ -1,5 +1,5 @@
 import { useFormContext } from "react-hook-form";
-import { GalleryImageFormCard } from "./FormImageCard";
+import { FormImageCard } from "./FormImageCard";
 import type { UpdateGalleryValues } from "../../schemas/gallery-request.schema";
 import { FormImagePlug } from "./FormImagePlug";
 
@@ -31,7 +31,7 @@ export const FormImagesList = () => {
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-5">
         {visibleImages.map(({ image, index }) => (
-          <GalleryImageFormCard
+          <FormImageCard
             key={image.id}
             imageSrc={image.path}
             imageAlt={`Photo ${index + 1}`}

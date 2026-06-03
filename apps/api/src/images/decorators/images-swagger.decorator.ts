@@ -26,6 +26,9 @@ import { memoryStorage } from 'multer';
 import {
   ALLOWED_IMAGES_TYPES,
   MAX_FILE_SIZE,
+  MAX_IMAGES_PER_GALLERY,
+  MAX_IMAGES_PER_RESPONSE,
+  MIN_IMAGES_PER_GALLERY,
 } from '../../common/constants/limits.constants';
 import { MulterExceptionFilter } from '../../common/filters/multer-exception-filter';
 import { VALIDATION_MESSAGES } from '../../common/constants/validation.constants';
@@ -56,7 +59,15 @@ export const imageConflictMaxImages = {
   summary: 'Max images per gallery',
   value: {
     statusCode: 409,
-    message: IMAGE_MESSAGES.MAX_IMAGES_DESCRIPTION,
+    message: IMAGE_MESSAGES.MAX_IMAGES(MAX_IMAGES_PER_RESPONSE),
+  },
+};
+
+export const imageConflictMinImages = {
+  summary: 'Min images per gallery',
+  value: {
+    statusCode: 409,
+    message: IMAGE_MESSAGES.MIN_IMAGES(MIN_IMAGES_PER_GALLERY),
   },
 };
 
@@ -78,9 +89,16 @@ export function ApiImageIdParam() {
   });
 }
 
-export function ImageAccess(state: ResourceState = 'active') {
+export function ImageAccess(
+  GalleryState: ResourceState = 'active',
+  ImageState: ResourceState = 'active',
+) {
   return applyDecorators(
-    UseGuards(JwtAuthGuard, GalleryAccessGuard(state), ImageAccessGuard(state)),
+    UseGuards(
+      JwtAuthGuard,
+      GalleryAccessGuard(GalleryState),
+      ImageAccessGuard(ImageState),
+    ),
     ApiAuth(),
     ApiGalleryIdParam(),
     ApiImageIdParam(),
@@ -92,7 +110,7 @@ export function ImageAccess(state: ResourceState = 'active') {
 export function UploadValidation() {
   return ApiBadRequestError({
     noFile: [IMAGE_MESSAGES.NO_FILES],
-    maxImages: [IMAGE_MESSAGES.MAX_IMAGES_DESCRIPTION],
+    maxImages: [IMAGE_MESSAGES.MAX_IMAGES(MAX_IMAGES_PER_GALLERY)],
     invalidFileType: [
       IMAGE_MESSAGES.UNSUPORTED_FILE_TYPE(ALLOWED_IMAGES_TYPES),
     ],
@@ -191,12 +209,27 @@ export function MoveCopyValidation() {
 
 export function MoveCopyConflicts() {
   return ApiConflictResponse({
-    description: 'Coflicts with image actions',
+    description: 'Coflicts with image actions (move/copy)',
     content: {
       'application/json': {
         examples: {
           maxImages: imageConflictMaxImages,
+          minImages: imageConflictMinImages,
           sameGallery: imageConflictSameGallery,
+        },
+      },
+    },
+  });
+}
+
+export function ImageCountConflicts() {
+  return ApiConflictResponse({
+    description: 'Coflicts with image coujt',
+    content: {
+      'application/json': {
+        examples: {
+          maxImages: imageConflictMaxImages,
+          minImages: imageConflictMinImages,
         },
       },
     },

@@ -16,7 +16,8 @@ export const useRouteMatch = () => {
 
   const getNumericId = (routeMatch: PathMatch<string> | null) => {
     const id = routeMatch?.params.id;
-    return id && !Number.isNaN(Number(id)) ? Number(id) : undefined;
+    const numeric = Number(id);
+    return id && !Number.isNaN(numeric) && numeric > 0 ? numeric : undefined;
   };
 
   const detailGalleryId = getNumericId(detailGalleryMatch);
@@ -26,11 +27,11 @@ export const useRouteMatch = () => {
   return {
     isGalleries: !!galleriesMatch,
     isCreateGallery: !!createGalleryMatch,
-    isGalleryDetail: !!detailGalleryMatch && !!detailGalleryId,
     galleryDetailId: detailGalleryId,
+    isGalleryDetail: !!detailGalleryMatch && !!detailGalleryId,
     isEditGallery: !!editGalleryMatch && !!editGalleryId,
-    galleryEditId: editGalleryId,
     isUploadGallery: !!uploadGalleryMatch && !!uploadGalleryId,
+    galleryEditId: editGalleryId,
     galleryUploadId: uploadGalleryId,
     isProfile: !!profileMatch,
     isUserManagment: !!userManagementMatch,

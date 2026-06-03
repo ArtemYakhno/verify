@@ -131,6 +131,7 @@ export const GallerySort = ({
       <div className="lg:hidden">
         <div className="relative">
           <Button
+            data-testid="mobile-sort-trigger"
             variant="transparent"
             size="auto"
             className="rounded-full bg-statuses h-[40px] w-[40px]"
@@ -139,7 +140,7 @@ export const GallerySort = ({
             <ArrowUpDown className="text-ui-black" size={16} />
           </Button>
           {hasActiveSort && (
-            <span className="absolute top-0 right-0 h-2.5 w-2.5 rounded-full bg-green" />
+            <span data-testid="active-sort-dot" className="absolute top-0 right-0 h-2.5 w-2.5 rounded-full bg-green" />
           )}
         </div>
 

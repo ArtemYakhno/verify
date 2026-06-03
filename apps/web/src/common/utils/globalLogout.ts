@@ -5,3 +5,4 @@ export const globalLogout = () => {
   useAuthStore.getState().logout();
   queryClient.clear();
 };
+

@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar/Sidebar";
 import { Header } from "./Header/Header";
 import { useIsMobile } from "@/common/hooks/useIsMobile";
-import { Footer } from "./Footer";
+import { Footer } from "./Footer/Footer";
 import { cn } from "@/common/lib/utils";
 import { useScrolled } from "@/common/hooks/useScrolled";
 

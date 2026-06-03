@@ -1,4 +1,5 @@
 export const MAX_IMAGES_PER_GALLERY = 50;
+export const MIN_IMAGES_PER_GALLERY = 0;
 
 export const ALLOWED_IMAGES_TYPES = [
   'image/jpeg',

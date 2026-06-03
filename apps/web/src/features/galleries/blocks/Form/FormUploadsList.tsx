@@ -1,6 +1,6 @@
 import { useFormContext, type FieldArrayWithId } from "react-hook-form";
 import { MAX_FILES } from "@/features/images/constants/image.constants";
-import { GalleryImageFormCard } from "./FormImageCard";
+import { FormImageCard } from "./FormImageCard";
 import type { UploadImageItemValues, UploadImagesValues } from "@/features/images/schemas/image-request.schema";
 import { FormImagePlug } from "./FormImagePlug";
 import { Button } from "@/common/components/ui/button";
@@ -42,7 +42,7 @@ export const FormUploadsList = ({
           const previewUrl = getPreviewUrl(file);
 
           return (
-            <GalleryImageFormCard
+            <FormImageCard
               key={field.id}
               imageSrc={previewUrl}
               imageAlt={`Preview ${index + 1}`}

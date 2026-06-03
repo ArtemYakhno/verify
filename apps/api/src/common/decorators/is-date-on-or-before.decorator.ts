@@ -1,9 +1,15 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
+import { DateConstraint, resolveDate } from '../utils/resolveDate.util';
 
-type DateConstraint = Date | (() => Date);
-
-function resolveDate(dateOrFactory: DateConstraint): Date {
-  return typeof dateOrFactory === 'function' ? dateOrFactory() : dateOrFactory;
+export function validateDateOnOrBefore(
+  value: unknown,
+  dateOrFactory: DateConstraint,
+): boolean {
+  if (value == null) return true;
+  if (!(value instanceof Date) || Number.isNaN(value.getTime())) return false;
+  const limit = resolveDate(dateOrFactory);
+  if (!(limit instanceof Date) || Number.isNaN(limit.getTime())) return false;
+  return value.getTime() <= limit.getTime();
 }
 
 export function IsDateOnOrBefore(
@@ -19,21 +25,7 @@ export function IsDateOnOrBefore(
       options: validationOptions,
       validator: {
         validate(value: unknown) {
-          if (value == null) {
-            return true;
-          }
-
-          if (!(value instanceof Date) || Number.isNaN(value.getTime())) {
-            return false;
-          }
-
-          const limit = resolveDate(dateOrFactory);
-
-          if (!(limit instanceof Date) || Number.isNaN(limit.getTime())) {
-            return false;
-          }
-
-          return value.getTime() <= limit.getTime();
+          return validateDateOnOrBefore(value, dateOrFactory);
         },
       },
     });

@@ -56,12 +56,24 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_CREDENTIALS);
+      throw new UnauthorizedException({
+        message: AUTH_MESSAGES.INVALID_CREDENTIALS,
+        errors: {
+          password: [AUTH_MESSAGES.INVALID_CREDENTIALS],
+          email: [AUTH_MESSAGES.INVALID_CREDENTIALS],
+        },
+      });
     }
 
     const isMatch = await this.hashService.verify(user.password, dto.password);
     if (!isMatch) {
-      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_CREDENTIALS);
+      throw new UnauthorizedException({
+        message: AUTH_MESSAGES.INVALID_CREDENTIALS,
+        errors: {
+          password: [AUTH_MESSAGES.INVALID_CREDENTIALS],
+          email: [AUTH_MESSAGES.INVALID_CREDENTIALS],
+        },
+      });
     }
 
     return this.auth(res, user.id);

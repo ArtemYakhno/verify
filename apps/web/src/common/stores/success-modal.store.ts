@@ -2,7 +2,7 @@ import { create, type StateCreator } from "zustand";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
-interface SuccessModalData {
+export interface SuccessModalData {
   title?: string;
   description?: string;
 }

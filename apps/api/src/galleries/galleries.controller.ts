@@ -25,6 +25,7 @@ import { GalleryInfo } from '../common/decorators/gallery-info.decorator';
 import {
   ApiGalleryIdParam,
   GalleryAccess,
+  GalleryLimitImages,
   GalleryNotFound,
   GalleryPaginationValidation,
   GalleryValidation,
@@ -33,6 +34,7 @@ import { Role } from '../../generated/prisma/enums';
 import { Auth } from '../common/decorators/auth.decorator';
 import { UserExistsPipe } from '../common/pipes/user-exist.pipe';
 import { ApiUserIdParam } from '../users/decorators/user-swagger.decorator';
+
 @ApiTags('Galleries')
 @Controller('galleries')
 export class GalleriesController {
@@ -169,7 +171,7 @@ export class GalleriesController {
   }
 
   @Delete(':galleryId/purge')
-  @GalleryAccess('any')
+  @GalleryAccess('deleted')
   @ApiOperation({
     summary: 'Purge gallery',
     description: 'owner or admin, auth required',
@@ -185,6 +187,7 @@ export class GalleriesController {
     summary: 'Restore gallery',
     description: 'owner or admin, auth required',
   })
+  @GalleryLimitImages()
   @ApiResponse({ status: HttpStatus.OK, type: Boolean })
   restore(@GalleryInfo('id') id: number) {
     return this.galleriesService.restore(id);

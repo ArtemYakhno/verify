@@ -33,7 +33,6 @@ export function extractErrorMessage(error: unknown): string {
 
 export function extractFieldErrors(error: unknown): Record<string, string> {
   const data = (error as AxiosError<BackendErrorBody>)?.response?.data;
-
   if (!data?.errors) return {};
 
   return Object.fromEntries(

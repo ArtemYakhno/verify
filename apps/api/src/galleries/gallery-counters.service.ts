@@ -1,15 +1,11 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { IMAGE_MESSAGES } from '../common/constants/messages.constants';
 import {
-  GALLERY_MESSAGES,
-  IMAGE_MESSAGES,
-} from '../common/constants/messages.constants';
-import { MAX_IMAGES_PER_GALLERY } from '../common/constants/limits.constants';
+  MAX_IMAGES_PER_GALLERY,
+  MIN_IMAGES_PER_GALLERY,
+} from '../common/constants/limits.constants';
 
 @Injectable()
 export class GalleryCountersService {
@@ -22,13 +18,48 @@ export class GalleryCountersService {
   ): Promise<void> {
     if (diff === 0) return;
 
-    await tx.gallery.update({
-      where: { id: galleryId },
+    if (diff > 0) {
+      const result = await tx.gallery.updateMany({
+        where: {
+          id: galleryId,
+          imagesCount: {
+            lte: MAX_IMAGES_PER_GALLERY - diff,
+          },
+        },
+        data: {
+          imagesCount: { increment: diff },
+        },
+      });
+
+      //Gallery checker method implemented before, so we know the gallery exists. No need to check again.
+      if (result.count === 0) {
+        throw new ConflictException(
+          IMAGE_MESSAGES.MAX_IMAGES(MAX_IMAGES_PER_GALLERY),
+        );
+      }
+
+      return;
+    }
+
+    const decrementBy = Math.abs(diff);
+
+    const result = await tx.gallery.updateMany({
+      where: {
+        id: galleryId,
+        imagesCount: {
+          gte: decrementBy,
+        },
+      },
       data: {
-        imagesCount:
-          diff > 0 ? { increment: diff } : { decrement: Math.abs(diff) },
+        imagesCount: { decrement: decrementBy },
       },
     });
+
+    if (result.count === 0) {
+      throw new ConflictException(
+        IMAGE_MESSAGES.MIN_IMAGES(MIN_IMAGES_PER_GALLERY),
+      );
+    }
   }
 
   async setImagesCount(
@@ -36,6 +67,15 @@ export class GalleryCountersService {
     galleryId: number,
     count: number,
   ): Promise<void> {
+    if (count < MIN_IMAGES_PER_GALLERY || count > MAX_IMAGES_PER_GALLERY) {
+      throw new ConflictException(
+        IMAGE_MESSAGES.LIMIT_IMAGES(
+          MIN_IMAGES_PER_GALLERY,
+          MAX_IMAGES_PER_GALLERY,
+        ),
+      );
+    }
+
     await tx.gallery.update({
       where: { id: galleryId },
       data: { imagesCount: count },
@@ -50,30 +90,5 @@ export class GalleryCountersService {
       where: { id: galleryId },
       data: { imagesCount: 0 },
     });
-  }
-
-  async ensureGalleryCapacity(
-    tx: Prisma.TransactionClient,
-    galleryId: number,
-    adding: number,
-  ): Promise<void> {
-    const gallery = await tx.gallery.findUnique({
-      where: { id: galleryId },
-      select: { imagesCount: true },
-    });
-
-    if (!gallery) {
-      throw new NotFoundException(GALLERY_MESSAGES.NOT_FOUND(galleryId));
-    }
-
-    if (gallery.imagesCount + adding > MAX_IMAGES_PER_GALLERY) {
-      throw new ConflictException(
-        IMAGE_MESSAGES.MAX_IMAGES(
-          gallery.imagesCount,
-          adding,
-          MAX_IMAGES_PER_GALLERY,
-        ),
-      );
-    }
   }
 }

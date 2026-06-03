@@ -7,7 +7,7 @@ import { Textarea } from "@/common/components/ui/textarea";
 import type { UploadImagesValues } from "@/features/images/schemas/image-request.schema";
 import { useFormContext } from "react-hook-form";
 
-interface GalleryImageFormCardProps {
+interface FormImageCardProps {
   imageSrc?: string;
   imageAlt: string;
   nameProps: React.ComponentProps<typeof Input>;
@@ -17,7 +17,7 @@ interface GalleryImageFormCardProps {
   onDelete: () => void;
 }
 
-export const GalleryImageFormCard = ({
+export const FormImageCard = ({
   imageSrc,
   imageAlt,
   nameProps,
@@ -25,12 +25,12 @@ export const GalleryImageFormCard = ({
   nameError,
   commentError,
   onDelete,
-}: GalleryImageFormCardProps) => {
+}: FormImageCardProps) => {
   const {
     formState: { isSubmitting },
   } = useFormContext<UploadImagesValues>();
   return (
-    <div className="grid grid-cols-1 gap-4 rounded-lg lg:grid-cols-[232px_1fr] pt-3">
+    <div className="grid grid-cols-1 gap-4 rounded-lg lg:grid-cols-[232px_1fr]">
       <div className="relative">
         <Button onClick={onDelete} type='button' variant="transparent" size="auto" className="p-1 rounded-circle bg-statuses absolute -top-2 -right-2">
           <X className="text-ui-black" size={16} />

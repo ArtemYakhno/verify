@@ -47,6 +47,7 @@ function Button({
 
   return (
     <Comp
+      role="button"
       data-slot="button"
       data-variant={variant}
       data-size={size}

@@ -2,7 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import logoText from '@/assets/logo-text.svg';
 import clsx from 'clsx';
 import { RoutePath } from '../routes/configs/root.config';
-import { Footer } from './Footer';
+import { Footer } from './Footer/Footer';
 
 export const AuthLayout = () => {
   const isSignIn = useLocation().pathname === RoutePath.SignIn;

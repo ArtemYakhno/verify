@@ -1,5 +1,5 @@
 import { cn } from "@/common/lib/utils";
-import { useRouteMatch } from "../routes/hooks/useRouteMatch";
+import { useRouteMatch } from "../../routes/hooks/useRouteMatch";
 import { Back } from "@/common/components/ui/back";
 interface FooterProps {
   className?: string;

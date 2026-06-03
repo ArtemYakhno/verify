@@ -77,8 +77,8 @@ export const GalleryFilter = ({
   const hasActiveFilters =
     !!filters.createdFrom ||
     !!filters.createdTo ||
-    filters.minImages !== undefined ||
-    filters.maxImages !== undefined;
+    filters.minImages !== GALLERY_IMAGES_COUNT_MIN ||
+    filters.maxImages !== GALLERY_IMAGES_COUNT_MAX;
 
   return (
     <>

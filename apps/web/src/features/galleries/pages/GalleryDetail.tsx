@@ -41,19 +41,16 @@ export const GalleryDetail = () => {
   const renderContent = () => {
     const photos = images?.data ?? [];
     const meta = images?.meta;
-    const isGalleryEmpty = !isGalleryLoading && gallery && !gallery.title;
-    const isImagesEmpty = !areImagesLoading && photos.length === 0;
-
 
     if (isGalleryLoading || areImagesLoading) {
       return <LoadingPlug />;
     }
 
-    if (isGalleryEmpty || isGalleryError || !gallery) {
+    if (isGalleryError || !gallery) {
       return <GalleryPlug variant={isGalleryError ? "error" : "empty"} error={galleryError} />
     }
 
-    if (isImagesEmpty || areImagesError || !images) {
+    if (areImagesError || !images || photos.length === 0) {
       return <GalleryDetailPlug variant={areImagesError ? "error" : "empty"} error={imagesError} galleryId={gallery.id} />;
     }
 

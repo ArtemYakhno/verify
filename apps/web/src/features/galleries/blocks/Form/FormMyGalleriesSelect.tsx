@@ -28,8 +28,7 @@ export const FormMyGalleriesSelect = ({
   }
 
   if (isError) {
-    console.error(extractErrorMessage(error));
-    return <div className="text-destructive">Failed to load galleries</div>;
+    return <div className="text-destructive">Failed to load galleries {extractErrorMessage(error)}</div>;
   }
 
   const availableGalleries =
@@ -54,6 +53,7 @@ export const FormMyGalleriesSelect = ({
               {gallery.title}
             </SelectItem>
           ))}
+          {availableGalleries.length === 0 && <p className="px-8 py-4 typo-main">There are now galleries</p>}
         </SelectGroup>
       </SelectContent>
     </Select>

@@ -53,6 +53,7 @@ export const SignInForm = () => {
         <form className="mt-8" onSubmit={handleSubmit(onSubmit)} noValidate>
           <FieldGroup className="grid gap-8">
             <CustomField
+              htmlFor="email"
               label="Email"
               required
               error={errors.email?.message}
@@ -68,6 +69,7 @@ export const SignInForm = () => {
             </CustomField>
 
             <CustomField
+              htmlFor="password"
               label="Password"
               required
               error={errors.password?.message}

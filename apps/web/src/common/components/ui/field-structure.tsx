@@ -76,6 +76,7 @@ export const PasswordField = ({
 
 interface CustomFieldProps {
   label: string;
+  htmlFor?: string;
   required?: boolean;
   optional?: boolean
   error?: string;
@@ -84,6 +85,7 @@ interface CustomFieldProps {
 
 export const CustomField = ({
   label,
+  htmlFor,
   required,
   optional,
   error,
@@ -91,7 +93,7 @@ export const CustomField = ({
 }: CustomFieldProps) => {
   return (
     <Field>
-      <FieldLabel className="typo-secondary">
+      <FieldLabel htmlFor={htmlFor} className="typo-secondary">
         {label} {required && <span className="text-red">*</span>} {optional && <span className='typo-main text-[14px]'>(optional)</span>}
       </FieldLabel>
 

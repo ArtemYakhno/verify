@@ -117,6 +117,7 @@ export const SignUpForm = () => {
             <CustomField
               htmlFor="password"
               label="Password"
+              error={errors.password?.message}
               required
             >
               <PasswordField
@@ -131,6 +132,7 @@ export const SignUpForm = () => {
             <CustomField
               htmlFor="confirmPassword"
               label="Confirm password"
+              error={errors.confirmPassword?.message}
               required
             >
               <PasswordField

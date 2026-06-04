@@ -117,7 +117,6 @@ export const SignUpForm = () => {
             <CustomField
               htmlFor="password"
               label="Password"
-              error={errors.password?.message}
               required
             >
               <PasswordField
@@ -132,7 +131,6 @@ export const SignUpForm = () => {
             <CustomField
               htmlFor="confirmPassword"
               label="Confirm password"
-              error={errors.confirmPassword?.message}
               required
             >
               <PasswordField
@@ -144,7 +142,7 @@ export const SignUpForm = () => {
               />
             </CustomField>
 
-            {password.length > 0 && (
+            {(errors.confirmPassword || errors.password) && (
               <div className="animate-in fade-in slide-in-from-top-2 duration-200">
                 <PasswordChecklist
                   password={password}

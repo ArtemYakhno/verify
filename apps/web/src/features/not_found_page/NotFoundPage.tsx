@@ -1,4 +1,4 @@
-import { Footer } from "@/app/layouts/Footer"
+import { Footer } from "@/app/layouts/Footer/Footer"
 import { RoutePath } from "@/app/routes/configs/root.config";
 import { Button } from "@/common/components/ui/button";
 import { Plug } from "@/common/components/ui/plug";

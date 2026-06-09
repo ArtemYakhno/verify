@@ -32,6 +32,7 @@ import {
 import { GalleryExistsPipe } from '../common/pipes/gallery-exist.pipe';
 import {
   ImageAccess,
+  ImageCountConflicts,
   MoveCopyConflicts,
   MoveCopyValidation,
   UploadImage,
@@ -84,9 +85,12 @@ export class ImagesController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Upload single image to gallery (owner only)' })
+  @ApiOperation({
+    summary: 'Upload single image to gallery (owner/admin only)',
+  })
   @GalleryAccess('active')
   @UploadImage()
+  @ImageCountConflicts()
   @ApiResponse({ status: HttpStatus.CREATED, type: ImageResponseDto })
   uploadImage(
     @GalleryInfo() gallery: Gallery,
@@ -110,7 +114,7 @@ export class ImagesController {
   @ApiOperation({
     summary: 'Update image metadata auth + gallery owner + image owner',
   })
-  @ImageAccess('active')
+  @ImageAccess('active', 'active')
   updateMetadata(
     @ImageInfo('id') imageId: number,
     @Body() dto: ImageMetadataDto,
@@ -120,7 +124,8 @@ export class ImagesController {
 
   @Patch(':imageId/soft-delete')
   @ApiOperation({ summary: 'Soft delete image (owner only)' })
-  @ImageAccess('active')
+  @ImageAccess('active', 'active')
+  @ImageCountConflicts()
   @ApiResponse({ status: HttpStatus.OK, type: Boolean })
   softDelete(@ImageInfo() image: ImageInternal) {
     return this.imagesService.softDelete(image);
@@ -128,7 +133,7 @@ export class ImagesController {
 
   @Patch(':imageId/move')
   @ApiOperation({ summary: 'Move image to another gallery (owner only)' })
-  @ImageAccess('active')
+  @ImageAccess('active', 'active')
   @ApiResponse({ status: HttpStatus.OK, type: ImageResponseDto })
   @MoveCopyValidation()
   @MoveCopyConflicts()
@@ -143,7 +148,7 @@ export class ImagesController {
 
   @Post(':imageId/copy')
   @ApiOperation({ summary: 'Copy image to another gallery (owner only)' })
-  @ImageAccess('active')
+  @ImageAccess('active', 'active')
   @ApiResponse({ status: HttpStatus.OK, type: ImageResponseDto })
   @MoveCopyValidation()
   @MoveCopyConflicts()
@@ -158,7 +163,8 @@ export class ImagesController {
 
   @Delete(':imageId/purge')
   @ApiOperation({ summary: 'Permanently delete image (owner only)' })
-  @ImageAccess('any')
+  @ImageAccess('active', 'deleted')
+  @ImageCountConflicts()
   @ApiResponse({ status: HttpStatus.OK, type: Boolean })
   purge(@ImageInfo() image: ImageInternal) {
     return this.imagesService.purge(image);
@@ -166,7 +172,7 @@ export class ImagesController {
 
   @Patch(':imageId/restore')
   @ApiOperation({ summary: 'Restore deleted image (owner only)' })
-  @ImageAccess('deleted')
+  @ImageAccess('active', 'deleted')
   @ApiResponse({ status: HttpStatus.OK, type: ImageResponseDto })
   restore(@ImageInfo() image: ImageInternal) {
     return this.imagesService.restore(image);

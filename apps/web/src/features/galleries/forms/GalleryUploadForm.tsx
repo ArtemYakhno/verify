@@ -53,12 +53,11 @@ export const GalleryUploadForm = () => {
       `${successCount} of ${uploads.length} photos uploaded successfully.`
     );
 
-    navigate(buildPath.galleryDetail(galleryId));
-
-
     form.reset({
       uploads: [],
     });
+
+    navigate(buildPath.galleryDetail(galleryId));
   };
 
   if (isLoading || !gallery) {

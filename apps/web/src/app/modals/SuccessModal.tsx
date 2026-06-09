@@ -16,7 +16,7 @@ export const SuccessModal = ({
   description,
 }: SuccessModalProps) => {
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog data-testid="success-modal" open={isOpen} onOpenChange={onClose}>
       <DialogContent
         className="flex flex-col items-center gap-4 pb-10! text-center lg:max-w-[420px]"
       >
@@ -29,7 +29,7 @@ export const SuccessModal = ({
         </DialogTitle>
 
         <div className="flex size-20 items-center justify-center rounded-full bg-accent-green">
-          <Check className="size-12 text-white" />
+          <Check data-testid="check-icon" className="size-12 text-white" />
         </div>
 
         <p className="typo-main">

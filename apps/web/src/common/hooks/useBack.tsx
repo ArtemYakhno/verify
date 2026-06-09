@@ -55,7 +55,6 @@ export const useBack = () => {
       navigate(fallbackPath);
       return;
     }
-    console.log('default')
 
     const canGoBack = window.history.length > 1;
 

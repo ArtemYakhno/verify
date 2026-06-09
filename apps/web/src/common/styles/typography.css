@@ -19,7 +19,7 @@
   }
 
   .typo-third {
-    @apply font-sans font-normal text-[12px] leading-[100%]  tracking-[0%] text-placeholder;
+    @apply font-sans font-normal text-[12px] leading-[120%]  tracking-[0%] text-placeholder;
   }
 
   .typo-link {

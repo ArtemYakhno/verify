@@ -30,8 +30,8 @@ export function getSearchWith(
 }
 
 export const normalizeParam = <T>(value: T | undefined, defaultValue?: T) => {
-  if (value === defaultValue) return null;
   if (value === undefined) return undefined;
+  if (value === defaultValue) return null;
   if (value === null) return null;
   if (typeof value === "string" && !value.trim()) return null;
   return String(value);

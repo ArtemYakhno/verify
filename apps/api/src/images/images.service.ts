@@ -21,6 +21,7 @@ import { notDeletedWhere } from '../common/constants/constraints.constants';
 import { User } from '../common/types/user.types';
 import { ResourceState } from '../common/types/resource-state.type';
 import { DeletionReason, Prisma } from '../../generated/prisma/client';
+import { MediaCleanupService } from '../common/services/media-cleanup.service';
 
 @Injectable()
 export class ImagesService {
@@ -29,6 +30,7 @@ export class ImagesService {
     private readonly cloudinaryService: CloudinaryService,
     private readonly galleryAccessService: GalleryAccessService,
     private readonly galleryCountersService: GalleryCountersService,
+    private readonly mediaCleanupService: MediaCleanupService,
   ) {}
 
   async findPartByGallery(galleryId: number, query: PaginationQueryDto) {
@@ -123,12 +125,6 @@ export class ImagesService {
       uploadedPublicId = public_id;
 
       return await this.prismaService.$transaction(async (tx) => {
-        await this.galleryCountersService.ensureGalleryCapacity(
-          tx,
-          gallery.id,
-          1,
-        );
-
         const created = await tx.image.create({
           data: {
             path: secure_url,
@@ -147,9 +143,13 @@ export class ImagesService {
       });
     } catch (error) {
       if (uploadedPublicId) {
-        await Promise.allSettled([
-          this.cloudinaryService.deleteImage(uploadedPublicId),
-        ]);
+        await this.mediaCleanupService.deleteCloudinaryImages(
+          [uploadedPublicId],
+          {
+            scope: 'upload',
+            galleryId: gallery.id,
+          },
+        );
       }
 
       throw error;
@@ -190,15 +190,17 @@ export class ImagesService {
         throw new NotFoundException(IMAGE_MESSAGES.NOT_FOUND(imageId));
       }
 
-      await this.galleryCountersService.ensureGalleryCapacity(
-        tx,
-        targetGallery.id,
-        1,
-      );
+      if (image.deletedAt === null) {
+        await this.galleryCountersService.changeImagesCount(
+          tx,
+          targetGallery.id,
+          1,
+        );
+      }
 
       const moved = await tx.image.update({
         where: { id: imageId },
-        data: { galleryId: dto.targetGalleryId },
+        data: { galleryId: targetGallery.id },
         select: imageSelect,
       });
 
@@ -207,11 +209,6 @@ export class ImagesService {
           tx,
           image.galleryId,
           -1,
-        );
-        await this.galleryCountersService.changeImagesCount(
-          tx,
-          dto.targetGalleryId,
-          1,
         );
       }
 
@@ -244,12 +241,6 @@ export class ImagesService {
       uploadedPublicId = public_id;
 
       return await this.prismaService.$transaction(async (tx) => {
-        await this.galleryCountersService.ensureGalleryCapacity(
-          tx,
-          targetGallery.id,
-          1,
-        );
-
         const created = await tx.image.create({
           data: {
             path: secure_url,
@@ -264,7 +255,7 @@ export class ImagesService {
 
         await this.galleryCountersService.changeImagesCount(
           tx,
-          dto.targetGalleryId,
+          targetGallery.id,
           1,
         );
 
@@ -272,9 +263,15 @@ export class ImagesService {
       });
     } catch (error) {
       if (uploadedPublicId) {
-        await Promise.allSettled([
-          this.cloudinaryService.deleteImage(uploadedPublicId),
-        ]);
+        await this.mediaCleanupService.deleteCloudinaryImages(
+          [uploadedPublicId],
+          {
+            scope: 'copy',
+            imageId: image.id,
+            galleryId,
+            targetGalleryId: dto.targetGalleryId,
+          },
+        );
       }
 
       throw error;
@@ -357,22 +354,23 @@ export class ImagesService {
   }
 
   async purge(image: ImageInternal) {
-    await Promise.allSettled([
-      this.cloudinaryService.deleteImage(image.cloudinaryId),
-    ]);
-
-    await this.prismaService.$transaction(async (tx) => {
+    const cloudinaryIds = await this.prismaService.$transaction(async (tx) => {
       await tx.image.delete({
         where: { id: image.id },
       });
 
-      if (image.deletedAt === null) {
-        await this.galleryCountersService.changeImagesCount(
-          tx,
-          image.galleryId,
-          -1,
-        );
-      }
+      await this.galleryCountersService.changeImagesCount(
+        tx,
+        image.galleryId,
+        -1,
+      );
+      return [image.cloudinaryId];
+    });
+
+    await this.mediaCleanupService.deleteCloudinaryImages(cloudinaryIds, {
+      scope: 'image',
+      imageId: image.id,
+      galleryId: image.galleryId,
     });
 
     return true;
@@ -380,12 +378,6 @@ export class ImagesService {
 
   async restore(image: ImageInternal) {
     return await this.prismaService.$transaction(async (tx) => {
-      await this.galleryCountersService.ensureGalleryCapacity(
-        tx,
-        image.galleryId,
-        1,
-      );
-
       const result = await tx.image.updateMany({
         where: {
           id: image.id,

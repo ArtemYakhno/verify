@@ -19,6 +19,10 @@ import {
 } from '../../common/decorators/is-less-than-or-equal.decorator';
 import { IsDateOnOrAfter } from '../../common/decorators/is-date-on-or-after.decorator';
 import { IsDateOnOrBefore } from '../../common/decorators/is-date-on-or-before.decorator';
+import {
+  MAX_IMAGES_PER_GALLERY,
+  MIN_IMAGES_PER_GALLERY,
+} from '../../common/constants/limits.constants';
 
 export class GalleriesFiltersDto {
   @ApiPropertyOptional({
@@ -70,8 +74,8 @@ export class GalleriesFiltersDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt({ message: VALIDATION_MESSAGES.IS_INT })
-  @Min(0, { message: VALIDATION_MESSAGES.MIN(0) })
-  @Max(50, { message: VALIDATION_MESSAGES.MAX(50) })
+  @Min(0, { message: VALIDATION_MESSAGES.MIN(MIN_IMAGES_PER_GALLERY) })
+  @Max(50, { message: VALIDATION_MESSAGES.MAX(MAX_IMAGES_PER_GALLERY) })
   @IsLessThanOrEqual('maxImages', {
     message: VALIDATION_MESSAGES.IMAGE_COUNT,
   })
@@ -84,8 +88,8 @@ export class GalleriesFiltersDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt({ message: VALIDATION_MESSAGES.IS_INT })
-  @Min(0, { message: VALIDATION_MESSAGES.MIN(0) })
-  @Max(50, { message: VALIDATION_MESSAGES.MAX(50) })
+  @Min(0, { message: VALIDATION_MESSAGES.MIN(MIN_IMAGES_PER_GALLERY) })
+  @Max(50, { message: VALIDATION_MESSAGES.MAX(MAX_IMAGES_PER_GALLERY) })
   maxImages?: number;
 
   @ApiPropertyOptional({

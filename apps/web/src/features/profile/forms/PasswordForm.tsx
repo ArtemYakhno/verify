@@ -34,7 +34,7 @@ export const PasswordForm = ({ email }: Props) => {
 
 
   const { mutateAsync: changePassword, isPending } =
-    useChangePassword();
+    useChangePassword(form.setError);
 
   const {
     formState: { errors, isDirty },
@@ -72,7 +72,7 @@ export const PasswordForm = ({ email }: Props) => {
 
 
   return (
-    <section className="card">
+    <section data-testid="password-form" className="card">
       <h2 className="typo-h2 text-ui-black">Change Password</h2>
 
       <p className="mt-2 typo-main text-grey">
@@ -106,7 +106,6 @@ export const PasswordForm = ({ email }: Props) => {
 
             <CustomField
               label="New password"
-              error={errors.newPassword?.message}
             >
               <PasswordField
                 id="newPassword"
@@ -118,7 +117,6 @@ export const PasswordForm = ({ email }: Props) => {
 
             <CustomField
               label="New password confirmation"
-              error={errors.confirmPassword?.message}
             >
               <PasswordField
                 id="confirmPassword"
@@ -128,7 +126,7 @@ export const PasswordForm = ({ email }: Props) => {
               />
             </CustomField>
 
-            {newPassword.length > 0 && (
+            {(errors.newPassword || errors.confirmPassword) && (
               <div className="animate-in fade-in slide-in-from-top-2 duration-200">
                 <PasswordChecklist
                   password={newPassword}

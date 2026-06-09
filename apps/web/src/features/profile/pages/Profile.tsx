@@ -2,12 +2,13 @@ import { useGetMe } from "../queries/profile.queries";
 import { ProfileHeader } from "../blocks/ProfileHeader";
 import { AccountForm } from "../forms/AccountForm";
 import { PasswordForm } from "../forms/PasswordForm";
+import { LoadingPlug } from "@/common/components/ui/loading-plug";
 
 export const Profile = () => {
   const { data: user, isLoading } = useGetMe();
 
   if (isLoading) {
-    return <div className="py-10">Loading...</div>;
+    return <LoadingPlug />;
   }
 
   if (!user) {

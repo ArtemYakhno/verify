@@ -3,7 +3,6 @@
 import { ActionModal } from "@/app/modals/ActionModal";
 import { Button } from "@/common/components/ui/button";
 import { Pagination } from "@/common/components/ui/pagination";
-import { extractErrorMessage } from "@/common/utils/erros/errors";
 import { useSoftDeleteAllImages } from "@/features/images/gueries/images.mutations";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -34,9 +33,8 @@ export const GalleryDetailFooter = ({ page, perPage, meta, onPageChange, gallery
         description: "Photos have been successfully deleted from the gallery.",
       });
     }
-    catch (error) {
+    catch {
       toast.error("Failed to delete all images. Please try again.");
-      console.error("Error deleting all images:", extractErrorMessage(error));
     }
   }
 

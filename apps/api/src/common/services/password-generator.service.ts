@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { randomInt } from 'crypto';
 import { VALIDATION_RULES } from '../constants/validation.constants';
+import { USER_MESSAGES } from '../constants/messages.constants';
 
 @Injectable()
 export class PasswordGeneratorService {
@@ -27,7 +28,9 @@ export class PasswordGeneratorService {
     const password = this.shuffle([...required, ...rest]).join('');
 
     if (!VALIDATION_RULES.PASSWORD_REGEX.test(password)) {
-      return this.generate(length);
+      throw new InternalServerErrorException(
+        USER_MESSAGES.INVALID_REGEX_PASSWORD,
+      );
     }
 
     return password;

@@ -30,6 +30,7 @@ export const SignInForm = () => {
     register,
     handleSubmit,
     setError,
+    clearErrors,
     formState: { errors, isSubmitting, isValid },
   } = methods;
 
@@ -37,6 +38,11 @@ export const SignInForm = () => {
 
   const onSubmit = (values: LoginValues) => {
     loginUser(values);
+  };
+
+  const clearAuthServerErrors = () => {
+    if (errors.email?.type === "server") clearErrors("email");
+    if (errors.password?.type === "server") clearErrors("password");
   };
 
   const isDisabled = isPending || isSubmitting;
@@ -53,6 +59,7 @@ export const SignInForm = () => {
         <form className="mt-8" onSubmit={handleSubmit(onSubmit)} noValidate>
           <FieldGroup className="grid gap-8">
             <CustomField
+              htmlFor="email"
               label="Email"
               required
               error={errors.email?.message}
@@ -63,11 +70,12 @@ export const SignInForm = () => {
                 size="md"
                 placeholder="mail@simmmple.com"
                 autoComplete="email"
-                {...register("email")}
+                {...register("email", { onChange: clearAuthServerErrors })}
               />
             </CustomField>
 
             <CustomField
+              htmlFor="password"
               label="Password"
               required
               error={errors.password?.message}
@@ -78,6 +86,7 @@ export const SignInForm = () => {
                 placeholder="Min. 8 characters"
                 autoComplete="current-password"
                 size="md"
+                onChange={clearAuthServerErrors}
               />
             </CustomField>
 

@@ -18,7 +18,20 @@ export class BaseGalleryResponseDto {
   userId!: number;
 }
 
-export class GalleryListResponseDto extends BaseGalleryResponseDto {}
+export class GalleryImageResponseDto {
+  @ApiProperty()
+  id!: string;
+
+  @ApiProperty()
+  path!: string;
+}
+
+export class GalleryListResponseDto extends BaseGalleryResponseDto {
+  @ApiProperty({
+    type: [GalleryImageResponseDto],
+  })
+  images!: GalleryImageResponseDto[];
+}
 
 export class GalleryDetailResponseDto extends BaseGalleryResponseDto {
   @ApiProperty()

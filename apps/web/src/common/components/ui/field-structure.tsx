@@ -2,7 +2,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useController, useFormContext } from 'react-hook-form';
 import { Input, type InputProps } from './input';
 
-import { useState, type ReactNode } from 'react';
+import { useState, type ChangeEvent, type ReactNode } from 'react';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from './input-group';
 import { Field, FieldLabel, FieldMessage } from './field';
 
@@ -42,11 +42,17 @@ export const PasswordField = ({
   id,
   placeholder = 'Enter password',
   size,
+  onChange,
   ...props
 }: IPasswordFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const { control } = useFormContext();
   const { field, fieldState } = useController({ control, name });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    field.onChange(e);
+    onChange?.(e);
+  };
 
   return (
     <InputGroup>
@@ -58,6 +64,8 @@ export const PasswordField = ({
         placeholder={placeholder}
         aria-invalid={!!fieldState.error}
         size={size}
+        onChange={handleChange}
+
       />
       <InputGroupAddon align='inline-end'>
         <InputGroupButton
@@ -76,6 +84,7 @@ export const PasswordField = ({
 
 interface CustomFieldProps {
   label: string;
+  htmlFor?: string;
   required?: boolean;
   optional?: boolean
   error?: string;
@@ -84,6 +93,7 @@ interface CustomFieldProps {
 
 export const CustomField = ({
   label,
+  htmlFor,
   required,
   optional,
   error,
@@ -91,7 +101,7 @@ export const CustomField = ({
 }: CustomFieldProps) => {
   return (
     <Field>
-      <FieldLabel className="typo-secondary">
+      <FieldLabel htmlFor={htmlFor} className="typo-secondary">
         {label} {required && <span className="text-red">*</span>} {optional && <span className='typo-main text-[14px]'>(optional)</span>}
       </FieldLabel>
 

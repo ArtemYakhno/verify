@@ -8,7 +8,7 @@ type Props = {
 
 export const ProfileHeader = ({ firstname, lastname, email }: Props) => {
   return (
-    <section className="card">
+    <section data-testid="profile-header" className="card">
       <div className="relative">
         <div
           className="h-[120px] w-full rounded-md bg-[url('/images/profile-bg.webp')] bg-cover bg-center bg-no-repeat lg:h-[160px]"

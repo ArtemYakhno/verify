@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { userSchema } from "@/common/schemas/user.schemas";
+import { userSchema } from "@/common/schemas/user.schema";
 import { passwordSchema } from "@/common/schemas/primitives.schema";
 
 export const updateProfileSchema = userSchema.pick({

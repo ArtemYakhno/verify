@@ -1,5 +1,5 @@
 import type { PayloadConfig } from "../configs/payload.config";
-import { useGalleryHeader } from "./gallery/useGalleryHeader";
+import { useGalleryHeader } from "./useGalleryHeader";
 import { useStaticHeaderConfig } from "./useStaticHeader";
 
 

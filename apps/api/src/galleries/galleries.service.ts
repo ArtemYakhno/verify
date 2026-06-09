@@ -2,7 +2,6 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { UpdateGalleryDto } from './dto/update-gallery.dto';
-import { CloudinaryService } from '../common/services/cloudinary.service';
 import {
   gallerySelect,
   galleryListSelect,
@@ -14,6 +13,7 @@ import { GalleryCountersService } from './gallery-counters.service';
 import { DeletionReason, Prisma } from '../../generated/prisma/client';
 import { ResourceState } from '../common/types/resource-state.type';
 import { ImagesService } from '../images/images.service';
+import { MediaCleanupService } from '../common/services/media-cleanup.service';
 
 @Injectable()
 export class GalleriesService {
@@ -21,9 +21,9 @@ export class GalleriesService {
 
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly cloudinaryService: CloudinaryService,
     private readonly galleryCountersService: GalleryCountersService,
     protected readonly imagesService: ImagesService,
+    private readonly mediaCleanupService: MediaCleanupService,
   ) {}
 
   async findPart(query: FindAllGalleriesQueryDto) {
@@ -142,43 +142,41 @@ export class GalleriesService {
     return true;
   }
 
-  async purge(galleryId: number, tx?: Prisma.TransactionClient) {
-    const images = await this.prismaService.image.findMany({
+  private async purgeDbOnly(
+    db: Prisma.TransactionClient,
+    galleryId: number,
+  ): Promise<string[]> {
+    const images = await db.image.findMany({
       where: { galleryId },
       select: {
         cloudinaryId: true,
       },
     });
 
-    if (images.length > 0) {
-      const results = await Promise.allSettled(
-        images.map((img) =>
-          this.cloudinaryService.deleteImage(img.cloudinaryId),
-        ),
-      );
+    await db.gallery.delete({
+      where: { id: galleryId },
+    });
 
-      const failed = results.filter((result) => result.status === 'rejected');
+    const cloudinaryIds = images.map((img) => img.cloudinaryId);
 
-      if (failed.length > 0) {
-        this.logger.warn(
-          `Gallery ${galleryId}: ${failed.length}/${images.length} Cloudinary deletes failed`,
-        );
-      }
-    }
+    return cloudinaryIds;
+  }
 
-    const execute = async (db: Prisma.TransactionClient) => {
-      await db.gallery.delete({
-        where: { id: galleryId },
-      });
-    };
-
+  async purge(
+    galleryId: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<true | string[]> {
     if (tx) {
-      await execute(tx);
-      return true;
+      return this.purgeDbOnly(tx, galleryId);
     }
 
-    await this.prismaService.$transaction(async (innerTx) => {
-      await execute(innerTx);
+    const cloudinaryIds = await this.prismaService.$transaction((innerTx) =>
+      this.purgeDbOnly(innerTx, galleryId),
+    );
+
+    await this.mediaCleanupService.deleteCloudinaryImages(cloudinaryIds, {
+      scope: 'gallery',
+      galleryId,
     });
 
     return true;
@@ -212,12 +210,6 @@ export class GalleriesService {
           deletedAt: null,
         },
       });
-
-      await this.galleryCountersService.ensureGalleryCapacity(
-        db,
-        galleryId,
-        activeImagesCount,
-      );
 
       await this.galleryCountersService.setImagesCount(
         db,

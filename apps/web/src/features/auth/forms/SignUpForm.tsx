@@ -69,6 +69,7 @@ export const SignUpForm = () => {
         <form className="mt-6" onSubmit={handleSubmit(onSubmit)} noValidate>
           <FieldGroup className="grid gap-8">
             <CustomField
+              htmlFor="firstname"
               label="First name"
               required
               error={errors.firstname?.message}
@@ -83,6 +84,7 @@ export const SignUpForm = () => {
             </CustomField>
 
             <CustomField
+              htmlFor="lastname"
               label="Last name"
               required
               error={errors.lastname?.message}
@@ -97,6 +99,7 @@ export const SignUpForm = () => {
             </CustomField>
 
             <CustomField
+              htmlFor="email"
               label="Email"
               required
               error={errors.email?.message}
@@ -112,6 +115,7 @@ export const SignUpForm = () => {
             </CustomField>
 
             <CustomField
+              htmlFor="password"
               label="Password"
               required
             >
@@ -125,6 +129,7 @@ export const SignUpForm = () => {
             </CustomField>
 
             <CustomField
+              htmlFor="confirmPassword"
               label="Confirm password"
               required
             >
@@ -137,7 +142,7 @@ export const SignUpForm = () => {
               />
             </CustomField>
 
-            {password.length > 0 && (
+            {(errors.confirmPassword || errors.password) && (
               <div className="animate-in fade-in slide-in-from-top-2 duration-200">
                 <PasswordChecklist
                   password={password}

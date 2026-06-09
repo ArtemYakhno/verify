@@ -19,7 +19,7 @@ export const createIntRangeQuerySchema = (
 ) =>
   z.preprocess((value) => {
     if (value === "" || value === null || value === undefined) {
-      return undefined;
+      return defaultValue;
     }
 
     return value;

@@ -30,6 +30,7 @@ export const useGalleriesParams = () => {
     const result = galleriesQuerySchema.safeParse(
       searchParamsToObject(searchParams),
     );
+
     return result.success ? result.data : galleriesQuerySchema.parse({});
   }, [searchParams]);
 

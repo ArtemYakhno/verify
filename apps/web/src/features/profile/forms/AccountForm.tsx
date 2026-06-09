@@ -48,7 +48,7 @@ export const AccountForm = ({
   }, [firstname, lastname, reset]);
 
   const { mutateAsync: updateProfile, isPending } =
-    useUpdateProfile();
+    useUpdateProfile(form.setError);
 
   const handleUpdateProfile = async (values: UpdateProfileValues) => {
     if (!isDirty) {
@@ -65,7 +65,7 @@ export const AccountForm = ({
   };
 
   return (
-    <section className="card">
+    <section data-testid="account-form" className="card">
       <h2 className="typo-h2 text-ui-black">Account Settings</h2>
 
       <p className="mt-2 typo-main text-grey">

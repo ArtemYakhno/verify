@@ -1,0 +1,107 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e138]:
+      - complementary [ref=e139]:
+        - generic [ref=e140]:
+          - generic [ref=e141]:
+            - img "Verify logo" [ref=e142]
+            - navigation [ref=e143]:
+              - generic [ref=e145]:
+                - heading "Gallery" [level=3] [ref=e146]:
+                  - button "Gallery" [expanded] [ref=e147] [cursor=pointer]:
+                    - generic [ref=e148]:
+                      - img [ref=e149]
+                      - generic [ref=e153]: Gallery
+                    - img
+                - region "Gallery" [ref=e154]:
+                  - generic [ref=e156]:
+                    - link "List of galleries" [ref=e157] [cursor=pointer]:
+                      - /url: /galleries
+                      - generic [ref=e159]: List of galleries
+                    - link "Search among galleries" [ref=e160] [cursor=pointer]:
+                      - /url: /galleries/search
+                      - generic [ref=e162]: Search among galleries
+              - link "User management" [ref=e163] [cursor=pointer]:
+                - /url: /user-management
+                - generic [ref=e164]:
+                  - img [ref=e165]
+                  - generic [ref=e168]: User management
+          - generic [ref=e169]:
+            - link "AA Admin Admin admin@gmail.com" [ref=e170] [cursor=pointer]:
+              - /url: /profile
+              - generic [ref=e171]: AA
+              - generic [ref=e172]:
+                - generic [ref=e173]: Admin Admin
+                - generic [ref=e174]: admin@gmail.com
+            - button "Log Out" [ref=e175] [cursor=pointer]:
+              - img
+              - generic [ref=e176]: Log Out
+      - generic [ref=e177]:
+        - banner [ref=e179]:
+          - heading "Create a new gallery" [level=1] [ref=e340]
+          - button "Go to gallery list" [active] [ref=e341] [cursor=pointer]:
+            - text: Go to gallery list
+            - img
+        - main [ref=e183]:
+          - generic [ref=e184]:
+            - generic [ref=e342]:
+              - heading "Upload Photos" [level=2] [ref=e343]
+              - paragraph [ref=e344]: You can upload one photo or a set of photos.
+            - generic [ref=e346]:
+              - generic [ref=e347]:
+                - generic [ref=e348]:
+                  - generic [ref=e350]:
+                    - img [ref=e351]
+                    - generic [ref=e356]:
+                      - heading "Drag and drop photo here" [level=3] [ref=e357]
+                      - paragraph [ref=e358]: JPEG, PNG, WEBP (max 5MB / picture)
+                    - generic [ref=e361]: OR
+                    - button "Upload" [ref=e363] [cursor=pointer]:
+                      - img
+                      - text: Upload
+                  - generic [ref=e364]:
+                    - group [ref=e365]:
+                      - generic [ref=e366]: Gallery name
+                      - textbox "Gallery name" [ref=e367]
+                    - group [ref=e368]:
+                      - generic [ref=e369]:
+                        - text: Description
+                        - generic [ref=e370]: (optional)
+                      - generic [ref=e371]:
+                        - textbox "Type here..." [ref=e372]
+                        - generic: 0/255
+                - generic [ref=e373]:
+                  - generic [ref=e374]:
+                    - generic [ref=e375]:
+                      - img [ref=e376]
+                      - generic [ref=e379]: Photo preview
+                    - generic [ref=e380]:
+                      - img [ref=e381]
+                      - generic [ref=e384]: Photo preview
+                    - generic [ref=e385]:
+                      - img [ref=e386]
+                      - generic [ref=e389]: Photo preview
+                    - generic [ref=e390]:
+                      - img [ref=e391]
+                      - generic [ref=e394]: Photo preview
+                    - generic [ref=e395]:
+                      - img [ref=e396]
+                      - generic [ref=e399]: Photo preview
+                    - generic [ref=e400]:
+                      - img [ref=e401]
+                      - generic [ref=e404]: Photo preview
+                    - generic [ref=e405]:
+                      - img [ref=e406]
+                      - generic [ref=e409]: Photo preview
+                    - generic [ref=e410]:
+                      - img [ref=e411]
+                      - generic [ref=e414]: Photo preview
+                  - paragraph [ref=e415]: Upload a maximum of 50 photos, no more than 5MB each.
+              - button "Create a new gallery" [ref=e417] [cursor=pointer]
+        - contentinfo [ref=e338]:
+          - generic [ref=e339]: © 2026 Verify. All Rights Reserved.
+    - region "Notifications alt+T"
+  - generic [ref=e33]:
+    - img [ref=e35]
+    - button "Open Tanstack query devtools" [ref=e83] [cursor=pointer]:
+      - img [ref=e84]

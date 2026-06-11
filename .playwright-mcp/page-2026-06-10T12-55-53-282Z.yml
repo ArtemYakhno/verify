@@ -1,0 +1,38 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - heading "Sign In" [level=1] [ref=e7]
+        - heading "Enter your email and password to sign in!" [level=2] [ref=e8]
+        - generic [ref=e10]:
+          - group [ref=e11]:
+            - generic [ref=e12]:
+              - text: Email
+              - generic [ref=e13]: "*"
+            - textbox "Email *" [ref=e14]:
+              - /placeholder: mail@simmmple.com
+          - group [ref=e15]:
+            - generic [ref=e16]:
+              - text: Password
+              - generic [ref=e17]: "*"
+            - group [ref=e18]:
+              - textbox "Password *" [ref=e19]:
+                - /placeholder: Min. 8 characters
+              - button "toggle password" [ref=e21] [cursor=pointer]:
+                - img
+          - button "Sign In" [ref=e22] [cursor=pointer]
+        - paragraph [ref=e23]:
+          - text: Not registered yet?
+          - link "Create an Account" [ref=e24] [cursor=pointer]:
+            - /url: /auth/sign-up
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - img "Verify logo" [ref=e29]
+          - paragraph [ref=e30]: Welcome back 👋
+        - contentinfo [ref=e31]:
+          - generic [ref=e32]: © 2026 Verify. All Rights Reserved.
+    - region "Notifications alt+T"
+  - generic [ref=e33]:
+    - img [ref=e35]
+    - button "Open Tanstack query devtools" [ref=e83] [cursor=pointer]:
+      - img [ref=e84]

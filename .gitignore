@@ -6,7 +6,7 @@
 # Dependencies 
 node_modules
 
-# Build outputs 
+# Build outputs
 dist
 dist-ssr
 build
@@ -37,3 +37,4 @@ pnpm-debug.log*
 *.local
 
 .history/
+.playwright-mcp/

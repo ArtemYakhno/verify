@@ -37,7 +37,7 @@ export class AuthService {
     this.refreshTokenTtl = Number(
       configService.getOrThrow('JWT_REFRESH_TOKEN_TTL'),
     );
-    this.cookieDomain = configService.getOrThrow('COOKIE_DOMAIN');
+    this.cookieDomain = configService.get('COOKIE_DOMAIN') ?? '';
   }
 
   async register(res: Response, createUserDto: CreateUserDto) {
@@ -171,10 +171,10 @@ export class AuthService {
 
     res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, {
       httpOnly: true,
-      domain: this.cookieDomain,
+      domain: this.cookieDomain || undefined,
       expires: new Date(Date.now() + Number(this.refreshTokenTtl) * 1000),
       secure: !isDevEnv,
-      sameSite: 'lax',
+      sameSite: isDevEnv ? 'lax' : 'none',
     });
   }
 }

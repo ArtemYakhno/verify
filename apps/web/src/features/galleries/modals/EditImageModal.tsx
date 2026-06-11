@@ -136,7 +136,7 @@ export const EditImageModal = ({
               placeholder="Type here..."
               aria-invalid={!!errors.comment}
               maxLength={100}
-              defaultValue={initialComment}
+              defaultValue={initialComment ?? undefined}
               className="min-h-[170px]"
             />
           </CustomField>

@@ -1,70 +1,70 @@
-# Verify
+# 🖼️ Verify
 
 Verify is a full-stack monorepo application for managing galleries and images with authentication, admin flows, media uploads, and email-based user invitation scenarios.  
 The project includes a React frontend and a NestJS backend, with PostgreSQL for persistence, Prisma as the ORM, Cloudinary for media storage, and Mailpit for local email testing in development.
 
-## Features
+🔗 **Live Demo** → [Open link](https://verify-web-six.vercel.app/auth/sign-in) &nbsp;|&nbsp; 🎨 **Figma Design** → [Open in Figma](https://www.figma.com/file/0K7EG2mVMhfKr231R5sp61?node-id=2634-69406&type=design&mode=design&fuid=1392495306524358357) &nbsp;|&nbsp; 📖 **API Docs** → [Swagger UI](https://verify-api-h3wk.onrender.com/api/docs)
 
-- **JWT authentication** with access and refresh tokens; silent token refresh on the frontend — expired sessions are renewed automatically without logging the user out
-- **Role-based access control** — two roles (`USER` / `ADMIN`); protected routes on both frontend and backend
-- **User invitation flow** — admin creates a user account, a temporary password is generated and sent to the user's email automatically
-- **Profile management** — users can update their personal details and change their password
-- **Gallery management** — create, edit, and delete galleries with title and description
-- **Image upload** — upload multiple images at once to a gallery; files are stored in Cloudinary
-- **Image management** — edit image name and comment, move or copy images between galleries, delete individual images or clear an entire gallery at once
-- **Search, sort, and filter** — gallery list supports real-time search by title, sorting by date / title / image count, and filtering by creation date range and image count range
-- **URL-persisted state** — all pagination, sort, and filter parameters are stored in the URL; supports browser back/forward navigation and shareable filtered links
-- **Soft delete** — users, galleries, and images are never permanently removed; deletion is tracked with a timestamp and a reason (`MANUAL` or `INHERIT`)
-- **Restore** — soft-deleted galleries and images can be restored to their active state before being permanently purged
-- **Purge** — permanently removes soft-deleted records and their associated Cloudinary assets from the database
-- **Responsive UI** — adaptive layout for desktop and mobile; sorting and filtering use mobile-optimized bottom-sheet dialogs on small screens
-- **Figma-designed** — UI built from a [Figma design](https://www.figma.com/design/0K7EG2mVMhfKr231R5sp61/Verify-Dashboard--Copy-?node-id=2634-56471&t=O06vMDkfwfqtXlAH-0)
-- **API documentation** — Swagger UI available at `/api/docs` in development
+---
 
-## Tech Stack
+## ✨ Features
+
+- 🔐 **JWT authentication** with access and refresh tokens; silent token refresh on the frontend — expired sessions are renewed automatically without logging the user out
+- 🛡️ **Role-based access control** — two roles (`USER` / `ADMIN`); protected routes on both frontend and backend
+- 📧 **User invitation flow** — admin creates a user account, a temporary password is generated and sent to the user's email automatically
+- 👤 **Profile management** — users can update their personal details and change their password
+- 🖼️ **Gallery management** — create, edit, and delete galleries with title and description
+- ☁️ **Image upload** — upload multiple images at once to a gallery; files are stored in Cloudinary
+- 🗂️ **Image management** — edit image name and comment, move or copy images between galleries, delete individual images or clear an entire gallery at once
+- 🔎 **Search, sort, and filter** — gallery list supports real-time search by title, sorting by date / title / image count, and filtering by creation date range and image count range
+- 🔗 **URL-persisted state** — all pagination, sort, and filter parameters are stored in the URL; supports browser back/forward navigation and shareable filtered links
+- 🗑️ **Soft delete** — users, galleries, and images are never permanently removed; deletion is tracked with a timestamp and a reason (`MANUAL` or `INHERIT`)
+- ♻️ **Restore** — soft-deleted galleries and images can be restored to their active state before being permanently purged
+- 💣 **Purge** — permanently removes soft-deleted records and their associated Cloudinary assets from the database
+- 📱 **Responsive UI** — adaptive layout for desktop and mobile; sorting and filtering use mobile-optimized bottom-sheet dialogs on small screens
+
+---
+
+## 🛠️ Tech Stack
 
 ### Frontend
 
-- React
-- TypeScript
-- React Router
-- Tanstask Query
-- Zustand
-- Zod
-- React Hook Form
-- Axios
-- Tailwind
-- shadcn
-- vitest
-- ESLint / Prettier
+- **React** — UI library
+- **TypeScript** — type safety
+- **React Router** — client-side routing
+- **TanStack Query** — server state management & caching
+- **Zustand** — client state management
+- **React Hook Form + Zod** — form handling & validation
+- **Axios** — API requests
+- **Tailwind CSS + shadcn/ui** — styling & components
+- **Vitest** — unit testing
+- **ESLint / Prettier** — code quality
 
 ### Backend
 
-- NestJS
-- TypeScript
-- PostgreSQL
-- Prisma ORM
-- Passport-JWT
-- cookie-parser
-- class-validator / class-transformer
-- Swagger / OpenAPI
-- Nodemailer
-- Multer
-- Cloudinary
-- Jest
-- ESLint / Prettier
+- **NestJS** — server framework
+- **TypeScript** — type safety
+- **PostgreSQL** — database
+- **Prisma ORM** — database access layer
+- **Passport-JWT** — authentication strategy
+- **class-validator / class-transformer** — request validation
+- **Swagger / OpenAPI** — API documentation
+- **Nodemailer** — email sending
+- **Multer** — file upload handling
+- **Cloudinary** — media storage
+- **Jest** — unit testing
+- **ESLint / Prettier** — code quality
 
 ### Infrastructure & Tooling
 
-- pnpm workspaces
-- Docker and Docker Compose
-- Cloudinary
-- Mailpit
-- ESLint / TypeScript-based development workflow
+- **pnpm workspaces** — monorepo package management
+- **Docker & Docker Compose** — containerized services
+- **Cloudinary** — image & media storage
+- **Mailpit** — local SMTP server for email testing
 
-Prisma is used as the ORM layer for database access in the NestJS backend, and Mailpit acts as a local SMTP server with a web interface for inspecting intercepted emails during development. Cloudinary is used for image and media-related workflows.
+---
 
-## Project Structure
+## 📁 Project Structure
 
 ```bash
 verify/
@@ -76,20 +76,25 @@ verify/
 ├── pnpm-workspace.yaml
 ├── .env.example
 └── README.md
+
 ```
 
-## Prerequisites
+---
 
-Before starting, make sure you have installed:
+## ⚙️ Prerequisites
+
+Before implemented, make sure you have installed:
 
 - Node.js 20+
 - pnpm
 - Docker + Docker Compose
 
-## Environment Variables
+---
+
+## 🌱 Environment Variables
 
 The project uses a single root `.env` file.  
-Create it from `.env.example` in the root of the repository.
+Create it from `.env.example` in the root of the repository:
 
 ```bash
 cp .env.example .env
@@ -136,13 +141,11 @@ EMAIL_PASSWORD=
 EMAIL_REPLY_TO=
 ```
 
+---
 
+## 🚀 Getting Started
 
-## Installation
-
-Run all commands from the repository root.
-
-Install dependencies for all workspace packages:
+### 1. Install dependencies
 
 ```bash
 pnpm install
@@ -150,31 +153,19 @@ pnpm install
 
 Prisma Client is generated automatically after installation via the backend `postinstall` script.
 
-## Database Setup
-
-Start the PostgreSQL container:
+### 2. Start the database
 
 ```bash
 docker compose up -d
 ```
 
-This starts the database defined in `docker-compose.yml`.
-
-#### Apply Migrations
-
-After the database is running, apply Prisma migrations:
+### 3. Apply migrations
 
 ```bash
 pnpm --filter api prisma migrate dev
 ```
 
-The `migrate dev` command is used in development to create and apply migrations and generate artifacts such as Prisma Client. It prepares the local database schema so the backend can run correctly. [web:680]
-
-## Mailpit Setup
-
-For local email testing, you can run Mailpit in Docker. Mailpit acts as a local SMTP server, captures outgoing emails, and provides a web UI for viewing them in the browser. The default SMTP port is `1025`, and the default web UI port is `8025`.
-
-Start Mailpit with:
+### 4. Start Mailpit (local email testing)
 
 ```bash
 docker run -d \
@@ -185,77 +176,74 @@ docker run -d \
   axllent/mailpit
 ```
 
-Use the mail-related environment variables from the `.env` example so the backend sends emails to Mailpit instead of a real mail provider during development.
-
-## Running the Project
-
-Start both frontend and backend from the repository root:
+### 5. Run the project
 
 ```bash
 pnpm dev
 ```
 
-This runs both applications concurrently using the root scripts.
+---
 
-### Default URLs
+## 🌐 Default URLs
 
-- Frontend: [http://localhost:5173](http://localhost:5173)
-- Backend: [http://localhost:3000](http://localhost:3000)
+| Service      | URL                                              |
+| ------------ | ------------------------------------------------ |
+| Frontend     | [http://localhost:5173](http://localhost:5173)   |
+| Backend      | [http://localhost:3000](http://localhost:3000)   |
+| Swagger UI   | [http://localhost:3000/api/docs](http://localhost:3000/api/docs) |
+| Mailpit UI   | [http://localhost:8025](http://localhost:8025)   |
 
-Swagger:
+---
 
-- API Docs: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+## 🧪 Testing
 
-Mailpit:
-
-- SMTP server: `127.0.0.1:1025`
-- Mailpit UI: [http://localhost:8025](http://localhost:8025)
-
-## Testing
-
-### Frontend
-
-The frontend uses **Vitest** as the test runner. Run tests with:
+**Frontend** (Vitest):
 
 ```bash
 pnpm --filter web test
 ```
 
-### Backend
-
-The backend uses **Jest**  for unit tests. Run tests with:
+**Backend** (Jest):
 
 ```bash
 pnpm --filter api test
 ```
 
-## Troubleshooting
+---
 
-### Prisma client is missing
+## 🔧 Troubleshooting
 
-If Prisma types are missing or the project does not compile after cloning, run:
+**Prisma client is missing**
 
 ```bash
 pnpm --filter api prisma generate
 ```
 
-Prisma Client is generated code based on your Prisma schema, and it must exist for TypeScript imports and types to work correctly.
+**Frontend does not read environment variables**  
+Make sure only variables prefixed with `VITE_` are used in client-side code.
 
-### Frontend does not read environment variables
+**Emails not visible in development**  
+Ensure Mailpit is running and `.env` contains:
 
-Make sure the frontend is configured to read env variables from the monorepo root if you use a shared root `.env`. Also remember that only variables starting with `VITE_` are available in client-side code.
+```env
+EMAIL_HOST=127.0.0.1
+EMAIL_PORT=1025
+```
 
-### Emails are not visible in development
+Then open [http://localhost:8025](http://localhost:8025) to inspect captured emails.
 
-Make sure Mailpit is running and that the backend mail configuration points to:
+---
 
-- `EMAIL_HOST=127.0.0.1`
-- `EMAIL_PORT=1025`
+## 📝 Notes
 
-Then open [http://localhost:8025](http://localhost:8025) to inspect captured emails. Mailpit is intended specifically for this local development workflow.
-
-## Notes
-
-- Use `pnpm install` only once from the root of the monorepo.
+- Run `pnpm install` only once from the monorepo root.
 - Do not commit the `.env` file.
 - Commit `.env.example` so other developers can configure the project locally.
+
+---
+
+## 👤 Author
+
+**Artem Yakhno**
+
+- GitHub: [@ArtemYakhno](https://github.com/ArtemYakhno)
